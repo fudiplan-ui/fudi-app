@@ -1,0 +1,12 @@
+{
+  "description": "FUDI: Smarte Ernährung mit KI-Blutzucker-Vorhersage, Kühlschrank-Scan, glykämischem Index und Supermarkt-Preisvergleich. Für Diabetiker, Sportler und gesunden Genuss.",
+  "robots": {
+    "index": true
+  },
+  "accessibility": {
+    "addBypassLinks": true,
+    "ignoreReducedMotion": false
+  },
+  "title": "FUDI 2.0 – KI-Ernährung, Blutzucker-Rechner & No-Waste Rezepte",
+  "language": "de"
+}

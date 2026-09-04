@@ -1,0 +1,849 @@
+
+---
+
+## 2. Figma Design Prompt
+
+**Kopiere diesen Prompt in Figma AI oder gib ihn deinem Designer:**
+
+```markdown
+# FUDI System 2.0 – Komplettes UI/UX Design
+
+## FARBPALETTE (aus Adobe Color)
+
+**Primärfarben:**
+- 🔴 Primary Red: #FF4127 (CTAs, Warnungen, wichtige Aktionen)
+-  Primary Green: #44A666 (Erfolg, gesunde Werte, Bestätigungen)
+- 🟠 Primary Orange: #EE9553 (Highlights, secondary Actions)
+- 🩷 Primary Pink: #EB72A7 (Features, Special Offers, Premium)
+- 🔵 Primary Blue: #0E78B6 (Information, Links, Navigation)
+
+**Neutrals (ergänzen):**
+- Gray 900: #1A1A1A (Text primär)
+- Gray 700: #4A4A4A (Text sekundär)
+- Gray 500: #8E8E8E (Placeholder)
+- Gray 300: #D1D1D1 (Borders)
+- Gray 100: #F5F5F5 (Backgrounds)
+- White: #FFFFFF
+
+**Semantic Colors:**
+- Success: #44A666 (Green)
+- Warning: #EE9553 (Orange)
+- Error: #FF4127 (Red)
+- Info: #0E78B6 (Blue)
+- Blood Sugar High: #FF4127
+- Blood Sugar Medium: #EE9553
+- Blood Sugar Low: #44A666
+
+## DESIGN SYSTEM
+
+### Typography
+- **Font Family**: Inter oder SF Pro Display
+- **Headlines**: 
+  - H1: 32px/40px Bold
+  - H2: 24px/32px SemiBold
+  - H3: 20px/28px SemiBold
+- **Body**: 
+  - Large: 18px/28px Regular
+  - Base: 16px/24px Regular
+  - Small: 14px/20px Regular
+- **Caption**: 12px/16px Regular
+
+### Spacing Scale
+- 4px, 8px, 12px, 16px, 24px, 32px, 48px, 64px
+
+### Border Radius
+- Small: 8px (Buttons, Inputs)
+- Medium: 12px (Cards)
+- Large: 16px (Modals)
+- XL: 24px (Hero Sections)
+
+### Shadows
+- Card: 0 2px 8px rgba(0,0,0,0.08)
+- Elevated: 0 4px 16px rgba(0,0,0,0.12)
+- Modal: 0 8px 32px rgba(0,0,0,0.16)
+
+---
+
+## SEITEN & SCREENS
+
+### 1. LANDING PAGE
+
+**Hero Section:**
+- Vollbild-Gradient: Linear 135° von #FF4127 (oben links) zu #0E78B6 (unten rechts)
+- Headline: "Iss gesund. Bleib fit. Verstehe deinen Körper."
+- Subheadline: "KI-gestützte Rezepte mit Blutzucker-Prädiktion"
+- CTA Buttons: 
+  - Primary: "Kostenlos starten" (#FFFFFF Text auf #44A666)
+  - Secondary: "Demo ansehen" (Transparent mit weißem Border)
+- Hero Image: Collage aus gesunden, bunten Gerichten (Mediterran, Asiatisch, Modern)
+- Trust Badges: "DSGVO-konform", "Wissenschaftlich fundiert", "10.000+ Nutzer"
+
+**Features Grid (3 Spalten):**
+1. 🍽️ Rezept-Suche mit Icons (Food-Bilder)
+   - Icon: Teller mit gesunden Zutaten
+   - Titel: "Personalisierte Rezepte"
+   - Text: "Allergien, Nährwerte, Blutzucker – alles berücksichtigt"
+   
+2.  Gesundheits-Tracker
+   - Icon: Dashboard mit Graphen
+   - Titel: "Blutzucker im Blick"
+   - Text: "Vorhersage & Tracking deiner Werte"
+   
+3. 🛒 Smart Shopping
+   - Icon: Einkaufswagen mit Checkliste
+   - Titel: "Automatische Einkaufslisten"
+   - Text: "Nie wieder etwas vergessen"
+
+**How it Works (4 Steps):**
+- Schritt-für-Schritt Visualisierung mit Illustrationen
+- Icons: 1. Profil → 2. Präferenzen → 3. Rezepte → 4. Genießen
+- Farbakzente: Orange (#EE9553) für aktive Schritte
+
+**Pricing Preview:**
+- 3 Karten nebeneinander
+- Middle Card (Pro) hervorheben mit Pink (#EB72A7) Border
+- "Beliebt" Badge in Pink
+
+**Footer:**
+- Dark Background (#1A1A1A)
+- Links in 4 Spalten
+- Social Media Icons
+- Newsletter Signup mit Green Button
+
+---
+
+### 2. AUTHENTIFIZIERUNG
+
+**Login Screen:**
+- Split Layout: Links Branding (Gradient Background), Rechts Formular
+- Logo oben: FUDI in Primary Red (#FF4127)
+- Formular:
+  - Input Fields: 
+    * Email (Icon: 📧)
+    * Passwort (Icon: 🔒)
+    * "Angemeldet bleiben" Checkbox
+  - Primary Button: "Einloggen" (#44A666)
+  - Secondary: "Mit Google anmelden" (White mit Gray Border)
+  - Link: "Passwort vergessen?" (#0E78B6)
+- Unten: "Noch kein Konto? Registrieren"
+
+**Register Screen:**
+- Multi-Step Form (Progress Bar oben in Orange)
+- **Schritt 1: Basis-Daten**
+  - Name, Email, Passwort
+  - Geburtsdatum (DatePicker)
+  
+- **Schritt 2: Gesundheits-Profil**
+  - "Hast du Diabetes?" Toggle (Ja/Nein)
+  - Wenn Ja: Typ 1 / Typ 2 / Prädiabetes Select
+  - Aktuelle Werte Eingabe:
+    * HbA1c (%)
+    * Durchschnittlicher Blutzucker (mg/dL)
+  - Gewicht & Größe (mit BMI-Auto-Berechnung Anzeige)
+  
+- **Schritt 3: Ernährung**
+  - Ernährungstyp: Cards mit Icons
+    * 🥗 Vegan
+    * 🥕 Vegetarisch
+    * 🐟 Pescetarier
+    * 🍖 Allesesser
+  - Allergien: Multi-Select Chips
+    * Gluten, Laktose, Nüsse, Soja, Eier, Fisch, Schalentiere
+  - Unverträglichkeiten: Free Text Input
+  
+- **Schritt 4: Ziele**
+  - Ziel-Select: Abnehmen / Halten / Zunehmen
+  - Gewichtsziel (kg)
+  - Aktivitätslevel: Slider (Sitzend → Sehr aktiv)
+  - TDEE-Berechnung automatisch anzeigen
+  
+- **Schritt 5: Präferenzen**
+  - Lieblingsküchen: Tags (Mediterran, Asiatisch, Deutsch, etc.)
+  - Geschmacksrichtungen: Slider (Süß ←→ Salzig, Mild ←→ Scharf)
+  - Max. Kochzeit: Dropdown (15min, 30min, 60min, 90min+)
+  - Budget pro Mahlzeit: Slider (€ - €€€)
+
+**Password Reset:**
+- Einfaches Formular mit Email Input
+- Green Submit Button
+- Zurück zum Login Link
+
+---
+
+### 3. DASHBOARD (USER CABINET)
+
+**Header/Navigation:**
+- Sticky Top Navigation
+- Logo links (FUDI in Red)
+- Navigation Items: Dashboard, Rezepte, Mahlzeitplan, Einkaufsliste, Stats, Profil
+- Rechts: Benachrichtigungs-Glocke (mit Badge), User Avatar Dropdown
+
+**Dashboard Overview:**
+- **Welcome Section**: 
+  * "Guten Morgen, [Name]!" 
+  * Heutiges Datum
+  * Wetter-Widget (optional)
+  
+- **Quick Stats Cards (4 Spalten):**
+  1.  Kalorien heute
+     * Große Zahl: "1.450 / 2.000 kcal"
+     * Progress Bar (Green bis 80%, Orange 80-100%, Red >100%)
+     * Trend: "+12% vs. gestern"
+     
+  2. 🍎 Makros
+     * Donut Chart: Protein/KH/Fett
+     * Zahlen: "P: 95g | KH: 145g | F: 58g"
+     
+  3. 🩸 Blutzucker
+     * Aktueller Wert (wenn eingetragen): "112 mg/dL"
+     * Trend-Pfeil (↗️ ↘️ →)
+     * Ampel-Farbe basierend auf Wert
+     
+  4. 🎯 Tagesziel
+     * "Noch 550 kcal verfügbar"
+     * Circle Progress Indicator
+
+- **Heutige Mahlzeiten (Timeline View):**
+  * Frühstück, Snack, Mittag, Snack, Abendessen
+  * Jede Mahlzeit als Card:
+    - Bild (wenn vorhanden)
+    - Name des Rezepts
+    - Kalorien & Makros
+    - Blutzucker-Impact (wenn berechnet)
+    - Edit/Delete Icons
+    
+- **Empfohlene Rezepte (Horizontal Scroll):**
+  * Überschrift: "Basierend auf deinen Zielen"
+  * 5-6 Rezept-Cards:
+    - Bild (3:2 Aspect Ratio)
+    - Titel
+    - Bewertung (⭐ 4.8)
+    - Zeit (⏱️ 25 min)
+    - Kalorien (🔥 450 kcal)
+    - Blutzucker-Ampel (🟢/🟡/🔴)
+    
+- **Wochen-Übersicht (Mini-Kalender):**
+  * 7 Tage horizontal
+  * Jeden Tag: 
+    - Datum
+    - Erfüllte Mahlzeiten (Checkmarks)
+    - Durchschnittlicher Blutzucker
+    - Gesamtkalorien
+
+---
+
+### 4. REZEPT-SUCHE & ENTFDECKEN
+
+**Such-Seite:**
+- **Suchleiste (Sticky Top):**
+  * Große Such-Input mit Placeholder: "Suche nach Rezepten, Zutaten, Küchen..."
+  * Filter-Button rechts
+  * Voice Search Icon (Mikrofon)
+  
+- **Filter Panel (Slide-out von rechts):**
+  * **Kategorien**: Frühstück, Mittag, Abendessen, Snack, Dessert
+  * **Ernährungstyp**: Vegan, Vegetarisch, etc. (Checkboxen)
+  * **Allergene ausschließen**: Multi-Select
+  * **Kochzeit**: Slider (0-120 min)
+  * **Schwierigkeit**: Einfach/Mittel/Schwer
+  * **Kalorien**: Range Slider (0-1000+)
+  * **Protein**: Min/Max Input
+  * **Kohlenhydrate**: Min/Max Input
+  * **Blutzucker-Impact**: 
+    * Toggle: "Nur grüne Rezepte" (Low Impact)
+    * Max. Anstieg Slider (0-100 mg/dL)
+  * **Preis**: Budget Slider
+  * **Bewertung**: Min. Sterne (4+ ⭐, 3+ ⭐, etc.)
+  * Apply Filter Button (Green)
+  
+- **Ergebnisse (Grid Layout):**
+  * Sortierung: Relevanz, Bewertung, Zeit, Kalorien (aufsteigend/absteigend)
+  * Responsive Grid: Desktop 4 Spalten, Tablet 2, Mobile 1
+  * Rezept-Card Design:
+    - Bild (oben, 16:9)
+    - Overlay Badge: " Low GI" oder " High Protein"
+    - Titel (2 Zeilen max)
+    - Meta-Info Row: ⏱️ 25min | 👥 4 Portionen
+    - Nährwerte Row: 🔥 450 | 🥩 35g |  45g
+    - Blutzucker: "+35 mg/dL 🟢"
+    - Bewertung: ⭐⭐⭐⭐⭐ (4.8)
+    - Hover-Effekt: Scale 1.02, Shadow erhöht
+
+**Rezept-Detailseite:**
+- **Hero Section:**
+  * Großes Bild (Full Width, 400px Höhe)
+  * Overlay Gradient (schwarz transparent von unten)
+  * Titel (weiß, groß)
+  * Quick Stats überlappend unten:
+    - Zeit | Portionen | Schwierigkeit | Kalorien
+    
+- **Tab Navigation:**
+  * Übersicht | Nährwerte | Zubereitung | Ähnliche Rezepte
+  
+- **Übersicht Tab:**
+  * **Beschreibung** (Fließtext)
+  * **Zutaten Liste** (linke Spalte):
+    - Checkboxes neben jeder Zutat
+    - Mengenangaben
+    - "Zur Einkaufsliste hinzufügen" Button
+  * **Nährwerte Box** (rechte Spalte):
+    - Kalorien groß
+    - Makro-Pie-Chart
+    - Vitamine & Mineralien (Liste mit Icons)
+  * **Zubereitung** (untere Section):
+    - Schritt-für-Schritt nummeriert
+    - Jeder Schritt mit optionalem Bild
+    - Timer-Button für Kochzeiten
+    
+- **Nährwerte Tab:**
+  * **Blutzucker-Analyse (Highlight Box):**
+    - "Erwarteter Blutzucker-Anstieg"
+    - Große Zahl: "+45 mg/dL"
+    - Ampel-Farbe
+    - Timeline-Graph:
+      * X-Achse: Zeit (0h, 1h, 2h, 3h, 4h)
+      * Y-Achse: Blutzucker (mg/dL)
+      * Kurve zeigt Anstieg und Abfall
+    - Peak-Markierung: "Peak nach 45 Min"
+    - Return-to-Baseline: "Normal nach 2.5 Std"
+    
+  * **Detaillierte Nährwert-Tabelle:**
+    - Pro 100g & pro Portion
+    - Kalorien, Protein, KH, Fett, Ballaststoffe
+    - Zucker, Salz, gesättigte Fettsäuren
+    - Vitamine (A, C, D, E, K, B1-B12)
+    - Mineralien (Eisen, Kalzium, Magnesium, Zink, etc.)
+    - Aminosäuren-Profil (optional)
+    
+  * **Gesundheits-Score:**
+    - Circular Progress: "85/100"
+    - Kategorien:
+      * Nährstoff-Dichte: ⭐⭐⭐⭐
+      * Blutzucker-Freundlichkeit: ⭐⭐⭐⭐
+      * Entzündungshemmend: ⭐⭐⭐
+      
+  * **Empfehlungen:**
+    * "Kombiniere mit:" (z.B. Salat für bessere Aufnahme)
+    * "Vermeide wenn:" (z.B. akute Hypoglykämie)
+    
+- **Rezept-Anpassungen:**
+  * Portionen-Adjuster (+/- Buttons)
+  * "Mach es vegan" Toggle
+  * "Reduziere Kohlenhydrate" Button → schlägt Alternativen vor
+  * Allergen-Substitutionen
+
+---
+
+### 5. INTERAKTIVER BLUTZUCKER-RECHNER
+
+**Rechner-Widget (Modal oder eigene Seite):**
+- **Input Section:**
+  * "Aktueller Blutzucker"
+    - Number Input mit mg/dL Einheit
+    - Visual Slider mit Farbskala (Grün → Gelb → Rot)
+  * "Geplante Mahlzeit"
+    - Rezept-Auswahl (Dropdown mit Suchfunktion)
+    - Oder manuelle Eingabe:
+      * Kohlenhydrate (g)
+      - Protein (g)
+      * Fett (g)
+      
+  * "Zusätzliche Faktoren":
+    - Toggle: "Nach dem Sport?" (erhöht Aufnahme)
+    - Toggle: "Auf nüchternen Magen?"
+    - Insulin-Einheiten (wenn Typ-1 Diabetiker)
+    
+- **Berechnung Animation:**
+  * Loading State mit Formel-Visualisierung
+  * "Berechne..."
+  
+- **Ergebnis Section:**
+  * **Große Anzeige:**
+    - "Dein Blutzucker wird steigen auf:"
+    - Riesige Zahl: "165 mg/dL"
+    - Pfeil: "↑ +45 mg/dL"
+    - Ampel-Farbe
+    
+  * **Timeline-Graph:**
+    - Interaktiver Graph (wie oben beschrieben)
+    - User kann Zeitpunkte hover für genaue Werte
+    
+  * **Empfehlungen:**
+    * "Warte 15 Min vor dem Essen für besseres Management"
+    * "Kombiniere mit 10g Ballaststoffen für langsameren Anstieg"
+    * "Insulin-Anpassung: +2 Units empfohlen"
+    
+  * **Alternativen:**
+    * "Möchtest du Rezepte mit geringerem Anstieg sehen?"
+    * Button: "Zeige Alternativen (<30 mg/dL)"
+    
+  * **Speichern:**
+    * "In Tagebuch eintragen" Checkbox
+    * "Als Standard berechnen" Toggle
+
+---
+
+### 6. WOCHENPLANER
+
+**Kalender-Ansicht:**
+- **Week View (Desktop: 7 Spalten, Mobile: Swipe)**
+  * Jeder Tag:
+    - Datum + Wochentag
+    - Summe Kalorien des Tages
+    - Durchschnitt Blutzucker
+    - Fortschrittsbalken (Ziele erreicht?)
+    
+- **Drag & Drop:**
+  * Rezepte aus Sidebar auf Tage ziehen
+  * Zwischen Tagen verschieben
+  * Zwischen Mahlzeiten verschieben (Frühstück → Mittag)
+  
+- **Tag-Detail (Click auf Tag):**
+  * Modal oder Side-Panel
+  * Alle Mahlzeiten des Tages
+  * "Rezept hinzufügen" Button
+  * Auto-Plan Button: "KI füllt Lücken"
+  
+- **Einkaufsliste Auto-Generierung:**
+  * "Einkaufsliste aus Wochenplan erstellen"
+  * Gruppiert nach Kategorien (Obst, Gemüse, Fleisch, etc.)
+  * Mengen automatisch addiert
+  * Checkboxen zum Abhaken
+
+---
+
+### 7. EINKAUFSLISTE
+
+**Listen-Ansicht:**
+- **Kategorien-Tabs:**
+  * Alle | Obst & Gemüse | Fleisch & Fisch | Molkerei | Vorräte | Tiefkühl
+  
+- **Liste:**
+  * Jede Zeile:
+    - Checkbox
+    - Produktname
+    - Menge (editierbar)
+    - Geschätzter Preis
+    - Geschäft (optional)
+    - Delete Button
+    
+- **Features:**
+  * "Von Rezept hinzufügen" Dropdown
+  * Barcode-Scanner Button (Mobile)
+  * "Teilen" Button (für Partner/WG)
+  * "Als PDF exportieren"
+  
+- **Smart Features:**
+  * "Häufig gekauft" Vorschläge
+  * Saisonale Empfehlungen
+  * Preisvergleich (wenn Partner-Shops integriert)
+
+---
+
+### 8. STATS & ANALYTICS
+
+**Dashboard mit Graphen:**
+- **Zeitraum-Selector:**
+  * Heute | Woche | Monat | Jahr | Benutzerdefiniert
+  
+- **KPI Cards:**
+  * Durchschnittliche Kalorien/Tag
+  * Durchschnittlicher Blutzucker
+  * Gewichtsentwicklung
+  * HbA1c Trend (wenn eingetragen)
+  
+- **Graphen:**
+  1. **Blutzucker-Verlauf (Line Chart):**
+     - X: Zeit (Tage/Wochen)
+     - Y: mg/dL
+     - Mehrere Linien: Morgens, Mittags, Abends
+     - Zielbereich als grüne Zone markiert
+     
+  2. **Makro-Verteilung (Stacked Bar):**
+     - Pro Tag die Verteilung Protein/KH/Fett
+     - Vergleich mit Zielen
+     
+  3. **Kalorien-Trend:**
+     - Linie: Tatsächliche Kalorien
+     - Linie: Ziel-Kalorien
+     - Schattierte Fläche dazwischen
+     
+  4. **Gewichts-Chart:**
+     - Gewicht über Zeit
+     - Trendlinie
+     - Zielgewicht als horizontale Linie
+     
+  5. **Rezept-Beliebtheit (Pie Chart):**
+     - Meistgekochte Kategorien
+     
+  6. **Blutzucker-Response nach Rezept (Scatter Plot):**
+     - X: Kohlenhydrate
+     - Y: Blutzucker-Anstieg
+     - Jeder Punkt ein Rezept
+     - Hilft Muster zu erkennen
+
+- **Insights Box:**
+  * "Du isst durchschnittlich 200 kcal mehr am Wochenende"
+  * "Dein Blutzucker ist morgens 15% höher als abends"
+  * "Versuche mehr Ballaststoffe: Aktuell 18g, Ziel 30g"
+
+---
+
+### 9. ABO & PRICING
+
+**Pricing Page:**
+- **Toggle:** Monatlich / Jährlich (20% sparen)
+- **3 Tiers:**
+
+  **Free (Basis):**
+  * Preis: €0
+  * Features:
+    - 5 Rezepte/Monat
+    - Basis-Nährwerte
+    - Einkaufsliste
+    - Community-Zugang
+  * CTA: "Kostenlos starten" (Gray Button)
+  
+  **Pro (Beliebt – Highlight mit Pink Border):**
+  * Preis: €9,90/Monat
+  * Badge: "Beliebt" (Pink)
+  * Features:
+    - Unbegrenzte Rezepte
+    - Blutzucker-Prädiktion
+    - Personalisierte Empfehlungen
+    - Wochenplaner
+    - Stats & Analytics
+    - Premium-Rezepte
+    - Werbefrei
+  * CTA: "Pro starten" (Green Button)
+  * "14 Tage kostenlos testen"
+  
+  **Business:**
+  * Preis: €39/Monat
+  * Features:
+    - Alles aus Pro
+    - API-Zugang
+    - White-Label Option
+    - Priority Support
+    - Team-Accounts (bis 5)
+    - Erweiterte Analytics
+  * CTA: "Business kontaktieren" (Blue Button)
+
+- **FAQ Accordion** unter den Plans
+- **Trust Signals**: SSL, DSGVO, Kündigung jederzeit
+
+**Account Settings – Abo-Verwaltung:**
+- Aktueller Plan anzeigen
+- "Upgrade/Downgrade" Button
+- Zahlungsmethode verwalten
+- Rechnungen herunterladen
+- Abo pausieren/kündigen
+
+---
+
+### 10. PROFIL & EINSTELLUNGEN
+
+**Profilseite:**
+- **Avatar Upload** (Circle, 120px)
+- **Persönliche Daten:**
+  * Name, Email, Telefon
+  * Adresse (für Lieferungen)
+  
+- **Gesundheitsprofil bearbeiten:**
+  * Alle Werte aus Registration editierbar
+  * Medizinische Historie (optional)
+  * Medikamente (z.B. Insulin-Typ)
+  
+- **Ziele anpassen:**
+  * Gewichtsziel
+  * Makro-Ziele (Slider)
+  * Aktivitätslevel
+  
+- **Präferenzen:**
+  * Benachrichtigungen (Toggle):
+    - "Erinnere mich ans Essen"
+    - "Blutzucker messen"
+    - "Einkaufsliste"
+  * Sprache
+  * Einheiten (mg/dL vs mmol/L, kcal vs kJ)
+
+**Datenschutz:**
+- Daten-Export Button
+- Account löschen
+- Cookie-Einstellungen
+
+---
+
+### 11. MOBILE APP (Responsive)
+
+**Mobile Navigation:**
+- Bottom Tab Bar:
+  * 🏠 Home
+  * 🔍 Suchen
+  * 📅 Planer
+  * 🛒 Liste
+  *  Profil
+  
+**Mobile Optimierungen:**
+- Alle Inputs: Min. 44px Touch-Target
+- Cards: Full-Width mit 16px Margin
+- Bilder: Lazy Loading
+- Swipe-Gesten:
+  * Rezept-Card swipen → Speichern
+  * Einkaufsliste: Swipe left → Delete
+- Pull-to-Refresh auf allen Listen
+- Offline-Modus Indicator
+
+---
+
+### 12. BENACHRICHTIGUNGEN
+
+**Notification Center:**
+- Glocken-Icon im Header mit Badge
+- Dropdown-Liste:
+  * "Dein Mittagessen ist bereit" (Rezept-Erinnerung)
+  * "Blutzucker messen" (wenn fällig)
+  * "Neues Rezept basierend auf deinen Präferenzen"
+  * "Dein Abo läuft in 3 Tagen ab"
+  
+**Push Notifications (Mobile):**
+- Mahlzeiten-Erinnerungen
+- Blutzucker-Alerts (wenn Werte kritisch)
+- Einkaufsliste: "Du bist in der Nähe von Edeka"
+
+---
+
+### 13. ONBOARDING TUTORIAL
+
+**Interactive Tour:**
+- Step-by-Step Overlay beim ersten Login
+- **Schritte:**
+  1. "Willkommen! Lass uns dein Profil einrichten" → Profil-Page
+  2. "Füge deine ersten Rezepte hinzu" → Such-Page mit Highlight
+  3. "Erstelle deinen Wochenplan" → Planer-Page
+  4. "Checke deinen Blutzucker-Impact" → Rezept-Detail mit Highlight
+  5. "Fertig! Los geht's" → Dashboard
+  
+- Skip-Button jederzeit
+- Fortschritts-Anzeige (Step 1/5)
+
+---
+
+### 14. EMPTY STATES
+
+**Design für leere Zustände:**
+- **Keine Rezepte gefunden:**
+  * Illustration: Trauriger Teller
+  * Text: "Keine Rezepte gefunden"
+  * Subtext: "Versuche andere Filter"
+  * Button: "Filter zurücksetzen"
+  
+- **Keine Mahlzeiten heute:**
+  * Illustration: Leer Kühlschrank
+  * Text: "Noch keine Mahlzeiten geplant"
+  * Button: "Rezepte entdecken"
+  
+- **Keine Stats verfügbar:**
+  * Text: "Noch nicht genug Daten"
+  * Subtext: "Trage deine ersten Mahlzeiten ein"
+
+---
+
+### 15. LOADING STATES
+
+**Skeleton Screens:**
+- Rezept-Card Skeleton:
+  * Graues Rechteck (Bild)
+  * 3 Linien (Text)
+  * Pulsierende Animation
+  
+- Dashboard Skeleton:
+  * 4 graue Cards
+  * Liste Skeleton
+
+**Spinner:**
+- Circular Spinner in Primary Blue (#0E78B6)
+- Size: Small (24px), Medium (40px), Large (64px)
+
+---
+
+### 16. ERROR STATES
+
+**Fehlermeldungen:**
+- **404 Page:**
+  * Illustration: Verirrter Koch
+  * "Seite nicht gefunden"
+  * Button: "Zurück zum Dashboard"
+  
+- **API Error:**
+  * Toast Notification (Red Background)
+  * "Etwas ist schiefgelaufen"
+  * Retry Button
+  
+- **Form Validation:**
+  * Roter Border am Input
+  * Fehlermeldung darunter (Small, Red)
+  * Icon: ️
+
+---
+
+### 17. COMPONENT LIBRARY
+
+**Buttons:**
+- Primary: Green Background, White Text, 8px Radius
+- Secondary: White Background, Blue Border & Text
+- Tertiary: Transparent, Gray Text
+- Danger: Red Background
+- Disabled: Gray Background, 50% Opacity
+
+**Inputs:**
+- Border: 1px Gray 300
+- Focus: 2px Blue Border
+- Error: 2px Red Border
+- Label: Above Input, Gray 700, SemiBold
+- Placeholder: Gray 500
+- Helper Text: Below Input, Small, Gray 500
+
+**Cards:**
+- White Background
+- 12px Border Radius
+- Shadow: 0 2px 8px rgba(0,0,0,0.08)
+- Padding: 16px oder 24px
+- Hover: Shadow erhöhen, leicht skalieren
+
+**Badges:**
+- Small Pill-Shape
+- Farben basierend auf Typ:
+  * Success: Green Background
+  * Warning: Orange Background
+  * Error: Red Background
+  * Info: Blue Background
+  
+**Tables:**
+- Stripe Rows (White / Gray 100)
+- Header: Gray Background, Bold
+- Hover Row: Light Blue Background
+- Sortable Columns mit Arrow Icons
+
+**Modals:**
+- Overlay: Black 50% Opacity
+- Content: White, 16px Radius
+- Max Width: 600px
+- Close Button: X oben rechts
+- Header, Body, Footer Sections
+
+**Tabs:**
+- Horizontal
+- Active: Blue Underline
+- Inactive: Gray Text
+- Hover: Light Gray Background
+
+**Progress Bars:**
+- Background: Gray 200
+- Fill: Gradient Green → Orange → Red
+- Height: 8px
+- Radius: 4px
+
+**Tooltips:**
+- Dark Gray Background
+- White Text
+- Small Arrow
+- Delay: 300ms
+
+---
+
+### 18. MICROINTERACTIONS
+
+**Hover Effects:**
+- Buttons: Scale 1.02, Shadow erhöhen
+- Cards: Lift Effect ( translateY(-4px) )
+- Links: Underline Animation von links nach rechts
+
+**Click Effects:**
+- Button Press: Scale 0.98
+- Like Button: Herz Animation (Pulse)
+- Checkbox: Check Animation
+
+**Transitions:**
+- Page Transitions: Fade + Slide (300ms)
+- Modal: Scale + Fade (200ms)
+- Dropdown: Fade (150ms)
+
+**Animations:**
+- Success: Checkmark Draw Animation
+- Error: Shake Animation
+- Loading: Skeleton Pulse
+
+---
+
+### 19. ACCESSIBILITY
+
+**WCAG 2.1 AA Compliance:**
+- Color Contrast: Min 4.5:1 für Text
+- Focus States: Sichtbare Outline für Keyboard Navigation
+- Screen Reader Labels: Aria-Labels auf allen Icons
+- Keyboard Navigation: Tab-Order logisch
+- Font Size: Respektiere Browser-Einstellungen
+- Reduced Motion: Option für weniger Animationen
+
+---
+
+### 20. FOOD PHOTOGRAPHY STYLE
+
+**Bild-Richtlinien:**
+- **Stil**: Natürliches Licht, overhead oder 45° Winkel
+- **Farben**: Lebendig, gesättigt aber nicht übertrieben
+- **Komposition**: Regel der Drittel, negative Space
+- **Props**: Minimalistisch, neutrale Teller (weiß/hellgrau)
+- **Hintergrund**: Hell, clean, lenkt nicht ab
+- **Consistency**: Alle Rezeptbilder ähnlicher Stil
+
+**Beispiel-Shots:**
+- Frühstück: Haferbrei mit Beeren, overhead, helles Holz
+- Mittag: Buddha Bowl, 45°, weißer Teller
+- Abendessen: Gegrillter Fisch mit Gemüse, Seitenlicht
+- Snack: Nüsse & Obst, Flatlay
+
+---
+
+## DELIVERABLES
+
+Erstelle in Figma:
+1. **Design System Page** (Colors, Typography, Components)
+2. **Desktop Wireframes** (alle Seiten oben)
+3. **Mobile Wireframes** (alle Seiten responsive)
+4. **Interactive Prototype** (User Flows verlinkt)
+5. **Component Library** (Auto-Layout, Variants)
+6. **Style Guide PDF** (für Entwickler)
+
+**User Flows zu prototypen:**
+- Registration → Onboarding → Dashboard
+- Rezept-Suche → Detail → Wochenplan hinzufügen
+- Blutzucker-Rechner → Ergebnis → Rezept-Anpassung
+- Einkaufsliste erstellen → Teilen → Abhaken
+
+**Breakpoints:**
+- Desktop: 1440px
+- Laptop: 1024px
+- Tablet: 768px
+- Mobile: 375px
+
+---
+
+## INSPIRATION
+
+**Referenz-Designs:**
+- MyFitnessPal (Tracking)
+- Yazio (Ernährung)
+- Spoonacular (Rezepte)
+- Levels (Blutzucker)
+- Headspace (Onboarding)
+
+**Design-Prinzipien:**
+- Clean & Modern
+- Trustworthy (Gesundheit!)
+- Motivierend (nicht belehrend)
+- Accessible für alle
+- Mobile-First
+
+Viel Erfolg beim Design! 🎨
