@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
@@ -368,9 +368,40 @@ export default function RecipeDetail() {
                 <div className="flex-1">
                   <p className="text-sm leading-relaxed" style={{ color: C.inkMid }}>{step}</p>
                   {i === 1 && (
-                    <button className="mt-2 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1" style={{ background: C.mintLight, color: C.forest }}>
-                      ⏱ Timer starten (20 min)
-                    </button>
+                    <div className="mt-2">
+                      {timerSeconds === null ? (
+                        <button
+                          onClick={() => startTimer(recipe.time || 20)}
+                          className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 shadow-sm"
+                          style={{ background: C.mint, color: C.white }}
+                        >
+                          ⏱ Koch-Timer starten ({recipe.time || 20} min)
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50 border border-emerald-200">
+                          <span className="text-lg font-black font-mono text-emerald-800">
+                            ⏱ {formatTimer(timerSeconds)}
+                          </span>
+                          <button
+                            onClick={() => setTimerRunning(!timerRunning)}
+                            className="text-xs px-2.5 py-1 rounded-md font-bold bg-white border border-emerald-300 text-emerald-900 shadow-xs"
+                          >
+                            {timerRunning ? "Pause" : "Weiter"}
+                          </button>
+                          <button
+                            onClick={() => { setTimerSeconds(null); setTimerRunning(false); }}
+                            className="text-xs px-2 py-1 rounded-md text-gray-500 hover:text-gray-800"
+                          >
+                            Stop
+                          </button>
+                          {timerSeconds === 0 && (
+                            <span className="text-xs font-bold text-amber-600 animate-bounce">
+                              🔔 Fertig!
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

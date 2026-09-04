@@ -124,6 +124,17 @@ const MEALS = [
 
 // ── Dashboard page ────────────────────────────────────────────────
 export default function Dashboard() {
+  const [waterMl, setWaterMl] = useState<number>(() => {
+    return Number(localStorage.getItem("fudi_water_ml") || 1500);
+  });
+
+  const addWater = (amount: number) => {
+    setWaterMl((prev) => {
+      const next = Math.min(3500, prev + amount);
+      localStorage.setItem("fudi_water_ml", String(next));
+      return next;
+    });
+  };
   const [scannerOpen, setScannerOpen] = useState(false);
   // 0 = Monday … 6 = Sunday, matching DAYS array
   const today = (new Date().getDay() + 6) % 7;
@@ -176,12 +187,29 @@ export default function Dashboard() {
           <p className="text-[10px] mt-1" style={{ color: C.mint }}>↘ stabil sinkend</p>
         </StatCard>
 
-        <div className="bg-white rounded-2xl p-4 border flex flex-col items-center justify-center gap-2" style={{ borderColor: C.border }}>
-          <p className="text-xs font-medium" style={{ color: C.stone }}>Tagesziele</p>
-          <div className="flex gap-3">
+        <div className="bg-white rounded-2xl p-4 border flex flex-col justify-between gap-2" style={{ borderColor: C.border }}>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-medium" style={{ color: C.stone }}>Tagesziele &amp; Wasser</p>
+            <span className="text-[10px] font-bold font-mono text-emerald-700">{(waterMl / 1000).toFixed(1)} / 2.5 L</span>
+          </div>
+          <div className="flex justify-around items-center">
             <CircleProgress pct={42} color={C.coral} label="Kcal" />
             <CircleProgress pct={65} color={C.mint} label="Protein" />
-            <CircleProgress pct={38} color={C.forest} label="Hydration" />
+            <CircleProgress pct={Math.min(100, Math.round((waterMl / 2500) * 100))} color={C.forest} label="Wasser" />
+          </div>
+          <div className="flex gap-1.5 pt-1 border-t" style={{ borderColor: C.border }}>
+            <button
+              onClick={() => addWater(250)}
+              className="flex-1 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[10px] font-bold text-emerald-800 transition-all active:scale-95"
+            >
+              + 250ml 🥛
+            </button>
+            <button
+              onClick={() => addWater(500)}
+              className="flex-1 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[10px] font-bold text-emerald-800 transition-all active:scale-95"
+            >
+              + 500ml 💧
+            </button>
           </div>
         </div>
       </div>
