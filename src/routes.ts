@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+﻿import { createBrowserRouter } from "react-router";
 import Root from "./components/Root";
 import Landing from "./pages/Landing";
 import Login, { RegisterPage } from "./pages/Login";
@@ -11,6 +11,7 @@ import ShoppingList from "./pages/ShoppingList";
 import Stats from "./pages/Stats";
 import Profile from "./pages/Profile";
 import Pricing from "./pages/Pricing";
+import FitnessTracker from "./pages/FitnessTracker";
 
 export const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ export const router = createBrowserRouter([
       { path: "stats",          Component: Stats },
       { path: "profil",         Component: Profile },
       { path: "preise",         Component: Pricing },
+      { path: "fitness",        Component: FitnessTracker },
     ],
   },
 ]);

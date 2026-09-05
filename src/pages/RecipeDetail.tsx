@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
-// ── Scale a human-readable amount string by a factor ─────────────
-// Handles "150g", "2 EL", "½ Stück", "1 Stück", "8 Stück", etc.
+// â”€â”€ Scale a human-readable amount string by a factor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// Handles "150g", "2 EL", "Â½ StÃ¼ck", "1 StÃ¼ck", "8 StÃ¼ck", etc.
 function scaleAmount(amount: string, scale: number): string {
   if (scale === 1) return amount;
   // Replace vulgar fractions before parsing
   const normalised = amount
-    .replace("½", "0.5").replace("¼", "0.25").replace("¾", "0.75")
-    .replace("⅓", "0.33").replace("⅔", "0.67");
+    .replace("Â½", "0.5").replace("Â¼", "0.25").replace("Â¾", "0.75")
+    .replace("â…“", "0.33").replace("â…”", "0.67");
   const match = normalised.match(/^([\d.]+)\s*(.*)/);
-  if (!match) return amount; // non-numeric (e.g. "nach Geschmack") → unchanged
+  if (!match) return amount; // non-numeric (e.g. "nach Geschmack") â†’ unchanged
   const num  = parseFloat(match[1]);
   const unit = match[2].trim();
   const result = num * scale;
@@ -21,7 +21,7 @@ function scaleAmount(amount: string, scale: number): string {
   return unit ? `${formatted} ${unit}` : formatted;
 }
 
-// ── Blood sugar curve ─────────────────────────────────────────────
+// â”€â”€ Blood sugar curve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BsCurve({ impact, color }: { impact: number; color: string }) {
   const base = 112, peak = base + impact;
   const rawPts = [base, base + impact * 0.3, peak, peak - impact * 0.08, base + impact * 0.55, base + impact * 0.28, base + 8, base];
@@ -49,7 +49,7 @@ function BsCurve({ impact, color }: { impact: number; color: string }) {
   );
 }
 
-// ── Macro bar ─────────────────────────────────────────────────────
+// â”€â”€ Macro bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function MacroBar({ label, val, max, color }: { label: string; val: number; max: number; color: string }) {
   return (
     <div>
@@ -64,38 +64,38 @@ function MacroBar({ label, val, max, color }: { label: string; val: number; max:
   );
 }
 
-// ── Star rating ───────────────────────────────────────────────────
+// â”€â”€ Star rating â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Stars({ rating }: { rating: number }) {
   return (
     <div className="flex gap-0.5">
       {[1,2,3,4,5].map((s) => (
-        <span key={s} className="text-sm" style={{ color: s <= Math.round(rating) ? C.coral : C.border }}>★</span>
+        <span key={s} className="text-sm" style={{ color: s <= Math.round(rating) ? C.coral : C.border }}>â˜…</span>
       ))}
       <span className="text-xs ml-1 font-semibold" style={{ color: C.stone }}>{rating}</span>
     </div>
   );
 }
 
-// ── Steps ─────────────────────────────────────────────────────────
+// â”€â”€ Steps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const STEPS_DATA = [
-  "Alle Zutaten abwiegen und vorbereiten. Gemüse waschen und in mundgerechte Stücke schneiden.",
-  "Quinoa oder Reis nach Packungsanleitung kochen. Mit einer Prise Salz würzen.",
-  "Das Dressing aus Tahini, Zitronensaft, Knoblauch und Olivenöl zubereiten und gut verrühren.",
-  "Alle Zutaten dekorativ in einer tiefen Schüssel anrichten. Dressing darüber geben.",
-  "Mit Sesam, frischen Kräutern und optional einem gekochten Ei garnieren und servieren.",
+  "Alle Zutaten abwiegen und vorbereiten. GemÃ¼se waschen und in mundgerechte StÃ¼cke schneiden.",
+  "Quinoa oder Reis nach Packungsanleitung kochen. Mit einer Prise Salz wÃ¼rzen.",
+  "Das Dressing aus Tahini, Zitronensaft, Knoblauch und OlivenÃ¶l zubereiten und gut verrÃ¼hren.",
+  "Alle Zutaten dekorativ in einer tiefen SchÃ¼ssel anrichten. Dressing darÃ¼ber geben.",
+  "Mit Sesam, frischen KrÃ¤utern und optional einem gekochten Ei garnieren und servieren.",
 ];
 
 const INGREDIENTS = [
   { name: "Quinoa (gekocht)", amount: "150g" },
   { name: "Kichererbsen (gekocht)", amount: "80g" },
-  { name: "Rote Paprika", amount: "1 Stück" },
-  { name: "Gurke", amount: "½ Stück" },
-  { name: "Kirschtomaten", amount: "8 Stück" },
-  { name: "Rote Zwiebel", amount: "¼ Stück" },
-  { name: "Avocado", amount: "½ Stück" },
+  { name: "Rote Paprika", amount: "1 StÃ¼ck" },
+  { name: "Gurke", amount: "Â½ StÃ¼ck" },
+  { name: "Kirschtomaten", amount: "8 StÃ¼ck" },
+  { name: "Rote Zwiebel", amount: "Â¼ StÃ¼ck" },
+  { name: "Avocado", amount: "Â½ StÃ¼ck" },
   { name: "Tahini", amount: "2 EL" },
   { name: "Zitronensaft", amount: "2 EL" },
-  { name: "Olivenöl", amount: "1 EL" },
+  { name: "OlivenÃ¶l", amount: "1 EL" },
 ];
 
 const VITAMINS = [
@@ -112,6 +112,28 @@ export default function RecipeDetail() {
   const [saved, setSaved]     = useState(false);
   const [checked, setChecked] = useState<boolean[]>(Array(INGREDIENTS.length).fill(false));
 
+  const [addedToast, setAddedToast] = useState(false);
+  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
+  const [timerRunning, setTimerRunning] = useState(false);
+
+  const startTimer = (duration: number) => {
+    setTimerSeconds(duration * 60);
+    setTimerRunning(true);
+    const interval = setInterval(() => {
+      setTimerSeconds(prev => {
+        if (!prev || prev <= 1) { clearInterval(interval); setTimerRunning(false); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const formatTimer = (s: number | null) => {
+    if (s === null) return "00:00";
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  };
+
   const color = recipe.gi === "low" ? C.mint : C.coral;
   const scale  = portions / recipe.portions;
 
@@ -127,20 +149,20 @@ export default function RecipeDetail() {
       <div className="relative w-full h-64 md:h-80 overflow-hidden" style={{ background: C.mintLight }}>
         <img src={recipe.img} alt={recipe.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(45,80,22,0.65) 0%, transparent 60%)" }} />
-        <Link to="/rezepte" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-sm font-bold" style={{ color: C.forest }}>←</Link>
+        <Link to="/rezepte" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-sm font-bold" style={{ color: C.forest }}>â†</Link>
         <button
           onClick={() => setSaved(!saved)}
           className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-lg"
         >
-          {saved ? "❤️" : "♡"}
+          {saved ? "â¤ï¸" : "â™¡"}
         </button>
         <div className="absolute bottom-4 left-4 right-4">
           <h1 className="text-2xl font-black text-white mb-2" style={{ fontFamily: "'DM Sans',sans-serif" }}>{recipe.title}</h1>
           <div className="flex flex-wrap gap-2">
             {[
-              { icon: "⏱", val: `${recipe.time} min` },
-              { icon: "👥", val: `${portions} Port.` },
-              { icon: "🔥", val: `${Math.round(recipe.kcal * scale)} kcal` },
+              { icon: "â±", val: `${recipe.time} min` },
+              { icon: "ðŸ‘¥", val: `${portions} Port.` },
+              { icon: "ðŸ”¥", val: `${Math.round(recipe.kcal * scale)} kcal` },
             ].map((s) => (
               <span key={s.val} className="text-xs font-semibold text-white bg-white/20 px-2 py-1 rounded-lg backdrop-blur-sm">{s.icon} {s.val}</span>
             ))}
@@ -157,7 +179,7 @@ export default function RecipeDetail() {
           </span>
           <span className="text-xs" style={{ color: C.stone }}>{recipe.tag}</span>
           <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setPortions(Math.max(1, portions - 1))} className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold" style={{ borderColor: C.border, color: C.forest }}>−</button>
+            <button onClick={() => setPortions(Math.max(1, portions - 1))} className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold" style={{ borderColor: C.border, color: C.forest }}>âˆ’</button>
             <span className="text-sm font-bold w-12 text-center" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{portions} Port.</span>
             <button onClick={() => setPortions(portions + 1)} className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold" style={{ borderColor: C.border, color: C.forest }}>+</button>
           </div>
@@ -166,7 +188,7 @@ export default function RecipeDetail() {
         {/* Tabs */}
         <div className="flex gap-1 mb-6 p-1 rounded-xl" style={{ background: C.cream }}>
           {(["overview", "nutrients", "steps"] as const).map((t) => {
-            const labels = { overview: "Übersicht", nutrients: "Nährwerte", steps: "Zubereitung" };
+            const labels = { overview: "Ãœbersicht", nutrients: "NÃ¤hrwerte", steps: "Zubereitung" };
             return (
               <button
                 key={t}
@@ -195,7 +217,7 @@ export default function RecipeDetail() {
                   className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all active:scale-95"
                   style={{ background: addedToast ? C.mint : C.mintLight, color: addedToast ? C.white : C.forest }}
                 >
-                  {addedToast ? "✓ Zur Liste hinzugefügt!" : "+ Einkaufsliste"}
+                  {addedToast ? "âœ“ Zur Liste hinzugefÃ¼gt!" : "+ Einkaufsliste"}
                   + Einkaufsliste
                 </button>
               </div>
@@ -214,7 +236,7 @@ export default function RecipeDetail() {
 
             {/* Nutrition summary */}
             <div>
-              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Nährwertübersicht</h3>
+              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>NÃ¤hrwertÃ¼bersicht</h3>
               <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
                 <div className="text-center mb-4">
                   <span className="text-4xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>
@@ -232,19 +254,19 @@ export default function RecipeDetail() {
               <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-bold text-xs uppercase tracking-wider" style={{ color: C.forest }}>
-                    🛒 Supermarkt-Preisvergleich
+                    ðŸ›’ Supermarkt-Preisvergleich
                   </h4>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-green-800 bg-green-100">
-                    Günstigster: Aldi Süd
+                    GÃ¼nstigster: Aldi SÃ¼d
                   </span>
                 </div>
                 <div className="space-y-1.5 text-xs">
                   {[
-                    { store: "Aldi Süd", price: "1,89 €", badge: "Bester Preis", highlight: true },
-                    { store: "Lidl", price: "1,95 €", badge: "" },
-                    { store: "Rewe", price: "2,45 €", badge: "" },
-                    { store: "Edeka", price: "2,65 €", badge: "" },
-                    { store: "Bio-Supermarkt", price: "3,35 €", badge: "100% Bio" },
+                    { store: "Aldi SÃ¼d", price: "1,89 â‚¬", badge: "Bester Preis", highlight: true },
+                    { store: "Lidl", price: "1,95 â‚¬", badge: "" },
+                    { store: "Rewe", price: "2,45 â‚¬", badge: "" },
+                    { store: "Edeka", price: "2,65 â‚¬", badge: "" },
+                    { store: "Bio-Supermarkt", price: "3,35 â‚¬", badge: "100% Bio" },
                   ].map((s) => (
                     <div
                       key={s.store}
@@ -263,8 +285,8 @@ export default function RecipeDetail() {
                   ))}
                 </div>
                 <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs" style={{ borderColor: C.border }}>
-                  <span className="text-green-700 font-semibold">🌱 +20 EcoPoints gutgeschrieben</span>
-                  <span className="text-gray-500 font-mono">Spare bis zu 1,46 €</span>
+                  <span className="text-green-700 font-semibold">ðŸŒ± +20 EcoPoints gutgeschrieben</span>
+                  <span className="text-gray-500 font-mono">Spare bis zu 1,46 â‚¬</span>
                 </div>
               </div>
 
@@ -272,7 +294,7 @@ export default function RecipeDetail() {
               <div className="rounded-2xl p-4" style={{ background: color + "14", border: `1.5px solid ${color}30` }}>
                 <p className="text-xs font-bold mb-1" style={{ color: C.stone }}>Blutzucker-Anstieg (erwartet)</p>
                 <p className="text-3xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color }}>+{recipe.impact} <span className="text-base font-medium" style={{ color: C.stone }}>mg/dL</span></p>
-                <button onClick={() => setTab("nutrients")} className="mt-2 text-xs font-semibold" style={{ color }}>Vollanalyse ansehen →</button>
+                <button onClick={() => setTab("nutrients")} className="mt-2 text-xs font-semibold" style={{ color }}>Vollanalyse ansehen â†’</button>
               </div>
             </div>
           </div>
@@ -309,15 +331,15 @@ export default function RecipeDetail() {
               <div className="mt-4 p-3 rounded-xl text-sm" style={{ background: color + "10" }}>
                 <p className="font-semibold mb-1" style={{ color }}>Empfehlungen</p>
                 <ul className="space-y-1 text-xs" style={{ color: C.inkMid }}>
-                  <li>• Kombiniere mit einem Glas Wasser vor der Mahlzeit</li>
-                  <li>• {recipe.gi === "low" ? "Dieses Gericht ist gut für stabile Blutzuckerwerte geeignet." : "Kombiniere mit Ballaststoffen für einen langsameren Anstieg."}</li>
+                  <li>â€¢ Kombiniere mit einem Glas Wasser vor der Mahlzeit</li>
+                  <li>â€¢ {recipe.gi === "low" ? "Dieses Gericht ist gut fÃ¼r stabile Blutzuckerwerte geeignet." : "Kombiniere mit Ballaststoffen fÃ¼r einen langsameren Anstieg."}</li>
                 </ul>
               </div>
             </div>
 
             {/* Detailed nutrients */}
             <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Nährstoff-Detail</h3>
+              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>NÃ¤hrstoff-Detail</h3>
               <div className="grid grid-cols-2 gap-x-6 gap-y-2">
                 {[
                   { label: "Kalorien", val: `${Math.round(recipe.kcal * scale)} kcal` },
@@ -327,7 +349,7 @@ export default function RecipeDetail() {
                   { label: "Fett", val: `${Math.round(recipe.fat * scale)}g` },
                   { label: "Ballaststoffe", val: `${Math.round(recipe.carbs * 0.15 * scale)}g` },
                   { label: "Salz", val: "0.8g" },
-                  { label: "GI (geschätzt)", val: recipe.gi === "low" ? "≈ 38" : "≈ 58" },
+                  { label: "GI (geschÃ¤tzt)", val: recipe.gi === "low" ? "â‰ˆ 38" : "â‰ˆ 58" },
                 ].map((n) => (
                   <div key={n.label} className="flex justify-between py-1 border-b text-sm" style={{ borderColor: C.border }}>
                     <span style={{ color: C.stone }}>{n.label}</span>
@@ -375,12 +397,12 @@ export default function RecipeDetail() {
                           className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 shadow-sm"
                           style={{ background: C.mint, color: C.white }}
                         >
-                          ⏱ Koch-Timer starten ({recipe.time || 20} min)
+                          â± Koch-Timer starten ({recipe.time || 20} min)
                         </button>
                       ) : (
                         <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50 border border-emerald-200">
                           <span className="text-lg font-black font-mono text-emerald-800">
-                            ⏱ {formatTimer(timerSeconds)}
+                            â± {formatTimer(timerSeconds)}
                           </span>
                           <button
                             onClick={() => setTimerRunning(!timerRunning)}
@@ -418,7 +440,7 @@ export default function RecipeDetail() {
 
         {/* Similar recipes */}
         <div className="mt-8">
-          <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Ähnliche Rezepte</h3>
+          <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Ã„hnliche Rezepte</h3>
           <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
             {RECIPES.filter((r) => r.id !== recipe.id).slice(0, 4).map((r) => (
               <Link key={r.id} to={`/rezepte/${r.id}`} className="shrink-0 w-36 bg-white rounded-xl border overflow-hidden hover:-translate-y-0.5 transition-transform block" style={{ borderColor: C.border }}>
@@ -437,3 +459,4 @@ export default function RecipeDetail() {
     </div>
   );
 }
+

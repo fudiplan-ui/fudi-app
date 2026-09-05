@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link, useLocation } from "react-router";
 import { C } from "../shared/colors";
 
@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { to: "/blutzucker", label: "Blutzucker" },
   { to: "/planer",     label: "Wochenplaner" },
   { to: "/preise",     label: "Preise" },
+  { to: "/fitness",     label: "Fitness" },
 ];
 
 const BOTTOM_TABS = [
@@ -17,7 +18,7 @@ const BOTTOM_TABS = [
   { to: "/profil",     icon: "👤", label: "Profil" },
 ];
 
-const APP_PATHS = ["/dashboard", "/rezepte", "/planer", "/einkauf", "/profil", "/stats", "/blutzucker"];
+const APP_PATHS = ["/dashboard", "/rezepte", "/planer", "/einkauf", "/profil", "/stats", "/blutzucker", "/fitness"];
 
 export function TopNav({ authenticated = false }: { authenticated?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -171,3 +172,5 @@ export default function Layout({ children, authenticated = false }: { children: 
     </div>
   );
 }
+
+
