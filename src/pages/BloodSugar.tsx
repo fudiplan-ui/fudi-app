@@ -1,8 +1,8 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
-// ── Slider with color gradient track ─────────────────────────────
+// â”€â”€ Slider with color gradient track â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function ColorSlider({ value, onChange, min, max }: { value: number; onChange: (v: number) => void; min: number; max: number }) {
   const pct = ((value - min) / (max - min)) * 100;
   const color = pct < 40 ? C.mint : pct < 70 ? C.coral : "#D94F3D";
@@ -27,7 +27,7 @@ function ColorSlider({ value, onChange, min, max }: { value: number; onChange: (
   );
 }
 
-// ── BS Curve ──────────────────────────────────────────────────────
+// â”€â”€ BS Curve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BsResultCurve({ startVal, impact, color }: { startVal: number; impact: number; color: string }) {
   const peakVal = startVal + impact;
   const rawPts = [startVal, startVal + impact * 0.35, peakVal, peakVal - impact * 0.06, startVal + impact * 0.6, startVal + impact * 0.32, startVal + 10, startVal + 2];
@@ -68,11 +68,13 @@ function BsResultCurve({ startVal, impact, color }: { startVal: number; impact: 
 }
 
 const MEAL_OPTIONS = [
-  { label: "Wähle ein Rezept…", impact: 0, carbs: 0, protein: 0, fat: 0 },
+  { label: "WÃ¤hle ein Rezeptâ€¦", impact: 0, carbs: 0, protein: 0, fat: 0 },
   ...RECIPES.map((r) => ({ label: r.title, impact: r.impact, carbs: r.carbs, protein: r.protein, fat: r.fat })),
 ];
 
 export default function BloodSugar() {
+  const [diary, setDiary] = useState([]);
+  const [showDiaryToast, setShowDiaryToast] = useState(false);
   const [bsVal, setBsVal]     = useState(112);
   const [selMeal, setSelMeal] = useState(0);
   const [manualCarbs, setManualCarbs] = useState(60);
@@ -102,7 +104,7 @@ export default function BloodSugar() {
   const originalPeakVal = bsVal + impact;
 
   const color = peakVal < 140 ? C.mint : peakVal < 180 ? C.coral : "#D94F3D";
-  const level = peakVal < 140 ? "Normal" : peakVal < 180 ? "Erhöht" : "Hoch";
+  const level = peakVal < 140 ? "Normal" : peakVal < 180 ? "ErhÃ¶ht" : "Hoch";
 
   const calculate = () => {
     setLoading(true);
@@ -114,10 +116,10 @@ export default function BloodSugar() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-black" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest, letterSpacing: "-0.03em" }}>
-          Blutzucker-Rechner 🩸
+          Blutzucker-Rechner ðŸ©¸
         </h1>
         <p className="text-sm mt-1" style={{ color: C.stone }}>
-          Berechne den erwarteten Blutzucker-Anstieg für jede Mahlzeit – personalisiert für deinen Körper.
+          Berechne den erwarteten Blutzucker-Anstieg fÃ¼r jede Mahlzeit â€“ personalisiert fÃ¼r deinen KÃ¶rper.
         </p>
       </div>
 
@@ -145,7 +147,7 @@ export default function BloodSugar() {
                 <button key={m} onClick={() => setMode(m)}
                   className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
                   style={{ background: mode === m ? C.white : "transparent", color: mode === m ? C.forest : C.stone }}>
-                  {m === "recipe" ? "Rezept wählen" : "Manuell eingeben"}
+                  {m === "recipe" ? "Rezept wÃ¤hlen" : "Manuell eingeben"}
                 </button>
               ))}
             </div>
@@ -197,11 +199,11 @@ export default function BloodSugar() {
 
           {/* Additional factors */}
           <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-            <h3 className="font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Zusätzliche Faktoren</h3>
+            <h3 className="font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>ZusÃ¤tzliche Faktoren</h3>
             <div className="space-y-3">
               {[
-                { label: "Nach dem Sport essen", sub: "Erhöhte Insulinsensitivität → weniger Anstieg", val: afterSport, set: setAfterSport },
-                { label: "Auf nüchternen Magen", sub: "Leerer Magen → schnellere Aufnahme", val: fasting, set: setFasting },
+                { label: "Nach dem Sport essen", sub: "ErhÃ¶hte InsulinsensitivitÃ¤t â†’ weniger Anstieg", val: afterSport, set: setAfterSport },
+                { label: "Auf nÃ¼chternen Magen", sub: "Leerer Magen â†’ schnellere Aufnahme", val: fasting, set: setFasting },
               ].map((t) => (
                 <div key={t.label} className="flex items-start gap-3 p-3 rounded-xl" style={{ background: C.cream }}>
                   <button
@@ -227,7 +229,7 @@ export default function BloodSugar() {
             className="w-full py-4 rounded-xl text-base font-bold text-white transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
             style={{ background: C.forest }}
           >
-            {loading ? "⏳ Berechne…" : "Jetzt berechnen →"}
+            {loading ? "â³ Berechneâ€¦" : "Jetzt berechnen â†’"}
           </button>
         </div>
 
@@ -235,7 +237,7 @@ export default function BloodSugar() {
         <div>
           {!calculated ? (
             <div className="bg-white rounded-2xl border flex flex-col items-center justify-center text-center p-10 h-full" style={{ borderColor: C.border }}>
-              <div className="text-6xl mb-4">🩺</div>
+              <div className="text-6xl mb-4">ðŸ©º</div>
               <h3 className="text-lg font-bold mb-2" style={{ color: C.forest }}>Bereit zur Analyse</h3>
               <p className="text-sm" style={{ color: C.stone }}>
                 Gib deinen aktuellen Blutzucker und eine Mahlzeit ein, dann berechnet FUDI deinen erwarteten Verlauf.
@@ -255,7 +257,7 @@ export default function BloodSugar() {
                       </span>
                       <span className="text-base mb-1.5" style={{ color: C.stone }}>mg/dL</span>
                     </div>
-                    <p className="text-sm font-semibold mt-1" style={{ color }}>↑ +{impact} mg/dL vom Startwert</p>
+                    <p className="text-sm font-semibold mt-1" style={{ color }}>â†‘ +{impact} mg/dL vom Startwert</p>
                   </div>
                   <span className="text-sm font-bold px-3 py-1.5 rounded-full text-white" style={{ background: color }}>{level}</span>
                 </div>
@@ -289,11 +291,11 @@ export default function BloodSugar() {
                 <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Empfehlungen</h3>
                 <ul className="space-y-2.5">
                   {[
-                    peakVal > 140 && "Warte 15 Minuten vor dem Essen für besseres Management",
-                    peakVal > 140 && "Kombiniere mit 10g Ballaststoffen für langsameren Anstieg",
-                    afterSport && "Dein Sport hat den Anstieg bereits um 20% reduziert – gut gemacht!",
-                    !afterSport && "Ein 10-minütiger Spaziergang nach dem Essen reduziert den Anstieg um ~15%",
-                    "Trinke 200ml Wasser vor der Mahlzeit für bessere Magensäurebalance",
+                    peakVal > 140 && "Warte 15 Minuten vor dem Essen fÃ¼r besseres Management",
+                    peakVal > 140 && "Kombiniere mit 10g Ballaststoffen fÃ¼r langsameren Anstieg",
+                    afterSport && "Dein Sport hat den Anstieg bereits um 20% reduziert â€“ gut gemacht!",
+                    !afterSport && "Ein 10-minÃ¼tiger Spaziergang nach dem Essen reduziert den Anstieg um ~15%",
+                    "Trinke 200ml Wasser vor der Mahlzeit fÃ¼r bessere MagensÃ¤urebalance",
                   ].filter(Boolean).map((tip, i) => (
                     <li key={i} className="flex gap-2 text-sm" style={{ color: C.inkMid }}>
                       <span className="shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-[10px] text-white font-bold mt-0.5" style={{ background: C.mint }}>i</span>
@@ -303,18 +305,18 @@ export default function BloodSugar() {
                 </ul>
               </div>
 
-              {/* Was-wäre-wenn Blutzucker-Optimierer */}
+              {/* Was-wÃ¤re-wenn Blutzucker-Optimierer */}
               <div className="bg-white rounded-2xl border p-5 shadow-sm" style={{ borderColor: C.border }}>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg">💡</span>
+                    <span className="text-lg">ðŸ’¡</span>
                     <h3 className="font-bold text-sm" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>
-                      Was-wäre-wenn Zutaten-Optimierer
+                      Was-wÃ¤re-wenn Zutaten-Optimierer
                     </h3>
                   </div>
                   {activeSwap && (
                     <span className="text-[11px] font-bold px-2 py-0.5 rounded-full text-white bg-green-600 animate-pulse">
-                      🔻 -{originalPeakVal - peakVal} mg/dL weniger Spitze!
+                      ðŸ”» -{originalPeakVal - peakVal} mg/dL weniger Spitze!
                     </span>
                   )}
                 </div>
@@ -326,7 +328,7 @@ export default function BloodSugar() {
                     { id: "cauli", title: "Blumenkohlreis statt Reis", save: "-70% Glukosespitze", icon: "🥦" },
                     { id: "lentils", title: "Linsennudeln statt Pasta", save: "-45% Anstieg, +14g Protein", icon: "🌱" },
                     { id: "erythrit", title: "Erythrit statt Zucker", save: "0 mg/dL Glukosepeak", icon: "✨" },
-                    { id: "vinegar", title: "1 EL Apfelessig vorab", save: "-20% Glukosespitze", icon: "🍏" },
+                    { id: "vinegar", title: "1 EL Apfelessig vorab", save: "-20% Glukosespitze", icon: "ðŸ" },
                   ].map((s) => (
                     <button
                       key={s.id}
@@ -347,27 +349,54 @@ export default function BloodSugar() {
                 </div>
                 {activeSwap && (
                   <div className="p-2.5 rounded-xl bg-green-50 border border-green-200 text-[11px] text-green-800 flex items-center justify-between">
-                    <span>✨ Optimierter Blutzucker: <b>{peakVal} mg/dL</b> (statt {originalPeakVal} mg/dL)</span>
+                    <span>âœ¨ Optimierter Blutzucker: <b>{peakVal} mg/dL</b> (statt {originalPeakVal} mg/dL)</span>
                     <button onClick={() => setActiveSwap(null)} className="underline text-green-900 font-bold ml-2">
-                      Zurücksetzen
+                      ZurÃ¼cksetzen
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Medical Disclaimer */}
+              {/* Diary Toast */}
+{showDiaryToast && (
+  <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-white text-sm font-semibold shadow-xl flex items-center gap-2" style={{ background: C.forest }}>
+    <span>✅</span> Eintrag gespeichert!
+  </div>
+)}
+{/* Medical Disclaimer */}
               <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 text-[11px] text-amber-900 flex items-start gap-2">
-                <span className="text-base leading-none">⚕️</span>
+                <span className="text-base leading-none">âš•ï¸</span>
                 <p>
-                  <b>Medizinischer Hinweis:</b> Diese Simulation basiert auf standardisierten Modellberechnungen (Glykämische Last & Resorptionskoeffizienten). Individuelle Stoffwechselreaktionen können variieren. FUDI stellt keine medizinische Diagnose oder Therapieempfehlung dar.
+                  <b>Medizinischer Hinweis:</b> Diese Simulation basiert auf standardisierten Modellberechnungen (GlykÃ¤mische Last & Resorptionskoeffizienten). Individuelle Stoffwechselreaktionen kÃ¶nnen variieren. FUDI stellt keine medizinische Diagnose oder Therapieempfehlung dar.
                 </p>
               </div>
 
               {/* Actions */}
               <div className="grid grid-cols-2 gap-3">
-                <button className="py-3 rounded-xl text-sm font-bold text-white" style={{ background: C.forest }}>
-                  In Tagebuch eintragen
-                </button>
+                <button
+  className="py-3 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95"
+  style={{ background: C.forest }}
+  onClick={() => {
+    const entry = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString("de-DE"),
+      time: new Date().toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" }),
+      meal: selectedFood,
+      startBs: bsVal,
+      peakBs: peakVal,
+      impact: effectiveImpact,
+      swap: activeSwap,
+    };
+    const existing = JSON.parse(localStorage.getItem("fudi_bs_diary") || "[]");
+    existing.unshift(entry);
+    localStorage.setItem("fudi_bs_diary", JSON.stringify(existing.slice(0, 50)));
+    setDiary(existing);
+    setShowDiaryToast(true);
+    setTimeout(() => setShowDiaryToast(false), 2500);
+  }}
+>
+  In Tagebuch eintragen ✓
+</button>
                 <button
                   onClick={() => setCalculated(false)}
                   className="py-3 rounded-xl text-sm font-semibold border"

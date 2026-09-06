@@ -1,10 +1,10 @@
-import FridgeScannerModal from "../components/FridgeScannerModal";
+﻿import FridgeScannerModal from "../components/FridgeScannerModal";
 import { useState } from "react";
 import { Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
-// ── Mini donut chart ──────────────────────────────────────────────
+// â”€â”€ Mini donut chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Donut({ slices, size = 72 }: { slices: { val: number; color: string }[]; size?: number }) {
   const r = size / 2 - 8, cx = size / 2, cy = size / 2;
   const total = slices.reduce((a, s) => a + s.val, 0);
@@ -27,7 +27,7 @@ function Donut({ slices, size = 72 }: { slices: { val: number; color: string }[]
   );
 }
 
-// ── Circular progress ─────────────────────────────────────────────
+// â”€â”€ Circular progress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CircleProgress({ pct, color, size = 64, label }: { pct: number; color: string; size?: number; label: string }) {
   const r = size / 2 - 5, cx = size / 2, cy = size / 2;
   const circ = 2 * Math.PI * r;
@@ -43,7 +43,7 @@ function CircleProgress({ pct, color, size = 64, label }: { pct: number; color: 
   );
 }
 
-// ── Small bar ─────────────────────────────────────────────────────
+// â”€â”€ Small bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Bar({ pct, color }: { pct: number; color: string }) {
   return (
     <div className="h-2 rounded-full overflow-hidden" style={{ background: C.border }}>
@@ -52,7 +52,7 @@ function Bar({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-// ── Stat card ─────────────────────────────────────────────────────
+// â”€â”€ Stat card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function StatCard({ icon, label, value, unit, sub, accent, children }: {
   icon: string; label: string; value: string; unit?: string;
   sub?: string; accent: string; children?: React.ReactNode;
@@ -75,7 +75,7 @@ function StatCard({ icon, label, value, unit, sub, accent, children }: {
   );
 }
 
-// ── Blood sugar mini chart ────────────────────────────────────────
+// â”€â”€ Blood sugar mini chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BsChart() {
   const pts = [112, 118, 142, 158, 145, 130, 120, 115, 112];
   const w = 200, h = 50;
@@ -100,7 +100,7 @@ function BsChart() {
   );
 }
 
-// ── Weekly mini calendar ──────────────────────────────────────────
+// â”€â”€ Weekly mini calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const DAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const WEEK_DATA = [
   { meals: 3, kcal: 1820, bs: 118 },
@@ -112,18 +112,22 @@ const WEEK_DATA = [
   { meals: 0, kcal: 0,    bs: 0  },
 ];
 
-// ── Meal timeline ─────────────────────────────────────────────────
+// â”€â”€ Meal timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // status: "done" = gegessen | "planned" = geplant, noch nicht gegessen | "empty" = nicht geplant
 const MEALS = [
-  { time: "07:30", label: "Frühstück",  recipe: "Haferbrei mit Beeren", kcal: 340, img: RECIPES[3].img, status: "done"    },
-  { time: "10:00", label: "Snack",      recipe: "Nüsse & Obst",         kcal: 180, img: RECIPES[6].img, status: "done"    },
+  { time: "07:30", label: "FrÃ¼hstÃ¼ck",  recipe: "Haferbrei mit Beeren", kcal: 340, img: RECIPES[3].img, status: "done"    },
+  { time: "10:00", label: "Snack",      recipe: "NÃ¼sse & Obst",         kcal: 180, img: RECIPES[6].img, status: "done"    },
   { time: "12:30", label: "Mittag",     recipe: "Buddha Bowl",          kcal: 420, img: RECIPES[0].img, status: "done"    },
   { time: "15:30", label: "Snack",      recipe: "Quinoa Salat",         kcal: 210, img: RECIPES[11].img, status: "planned" },
-  { time: "19:00", label: "Abendessen", recipe: "—",                    kcal: 0,   img: "",              status: "empty"   },
+  { time: "19:00", label: "Abendessen", recipe: "â€”",                    kcal: 0,   img: "",              status: "empty"   },
 ] as const;
 
-// ── Dashboard page ────────────────────────────────────────────────
+// â”€â”€ Dashboard page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function Dashboard() {
+  // Load user profile from localStorage
+  const rawProfile = typeof window !== "undefined" ? localStorage.getItem("fudi_user_profile") : null;
+  const userProfile = rawProfile ? JSON.parse(rawProfile) : {};
+  const userName = userProfile.name || "du";
   const [waterMl, setWaterMl] = useState<number>(() => {
     return Number(localStorage.getItem("fudi_water_ml") || 1500);
   });
@@ -136,7 +140,7 @@ export default function Dashboard() {
     });
   };
   const [scannerOpen, setScannerOpen] = useState(false);
-  // 0 = Monday … 6 = Sunday, matching DAYS array
+  // 0 = Monday â€¦ 6 = Sunday, matching DAYS array
   const today = (new Date().getDay() + 6) % 7;
 
   return (
@@ -144,14 +148,13 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <p className="text-sm" style={{ color: C.stone }}>Donnerstag, 3. September 2026</p>
+          <p className="text-sm" style={{ color: C.stone }}>{new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
           <h1 className="text-3xl font-black" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest, letterSpacing: "-0.03em" }}>
-            Guten Morgen, Max! 👋
-          </h1>
+            Guten Morgen, {userName}! 👋</h1>
         </div>
         <div className="flex items-center gap-2">
           <button className="relative p-2 rounded-xl border" style={{ borderColor: C.border, background: C.white }}>
-            🔔
+            ðŸ””
             <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[9px] font-bold text-white flex items-center justify-center" style={{ background: C.coral }}>3</span>
           </button>
           <Link to="/profil">
@@ -162,12 +165,12 @@ export default function Dashboard() {
 
       {/* Quick stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <StatCard icon="🔥" label="Kalorien" value="940" unit="/ 2.240 kcal" sub="+8%" accent={C.coral}>
+        <StatCard icon="ðŸ”¥" label="Kalorien" value="940" unit="/ 2.240 kcal" sub="+8%" accent={C.coral}>
           <Bar pct={42} color={C.coral} />
-          <p className="text-[10px] mt-1" style={{ color: C.stone }}>1.300 kcal noch verfügbar</p>
+          <p className="text-[10px] mt-1" style={{ color: C.stone }}>1.300 kcal noch verfÃ¼gbar</p>
         </StatCard>
 
-        <StatCard icon="🥩" label="Makros" value="" unit="" accent={C.mint}>
+        <StatCard icon="ðŸ¥©" label="Makros" value="" unit="" accent={C.mint}>
           <div className="flex items-center gap-3">
             <Donut size={56} slices={[
               { val: 42, color: C.mint },
@@ -182,9 +185,9 @@ export default function Dashboard() {
           </div>
         </StatCard>
 
-        <StatCard icon="🩸" label="Blutzucker" value="112" unit="mg/dL" sub="Normal" accent={C.mint}>
+        <StatCard icon="ðŸ©¸" label="Blutzucker" value="112" unit="mg/dL" sub="Normal" accent={C.mint}>
           <BsChart />
-          <p className="text-[10px] mt-1" style={{ color: C.mint }}>↘ stabil sinkend</p>
+          <p className="text-[10px] mt-1" style={{ color: C.mint }}>â†˜ stabil sinkend</p>
         </StatCard>
 
         <div className="bg-white rounded-2xl p-4 border flex flex-col justify-between gap-2" style={{ borderColor: C.border }}>
@@ -202,13 +205,13 @@ export default function Dashboard() {
               onClick={() => addWater(250)}
               className="flex-1 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[10px] font-bold text-emerald-800 transition-all active:scale-95"
             >
-              + 250ml 🥛
+              + 250ml ðŸ¥›
             </button>
             <button
               onClick={() => addWater(500)}
               className="flex-1 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-[10px] font-bold text-emerald-800 transition-all active:scale-95"
             >
-              + 500ml 💧
+              + 500ml ðŸ’§
             </button>
           </div>
         </div>
@@ -219,7 +222,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Heutige Mahlzeiten</h2>
-            <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>+ Hinzufügen</Link>
+            <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>+ HinzufÃ¼gen</Link>
           </div>
 
           <div className="space-y-3">
@@ -261,11 +264,11 @@ export default function Dashboard() {
                   </div>
                   <div className="shrink-0">
                     {isDone ? (
-                      <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: C.mint }}>✓</span>
+                      <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ background: C.mint }}>âœ“</span>
                     ) : isPlanned ? (
-                      <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2" style={{ borderColor: C.coral, color: C.coral }}>○</span>
+                      <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2" style={{ borderColor: C.coral, color: C.coral }}>â—‹</span>
                     ) : (
-                      <Link to="/rezepte" className="text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80" style={{ background: C.mintLight, color: C.forest }}>Wählen</Link>
+                      <Link to="/rezepte" className="text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80" style={{ background: C.mintLight, color: C.forest }}>WÃ¤hlen</Link>
                     )}
                   </div>
                 </div>
@@ -276,7 +279,7 @@ export default function Dashboard() {
           {/* Recommended recipes */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Empfehlungen für dich</h2>
+              <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Empfehlungen fÃ¼r dich</h2>
               <Link to="/rezepte" className="text-sm" style={{ color: C.stone }}>Alle</Link>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
@@ -299,7 +302,7 @@ export default function Dashboard() {
                   <div className="p-2">
                     <p className="text-[11px] font-bold leading-tight mb-1" style={{ color: C.forest }}>{r.title}</p>
                     <div className="flex justify-between text-[10px]" style={{ color: C.stone }}>
-                      <span>⏱ {r.time}m</span>
+                      <span>â± {r.time}m</span>
                       <span style={{ fontFamily: "'JetBrains Mono',monospace", color: r.gi === "low" ? C.mint : C.coral }}>+{r.impact}</span>
                     </div>
                   </div>
@@ -329,7 +332,7 @@ export default function Dashboard() {
                       className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold"
                       style={{ background: active ? C.mint : data.meals > 0 ? C.mintLight : C.border, color: active ? C.white : C.forest }}
                     >
-                      {data.meals || "–"}
+                      {data.meals || "â€“"}
                     </div>
                     {data.bs > 0 && (
                       <span className="text-[8px]" style={{ fontFamily: "'JetBrains Mono',monospace", color: active ? "rgba(255,255,255,0.6)" : C.stone }}>{data.bs}</span>
@@ -339,8 +342,8 @@ export default function Dashboard() {
               })}
             </div>
             <div className="mt-3 pt-3 border-t flex justify-between text-xs" style={{ borderColor: C.border }}>
-              <div><span style={{ color: C.stone }}>Ø Kcal</span><br /><b style={{ color: C.forest }}>1.920</b></div>
-              <div className="text-center"><span style={{ color: C.stone }}>Ø Blutzucker</span><br /><b style={{ color: C.mint, fontFamily: "'JetBrains Mono',monospace" }}>118 mg/dL</b></div>
+              <div><span style={{ color: C.stone }}>Ã˜ Kcal</span><br /><b style={{ color: C.forest }}>1.920</b></div>
+              <div className="text-center"><span style={{ color: C.stone }}>Ã˜ Blutzucker</span><br /><b style={{ color: C.mint, fontFamily: "'JetBrains Mono',monospace" }}>118 mg/dL</b></div>
               <div className="text-right"><span style={{ color: C.stone }}>Mahlzeiten</span><br /><b style={{ color: C.forest }}>20 / 28</b></div>
             </div>
           </div>
@@ -348,29 +351,29 @@ export default function Dashboard() {
           {/* AI insight */}
           <div className="rounded-2xl p-4" style={{ background: C.forest }}>
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-base">🤖</span>
-              <span className="text-xs font-bold text-white">KI-Insight</span>
+              <span className="text-base">ðŸ¤–</span>
+              <span className="text-xs font-bold text-white">Ernaehrungs-Tipp</span>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.8)" }}>
-              Dein Blutzucker ist <strong className="text-white">morgens 12% höher</strong> als abends. Versuche ein Low-GI Frühstück wie Haferbrei mit Nüssen.
+              Dein Blutzucker ist <strong className="text-white">morgens 12% hÃ¶her</strong> als abends. Versuche ein Low-GI FrÃ¼hstÃ¼ck wie Haferbrei mit NÃ¼ssen.
             </p>
-            <Link to="/stats" className="mt-3 block text-xs font-semibold" style={{ color: C.mint }}>Stats ansehen →</Link>
+            <Link to="/stats" className="mt-3 block text-xs font-semibold" style={{ color: C.mint }}>Stats ansehen â†’</Link>
           </div>
 
-          {/* Kühlschrank-Scan Banner */}
+          {/* KÃ¼hlschrank-Scan Banner */}
           <div className="bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
             <div className="relative z-10">
               <span className="text-xs uppercase font-bold tracking-wider text-emerald-200">No-Waste Chef</span>
-              <h4 className="font-bold text-base mt-0.5 mb-1">Kühlschrank scannen</h4>
+              <h4 className="font-bold text-base mt-0.5 mb-1">KÃ¼hlschrank scannen</h4>
               <p className="text-xs text-emerald-100 mb-3">
-                Fotografiere deine Vorräte: FUDI findet passende Low-GI Rezepte und verhindert Food-Waste.
+                Fotografiere deine VorrÃ¤te: FUDI findet passende Low-GI Rezepte und verhindert Food-Waste.
               </p>
               <button
                 onClick={() => setScannerOpen(true)}
                 className="w-full py-2.5 rounded-xl bg-white text-emerald-900 font-bold text-xs shadow-md transition-all hover:bg-emerald-50 active:scale-95 flex items-center justify-center gap-1.5"
               >
-                <span>📸 Scan starten</span>
-                <span>➔</span>
+                <span>ðŸ“¸ Scan starten</span>
+                <span>âž”</span>
               </button>
             </div>
           </div>
@@ -382,10 +385,10 @@ export default function Dashboard() {
             <h3 className="text-sm font-bold mb-3" style={{ color: C.forest }}>Schnellzugriff</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { icon: "🩸", label: "Blutzucker", to: "/blutzucker" },
-                { icon: "📅", label: "Planer",     to: "/planer" },
-                { icon: "🛒", label: "Einkaufen",  to: "/einkauf" },
-                { icon: "📈", label: "Stats",      to: "/stats" },
+                { icon: "ðŸ©¸", label: "Blutzucker", to: "/blutzucker" },
+                { icon: "ðŸ“…", label: "Planer",     to: "/planer" },
+                { icon: "ðŸ›’", label: "Einkaufen",  to: "/einkauf" },
+                { icon: "ðŸ“ˆ", label: "Stats",      to: "/stats" },
               ].map((q) => (
                 <Link
                   key={q.label}

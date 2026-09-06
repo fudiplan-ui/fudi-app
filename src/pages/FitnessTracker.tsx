@@ -2,12 +2,12 @@
 import { C } from "../shared/colors";
 
 const WORKOUTS = [
-  { id: 1, name: "Krafttraining", icon: "💪", sets: 4, reps: 12, rest: 60, kcal: 320, duration: 45, category: "Kraft" },
-  { id: 2, name: "Jogging 5km", icon: "🏃", sets: 1, reps: 1, rest: 0, kcal: 280, duration: 28, category: "Ausdauer" },
-  { id: 3, name: "Yoga & Dehnen", icon: "🧘", sets: 1, reps: 1, rest: 0, kcal: 120, duration: 30, category: "Mobilitaet" },
-  { id: 4, name: "HIIT Circuit", icon: "⚡", sets: 5, reps: 20, rest: 30, kcal: 380, duration: 25, category: "Kraft" },
-  { id: 5, name: "Schwimmen 30min", icon: "🏊", sets: 1, reps: 1, rest: 0, kcal: 250, duration: 30, category: "Ausdauer" },
-  { id: 6, name: "Pilates", icon: "🤸", sets: 1, reps: 1, rest: 0, kcal: 150, duration: 45, category: "Mobilitaet" },
+  { id: 1, name: "Krafttraining", icon: "💪", sets: 4, reps: 12, rest: 60, kcal: 320, duration: 45, category: "Kraft", muscles: "Brust, Schultern, Trizeps", steps: ["Warm-up: 5 Min Mobilisation", "Bankdruecken: 4x12 (60 sek Pause)", "Schulterpresse: 3x12", "Trizeps-Pushdown: 3x15", "Cool-down: 5 Min Dehnen"] },
+  { id: 2, name: "Jogging 5km", icon: "🏃", sets: 1, reps: 1, rest: 0, kcal: 280, duration: 28, category: "Ausdauer", muscles: "Beine, Herz-Kreislauf", steps: ["Aufwaermen: 2 Min Gehen", "Langsam anlaufen: Pace 6:30/km", "Steady State: 20 Min konstantes Tempo", "Endspurt: letzte 500m schneller", "Abwaermen: 3 Min Gehen + Dehnen"] },
+  { id: 3, name: "Yoga & Dehnen", icon: "🧘", sets: 1, reps: 1, rest: 0, kcal: 120, duration: 30, category: "Mobilitaet", muscles: "Ganzkörper, Wirbelsäule", steps: ["Katze-Kuh: 10 Wdh.", "Herabschauender Hund: 60 sek halten", "Krieger I & II: je 30 sek pro Seite", "Sitzende Vorwaertsbeuge: 60 sek", "Savasana: 5 Min Entspannung"] },
+  { id: 4, name: "HIIT Circuit", icon: "⚡", sets: 5, reps: 20, rest: 30, kcal: 380, duration: 25, category: "Kraft", muscles: "Ganzkörper, Core", steps: ["Burpees: 20 Wdh. (30 sek Pause)", "Mountain Climbers: 20 Wdh.", "Jump Squats: 20 Wdh.", "Push-ups: 20 Wdh.", "High Knees: 20 Wdh. – 5 Runden gesamt"] },
+  { id: 5, name: "Schwimmen 30min", icon: "🏊", sets: 1, reps: 1, rest: 0, kcal: 250, duration: 30, category: "Ausdauer", muscles: "Ganzkörper, Schultern, Rücken", steps: ["Einschwaermen: 2x50m langsam", "Hauptteil Kraul: 10x100m", "Rueckenschwimmen: 4x50m", "Brustschwimmen: 4x50m", "Ausschwaermen: 2x25m locker"] },
+  { id: 6, name: "Pilates", icon: "🤸", sets: 1, reps: 1, rest: 0, kcal: 150, duration: 45, category: "Mobilitaet", muscles: "Core, Taille, Beine", steps: ["The Hundred: 100 Pumpbewegungen", "Roll Up: 10 Wdh.", "Single Leg Circle: 5 Wdh. pro Seite", "Rolling Like a Ball: 10 Wdh.", "Plank Variation: 3x30 sek halten"] },
 ];
 
 const WEEK_WORKOUTS = [
@@ -194,12 +194,29 @@ export default function FitnessTracker() {
                       style={{ background: active ? C.coral : C.forest }}>
                       {active ? "⏹ Stoppen" : "▶ Starten"}
                     </button>
-                    <button onClick={() => toggleLog(w.id)}
+                    <button onClick={() => setShowGuide(active ? null : showGuide === w.id ? null : w.id)} className="px-3 py-2 rounded-xl text-xs font-semibold border transition-all" style={{ borderColor: C.border, color: C.forest }}>📋 Anleitung</button>
+      <button onClick={() => toggleLog(w.id)}
                       className="flex-1 py-2 rounded-xl text-xs font-bold border transition-all"
                       style={{ borderColor: logged ? C.mint : C.border, background: logged ? C.mintLight : "white", color: logged ? C.forest : C.stone }}>
                       {logged ? "✓ Absolviert" : "Als erledigt markieren"}
                     </button>
                   </div>
+                  {showGuide === w.id && w.steps && (
+                    <div className="mt-3 pt-3 border-t" style={{ borderColor: C.border }}>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <span className="text-sm">💪</span>
+                        <p className="text-xs font-bold" style={{ color: C.forest }}>Muskeln: {w.muscles}</p>
+                      </div>
+                      <ol className="space-y-1">
+                        {w.steps.map((step, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-xs" style={{ color: C.inkMid }}>
+                            <span className="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-bold text-white shrink-0 mt-0.5" style={{ background: C.mint }}>{idx + 1}</span>
+                            {step}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -226,7 +243,7 @@ export default function FitnessTracker() {
               </div>
             </div>
             <div className="mt-3 p-3 rounded-xl text-xs" style={{ background: C.forest + "10", color: C.forest }}>
-              <strong>Hermes-Tipp:</strong> Bei Krafttraining 1,6–2g Protein pro kg Koerpergewicht anstreben.
+              <strong>Tipp:</strong> Bei Krafttraining 1,6–2g Protein pro kg Koerpergewicht anstreben.
             </div>
           </div>
 

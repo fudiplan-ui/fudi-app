@@ -172,6 +172,52 @@ export default function ShoppingList() {
         )}
       </div>
 
+      {/* Price Comparison & Savings Score */}
+      <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold" style={{ color: C.forest }}>💰 Preisvergleich & Ersparnis</h3>
+          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: C.mintLight, color: C.forest }}>
+            Monatlich
+          </span>
+        </div>
+        {(() => {
+          const total = items.filter(i => !i.checked).reduce((s, i) => s + i.price, 0);
+          const checked = items.filter(i => i.checked).reduce((s, i) => s + i.price, 0);
+          const savings = items.reduce((s, i) => s + (i.price * 0.18), 0); // ~18% avg saving via deals
+          const monthSavings = savings * 4.3;
+          return (
+            <div className="grid grid-cols-3 gap-2">
+              <div className="text-center p-2.5 rounded-xl" style={{ background: C.cream }}>
+                <p className="text-xs" style={{ color: C.stone }}>Noch zu kaufen</p>
+                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>€{total.toFixed(2)}</p>
+              </div>
+              <div className="text-center p-2.5 rounded-xl" style={{ background: C.mintLight }}>
+                <p className="text-xs" style={{ color: C.stone }}>Bereits geholt</p>
+                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.mint }}>€{checked.toFixed(2)}</p>
+              </div>
+              <div className="text-center p-2.5 rounded-xl" style={{ background: "#fef3c7" }}>
+                <p className="text-xs" style={{ color: "#92400e" }}>Monat-Ersparnis</p>
+                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: "#d97706" }}>€{monthSavings.toFixed(0)}</p>
+              </div>
+            </div>
+          );
+        })()}
+        <div className="mt-3 space-y-1.5">
+          {[
+            { store: "Aldi", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.82, 0), badge: "Günstigster", color: "#16a34a" },
+            { store: "Lidl", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.87, 0), badge: "Zweitgünstigster", color: "#2563eb" },
+            { store: "Rewe", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.98, 0), badge: "Vollsortiment", color: "#7c3aed" },
+          ].map(s => (
+            <div key={s.store} className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: "#f9fafb" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold" style={{ color: C.forest }}>{s.store}</span>
+                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: s.color + "20", color: s.color }}>{s.badge}</span>
+              </div>
+              <span className="text-sm font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: s.color }}>€{s.total.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
       {/* Category tabs */}
       <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
         {CATS.map((c) => (

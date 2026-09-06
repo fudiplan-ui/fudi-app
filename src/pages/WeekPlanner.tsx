@@ -1,11 +1,11 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
 const DAYS_FULL = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
 const DAYS_SHORT = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
-const SLOT_LABELS = ["Frühstück", "Snack", "Mittag", "Snack", "Abendessen"];
+const SLOT_LABELS = ["FrÃ¼hstÃ¼ck", "Snack", "Mittag", "Snack", "Abendessen"];
 
 type SlotKey = string; // `${dayIndex}-${slotIndex}`
 type PlanMap = Record<SlotKey, number>; // recipe index
@@ -29,7 +29,7 @@ function RecipeChip({ recipeIdx, onRemove }: { recipeIdx: number; onRemove: () =
         <p className="text-[10px] font-bold truncate leading-tight" style={{ color: C.forest }}>{r.title}</p>
         <p className="text-[9px]" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.mint }}>+{r.impact} mg/dL</p>
       </div>
-      <button onClick={onRemove} className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] p-0.5 rounded" style={{ color: C.stone }}>✕</button>
+      <button onClick={onRemove} className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] p-0.5 rounded" style={{ color: C.stone }}>âœ•</button>
     </div>
   );
 }
@@ -41,7 +41,7 @@ function AddSlotMenu({ onSelect, onClose }: { onSelect: (i: number) => void; onC
     <div className="absolute z-20 top-full mt-1 left-0 right-0 bg-white rounded-xl border shadow-xl p-2" style={{ borderColor: C.border }}>
       <input
         value={q} onChange={(e) => setQ(e.target.value)}
-        placeholder="Rezept suchen…"
+        placeholder="Rezept suchenâ€¦"
         className="w-full text-xs px-2.5 py-1.5 rounded-lg border outline-none mb-2"
         style={{ borderColor: C.border, background: C.cream }}
         autoFocus
@@ -62,7 +62,7 @@ function AddSlotMenu({ onSelect, onClose }: { onSelect: (i: number) => void; onC
           </button>
         ))}
       </div>
-      <button onClick={onClose} className="mt-2 w-full text-xs py-1 rounded-lg" style={{ color: C.stone }}>Schließen</button>
+      <button onClick={onClose} className="mt-2 w-full text-xs py-1 rounded-lg" style={{ color: C.stone }}>SchlieÃŸen</button>
     </div>
   );
 }
@@ -132,7 +132,7 @@ function DayColumn({ dayIdx, plan, onAdd, onRemove }: {
   );
 }
 
-// ── WeekGrid – proper component so hooks are legal ────────────────
+// â”€â”€ WeekGrid â€“ proper component so hooks are legal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function WeekCell({ slotKey, recipeIdx, isSnack, onAdd, onRemove }: {
   slotKey: string;
   recipeIdx: number | undefined;
@@ -205,10 +205,32 @@ function WeekGrid({ plan, onAdd, onRemove, today }: {
   );
 }
 
+
+// iCal Export helper
+function generateIcal(plan, recipes) {
+  const SLOT_TIMES = ["073000", "100000", "123000", "153000", "190000"];
+  const SLOT_DUR   = ["PT30M", "PT15M", "PT60M", "PT15M", "PT45M"];
+  const today = new Date();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+  let ical = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//FUDI//Wochenplan//DE\r\nCALSCALE:GREGORIAN\r\n";
+  Object.entries(plan).forEach(([key, recipeIdx]) => {
+    const [dayIdx, slotIdx] = key.split("-").map(Number);
+    const recipe = recipes[recipeIdx];
+    if (!recipe) return;
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + dayIdx);
+    const dateStr = d.toISOString().split("T")[0].replace(/-/g, "");
+    const startTime = SLOT_TIMES[slotIdx] || "120000";
+    ical += "BEGIN:VEVENT\r\nDTSTAMP:" + new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z\r\nUID:fudi-" + key + "-" + Date.now() + "@fudi.app\r\nSUMMARY:Mahlzeit: " + recipe.title + "\r\nDESCRIPTION:" + recipe.kcal + " kcal / " + recipe.time + " min / BZ +" + recipe.impact + " mg/dL\r\nDTSTART:" + dateStr + "T" + startTime + "\r\nDURATION:" + (SLOT_DUR[slotIdx] || "PT30M") + "\r\nEND:VEVENT\r\n";
+  });
+  ical += "END:VCALENDAR";
+  return ical;
+}
 export default function WeekPlanner() {
   const [plan, setPlan] = useState<PlanMap>(INITIAL_PLAN);
   const [view, setView] = useState<"week" | "day">("week");
-  const today = (new Date().getDay() + 6) % 7; // 0=Mon … 6=Sun
+  const today = (new Date().getDay() + 6) % 7; // 0=Mon â€¦ 6=Sun
   const [dayView, setDayView] = useState(today);
 
   const addRecipe = (day: number, slot: number, rIdx: number) => {
@@ -228,10 +250,10 @@ export default function WeekPlanner() {
       <div className="flex flex-col md:flex-row md:items-end gap-4 mb-6">
         <div className="flex-1">
           <h1 className="text-3xl font-black" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest, letterSpacing: "-0.03em" }}>
-            Wochenplaner 📅
+            Wochenplaner ðŸ“…
           </h1>
           <p className="text-sm mt-0.5" style={{ color: C.stone }}>
-            KW 36 · 1.–7. September 2026 · {mealsPlanned}/{totalSlots} Mahlzeiten geplant
+            KW 36 Â· 1.â€“7. September 2026 Â· {mealsPlanned}/{totalSlots} Mahlzeiten geplant
           </p>
         </div>
         <div className="flex gap-2">
@@ -250,14 +272,14 @@ export default function WeekPlanner() {
               setPlan(next);
             }}
           >
-            🤖 KI Auto-Planen
+            ðŸ¤– KI Auto-Planen
           </button>
           <Link
             to="/einkauf"
             className="px-3 py-2 rounded-xl text-xs font-semibold text-white"
             style={{ background: C.forest }}
           >
-            🛒 Einkaufsliste erstellen
+            ðŸ›’ Einkaufsliste erstellen
           </Link>
         </div>
       </div>
@@ -266,7 +288,7 @@ export default function WeekPlanner() {
       <div className="grid grid-cols-3 gap-3 mb-6">
         {[
           { label: "Geplante Mahlzeiten", val: mealsPlanned, unit: `/ ${totalSlots}`, color: C.mint },
-          { label: "Ø Kalorien / Tag", val: Math.round(totalKcal / 7), unit: "kcal", color: C.coral },
+          { label: "Ã˜ Kalorien / Tag", val: Math.round(totalKcal / 7), unit: "kcal", color: C.coral },
           { label: "Abgedeckte Tage", val: [...new Set(Object.keys(plan).map((k) => k.split("-")[0]))].length, unit: "/ 7 Tage", color: C.forest },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl border p-3 text-center" style={{ borderColor: C.border }}>
@@ -325,15 +347,15 @@ export default function WeekPlanner() {
                       </div>
                       <div className="flex-1">
                         <p className="text-sm font-bold" style={{ color: C.forest }}>{recipe.title}</p>
-                        <p className="text-xs" style={{ color: C.stone }}>🔥 {recipe.kcal} kcal · ⏱ {recipe.time} min</p>
+                        <p className="text-xs" style={{ color: C.stone }}>ðŸ”¥ {recipe.kcal} kcal Â· â± {recipe.time} min</p>
                         <p className="text-xs mt-0.5" style={{ fontFamily: "'JetBrains Mono',monospace", color: recipe.gi === "low" ? C.mint : C.coral }}>+{recipe.impact} mg/dL</p>
                       </div>
-                      <button onClick={() => removeRecipe(key)} className="text-xs px-2.5 py-1.5 rounded-lg" style={{ background: C.cream, color: C.stone }}>Ändern</button>
+                      <button onClick={() => removeRecipe(key)} className="text-xs px-2.5 py-1.5 rounded-lg" style={{ background: C.cream, color: C.stone }}>Ã„ndern</button>
                     </>
                   ) : (
                     <div className="flex-1 flex items-center gap-3">
                       <div className="w-14 h-14 rounded-xl border-dashed border-2 flex items-center justify-center text-xl" style={{ borderColor: C.border }}>+</div>
-                      <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>Rezept hinzufügen</Link>
+                      <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>Rezept hinzufÃ¼gen</Link>
                     </div>
                   )}
                 </div>
