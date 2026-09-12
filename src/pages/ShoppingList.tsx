@@ -5,303 +5,293 @@ import BarcodeScannerModal from "../components/BarcodeScannerModal";
 type Item = { id: number; name: string; amount: string; price: number; category: string; checked: boolean };
 
 const INITIAL_ITEMS: Item[] = [
-  { id:1,  name: "Quinoa",           amount: "400g",    price: 2.99, category: "Vorraete",       checked: false },
-  { id:2,  name: "Avocado",          amount: "3 Stueck", price: 2.49, category: "Obst & Gemuese", checked: true  },
-  { id:3,  name: "Kichererbsen",     amount: "2x400g",  price: 1.98, category: "Vorraete",       checked: false },
-  { id:4,  name: "Babyspinat",       amount: "200g",    price: 1.79, category: "Obst & Gemuese", checked: false },
-  { id:5,  name: "Kirschtomaten",    amount: "500g",    price: 1.49, category: "Obst & Gemuese", checked: false },
-  { id:6,  name: "Rote Paprika",     amount: "3 Stueck", price: 1.97, category: "Obst & Gemuese", checked: true  },
-  { id:7,  name: "Lachs (Filet)",    amount: "600g",    price: 8.99, category: "Fleisch & Fisch", checked: false },
-  { id:8,  name: "Griechischer Joghurt", amount: "500g", price: 1.99, category: "Molkerei",      checked: false },
-  { id:9,  name: "Haferflocken",     amount: "500g",    price: 1.29, category: "Vorraete",       checked: false },
-  { id:10, name: "Blaubeeren",       amount: "250g",    price: 2.49, category: "Obst & Gemuese", checked: false },
-  { id:11, name: "Mandeln",          amount: "200g",    price: 2.99, category: "Vorraete",       checked: true  },
-  { id:12, name: "Olivenoel",        amount: "500ml",   price: 4.49, category: "Vorraete",       checked: false },
-  { id:13, name: "Tahini",           amount: "250g",    price: 3.49, category: "Vorraete",       checked: false },
-  { id:14, name: "Feta",             amount: "200g",    price: 2.29, category: "Molkerei",       checked: false },
-  { id:15, name: "Tiefkuehl-Erbsen", amount: "600g",    price: 1.79, category: "Tiefkuehl",     checked: false },
+  { id:1,  name: "Quinoa",                 amount: "400g",    price: 2.49, category: "Vorräte",        checked: false },
+  { id:2,  name: "Avocado Ready-to-Eat",   amount: "3 Stück", price: 2.29, category: "Obst & Gemüse",  checked: true  },
+  { id:3,  name: "Kichererbsen (Dose)",    amount: "2x400g",  price: 1.78, category: "Vorräte",        checked: false },
+  { id:4,  name: "Bio Babyspinat",         amount: "200g",    price: 1.69, category: "Obst & Gemüse",  checked: false },
+  { id:5,  name: "Strauch-Kirschtomaten",  amount: "500g",    price: 1.49, category: "Obst & Gemüse",  checked: false },
+  { id:6,  name: "Paprika-Mix (rot/gelb)", amount: "3 Stück", price: 1.89, category: "Obst & Gemüse",  checked: true  },
+  { id:7,  name: "Wildlachs-Filet",        amount: "400g",    price: 6.99, category: "Fleisch & Fisch", checked: false },
+  { id:8,  name: "Speisequark mager",      amount: "500g",    price: 0.99, category: "Molkerei",       checked: false },
+  { id:9,  name: "Zarte Haferflocken",     amount: "500g",    price: 0.79, category: "Vorräte",        checked: false },
+  { id:10, name: "Wald-Blaubeeren",        amount: "300g",    price: 2.49, category: "Obst & Gemüse",  checked: false },
+  { id:11, name: "Mandeln naturbelassen",  amount: "200g",    price: 2.79, category: "Vorräte",        checked: true  },
+  { id:12, name: "Natives Olivenöl Extra", amount: "500ml",   price: 5.49, category: "Vorräte",        checked: false },
+  { id:13, name: "Bio Eier (Freiland)",    amount: "10 Stück",price: 2.29, category: "Molkerei",       checked: false },
+  { id:14, name: "Feta g.U. Original",     amount: "200g",    price: 2.19, category: "Molkerei",       checked: false },
+  { id:15, name: "TK-Erbsen & Brokkoli",   amount: "750g",    price: 1.89, category: "Tiefkühl",      checked: false },
 ];
 
 const DEALS = [
-  { store: "Aldi", item: "Bio Haferflocken 1kg", price: "1.19", saving: "-30%", icon: "🌾", expires: "Sa, 07.09." },
-  { store: "Lidl",  item: "Lachsfilet 400g",    price: "4.99", saving: "-40%", icon: "🐟", expires: "So, 08.09." },
-  { store: "Rewe",  item: "Blaubeeren 500g",    price: "1.79", saving: "-20%", icon: "🫐", expires: "Fr, 06.09." },
-  { store: "Edeka", item: "Quinoa 500g",         price: "2.29", saving: "-25%", icon: "🌾", expires: "Sa, 07.09." },
+  { store: "Aldi",     item: "Bio Magerquark 500g",         price: 0.99, oldPrice: 1.35, saving: "-26%", icon: "🥛", category: "Molkerei",       expires: "Sa, 19.09." },
+  { store: "Lidl",     item: "Frisches Lachsfilet 400g",    price: 5.49, oldPrice: 7.99, saving: "-31%", icon: "🐟", category: "Fleisch & Fisch", expires: "So, 20.09." },
+  { store: "Rewe",     item: "Frische Kulturheidelbeeren 500g", price: 2.29, oldPrice: 3.49, saving: "-34%", icon: "🫐", category: "Obst & Gemüse",  expires: "Fr, 18.09." },
+  { store: "Edeka",    item: "Bio Hähnchenbrustfilet 400g", price: 5.99, oldPrice: 7.29, saving: "-18%", icon: "🥩", category: "Fleisch & Fisch", expires: "Sa, 19.09." },
+  { store: "Kaufland", item: "Räuchertofu Bio 350g",        price: 1.49, oldPrice: 2.19, saving: "-32%", icon: "🌱", category: "Vorräte",        expires: "Sa, 19.09." },
+  { store: "Aldi",     item: "Zarte Bio-Haferflocken 1kg",  price: 1.19, oldPrice: 1.69, saving: "-30%", icon: "🌾", category: "Vorräte",        expires: "Mi, 23.09." },
+  { store: "Lidl",     item: "Freilandeier 10er Pack",      price: 2.19, oldPrice: 2.79, saving: "-21%", icon: "🥚", category: "Molkerei",       expires: "So, 20.09." },
+  { store: "Rewe",     item: "Griechischer Joghurt 0% 1kg", price: 2.49, oldPrice: 3.29, saving: "-24%", icon: "🥣", category: "Molkerei",       expires: "Fr, 18.09." },
 ];
 
-const CATS = ["Alle", "Obst & Gemuese", "Fleisch & Fisch", "Molkerei", "Vorraete", "Tiefkuehl"];
-const CATS_DISPLAY: Record<string, string> = {
-  "Alle": "Alle",
-  "Obst & Gemuese": "Obst & Gemuese",
-  "Fleisch & Fisch": "Fleisch & Fisch",
-  "Molkerei": "Molkerei",
-  "Vorraete": "Vorraete",
-  "Tiefkuehl": "Tiefkuehl",
-};
+const CATS = ["Alle", "Obst & Gemüse", "Fleisch & Fisch", "Molkerei", "Vorräte", "Tiefkühl"];
 const CAT_ICONS: Record<string, string> = {
-  "Obst & Gemuese": "🥦",
-  "Fleisch & Fisch": "🐟",
-  "Molkerei": "🧀",
-  "Vorraete": "🫙",
-  "Tiefkuehl": "❄️",
+  "Obst & Gemüse": "🥗",
+  "Fleisch & Fisch": "🥩",
+  "Molkerei": "🥛",
+  "Vorräte": "🌾",
+  "Tiefkühl": "❄️",
 };
-
-function ItemRow({ item, onToggle, onRemove }: { item: Item; onToggle: (id: number) => void; onRemove: (id: number) => void }) {
-  return (
-    <div className="flex items-center gap-3 bg-white rounded-xl border p-3 group transition-all"
-      style={{ borderColor: C.border, opacity: item.checked ? 0.6 : 1 }}>
-      <button onClick={() => onToggle(item.id)}
-        className="w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all"
-        style={{ borderColor: item.checked ? C.mint : C.border, background: item.checked ? C.mint : "transparent" }}>
-        {item.checked && <span className="text-white text-[10px] font-bold">✓</span>}
-      </button>
-      <span className="flex-1 text-sm" style={{ color: C.ink, textDecoration: item.checked ? "line-through" : "none" }}>{item.name}</span>
-      <span className="text-xs font-semibold" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.stone }}>{item.amount}</span>
-      {item.price > 0 && <span className="text-xs" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.mint }}>€{item.price.toFixed(2)}</span>}
-      <button onClick={() => onRemove(item.id)} className="opacity-0 group-hover:opacity-100 text-xs p-1 rounded transition-opacity" style={{ color: C.stone }}>x</button>
-    </div>
-  );
-}
 
 export default function ShoppingList() {
   const [items, setItems] = useState<Item[]>(INITIAL_ITEMS);
   const [cat, setCat] = useState("Alle");
   const [newName, setNewName] = useState("");
   const [newAmt, setNewAmt] = useState("");
+  const [newPrice, setNewPrice] = useState("");
   const [barcodeOpen, setBarcodeOpen] = useState(false);
   const [showDeals, setShowDeals] = useState(true);
 
   const toggle = (id: number) => setItems(items.map((it) => it.id === id ? { ...it, checked: !it.checked } : it));
   const remove = (id: number) => setItems(items.filter((it) => it.id !== id));
+
   const addItem = () => {
     if (!newName.trim()) return;
     setItems([...items, {
-      id: Date.now(), name: newName.trim(), amount: newAmt || "1x",
-      price: 0, category: cat === "Alle" ? "Vorraete" : cat, checked: false,
+      id: Date.now(),
+      name: newName.trim(),
+      amount: newAmt || "1x",
+      price: parseFloat(newPrice) || 0,
+      category: cat === "Alle" ? "Vorräte" : cat,
+      checked: false,
     }]);
-    setNewName(""); setNewAmt("");
+    setNewName("");
+    setNewAmt("");
+    setNewPrice("");
+  };
+
+  const addDealToList = (deal: typeof DEALS[0]) => {
+    setItems(prev => [
+      ...prev,
+      {
+        id: Date.now(),
+        name: `${deal.item} (${deal.store})`,
+        amount: "1 Pck.",
+        price: deal.price,
+        category: deal.category,
+        checked: false
+      }
+    ]);
   };
 
   const filtered = cat === "Alle" ? items : items.filter((it) => it.category === cat);
   const total = items.filter((it) => !it.checked).reduce((s, it) => s + it.price, 0);
   const done = items.filter((it) => it.checked).length;
-  const pct = Math.round((done / items.length) * 100);
+  const pct = items.length > 0 ? Math.round((done / items.length) * 100) : 0;
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6">
+    <div className="max-w-4xl mx-auto px-4 py-6">
       <BarcodeScannerModal isOpen={barcodeOpen} onClose={() => setBarcodeOpen(false)} />
 
       {/* Header */}
-      <div className="flex items-end justify-between mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-6">
         <div>
           <h1 className="text-3xl font-black" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest, letterSpacing: "-0.03em" }}>
-            Einkaufsliste 🛒
+            Smarte Einkaufsliste & Angebote 🛒
           </h1>
-          <p className="text-sm mt-0.5" style={{ color: C.stone }}>{done} von {items.length} eingekauft</p>
+          <p className="text-sm mt-0.5" style={{ color: C.stone }}>
+            {done} von {items.length} Artikeln im Korb • Geschätzter Einkaufswert: {total.toFixed(2)} €
+          </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setBarcodeOpen(true)}
-            className="text-xs px-3 py-2 rounded-xl font-semibold border flex items-center gap-1.5 transition-all hover:border-green-400 hover:bg-green-50"
-            style={{ borderColor: C.border, color: C.forest }}>
-            📊 Barcode
+          <button
+            onClick={() => setBarcodeOpen(true)}
+            className="text-xs px-3.5 py-2 rounded-xl font-bold border flex items-center gap-1.5 transition-all hover:bg-emerald-50"
+            style={{ borderColor: C.border, color: C.forest }}
+          >
+            📷 Barcode scannen
           </button>
-          <button className="text-xs px-3 py-2 rounded-xl text-white font-semibold" style={{ background: C.forest }}>PDF ↓</button>
+          <button
+            onClick={() => setShowDeals(!showDeals)}
+            className="text-xs px-3.5 py-2 rounded-xl text-white font-bold transition-all shadow-sm"
+            style={{ background: showDeals ? C.mint : C.forest }}
+          >
+            {showDeals ? "🏷️ Deals ausblenden" : "🏷️ Supermarkt-Deals anzeigen"}
+          </button>
         </div>
       </div>
 
       {/* Progress */}
-      <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
+      <div className="bg-white rounded-2xl border p-4 mb-6 shadow-sm" style={{ borderColor: C.border }}>
         <div className="flex justify-between text-xs mb-2">
-          <span style={{ color: C.stone }}>Fortschritt</span>
-          <span className="font-bold" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{pct}%</span>
+          <span style={{ color: C.stone }}>Einkaufsfortschritt</span>
+          <span className="font-bold font-mono" style={{ color: C.forest }}>{pct}% ({done}/{items.length})</span>
         </div>
-        <div className="h-2 rounded-full" style={{ background: C.border }}>
-          <div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: pct === 100 ? C.mint : C.coral }} />
-        </div>
-        <div className="flex justify-between mt-3">
-          <div className="text-center">
-            <p className="text-xs" style={{ color: C.stone }}>Artikel</p>
-            <p className="font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{items.length}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs" style={{ color: C.stone }}>Noch zu kaufen</p>
-            <p className="font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.coral }}>{items.length - done}</p>
-          </div>
-          <div className="text-center">
-            <p className="text-xs" style={{ color: C.stone }}>Geschaetzte Kosten</p>
-            <p className="font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>€{total.toFixed(2)}</p>
-          </div>
+        <div className="h-2.5 rounded-full bg-gray-100 overflow-hidden">
+          <div
+            className="h-full transition-all duration-300 rounded-full"
+            style={{ width: `${pct}%`, background: pct === 100 ? C.mint : C.coral }}
+          />
         </div>
       </div>
 
-      {/* Supermarkt Deals Banner */}
-      <div className="bg-white rounded-2xl border mb-4 overflow-hidden" style={{ borderColor: C.border }}>
-        <button onClick={() => setShowDeals(!showDeals)}
-          className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🏪</span>
-            <div className="text-left">
-              <p className="text-sm font-bold" style={{ color: C.forest }}>Aktuelle Supermarkt-Angebote</p>
-              <p className="text-xs" style={{ color: C.stone }}>Diese Woche im Angebot - passend zu deiner Liste</p>
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left 2 Cols: Item List */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Quick Add Form */}
+          <div className="bg-white rounded-2xl border p-4 shadow-sm" style={{ borderColor: C.border }}>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-2.5">+ Artikel manuell hinzufügen</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+              <input
+                type="text"
+                placeholder="Artikelname (z.B. Bio-Eier)"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="text-xs p-2.5 rounded-xl border bg-gray-50 focus:outline-none focus:bg-white focus:ring-1 focus:ring-emerald-500 sm:col-span-2"
+                style={{ borderColor: C.border }}
+              />
+              <input
+                type="text"
+                placeholder="Menge (z.B. 500g)"
+                value={newAmt}
+                onChange={(e) => setNewAmt(e.target.value)}
+                className="text-xs p-2.5 rounded-xl border bg-gray-50 focus:outline-none focus:bg-white"
+                style={{ borderColor: C.border }}
+              />
+            </div>
+            <div className="flex justify-between items-center pt-1">
+              <input
+                type="number"
+                step="0.01"
+                placeholder="Preis (€, opt.)"
+                value={newPrice}
+                onChange={(e) => setNewPrice(e.target.value)}
+                className="text-xs p-2 rounded-xl border bg-gray-50 w-28 focus:outline-none"
+                style={{ borderColor: C.border }}
+              />
+              <button
+                onClick={addItem}
+                className="text-xs px-4 py-2 rounded-xl font-bold text-white transition-all hover:opacity-90"
+                style={{ background: C.forest }}
+              >
+                Hinzufügen
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ background: C.coral }}>4 Deals</span>
-            <span className="text-xs" style={{ color: C.stone }}>{showDeals ? "▲" : "▼"}</span>
+
+          {/* Category Filter */}
+          <div className="flex gap-1.5 overflow-x-auto pb-1">
+            {CATS.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCat(c)}
+                className="px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all border"
+                style={{
+                  background: cat === c ? C.forest : "white",
+                  color: cat === c ? "white" : C.stone,
+                  borderColor: cat === c ? C.forest : C.border,
+                }}
+              >
+                {CAT_ICONS[c] ? `${CAT_ICONS[c]} ` : ""}{c}
+              </button>
+            ))}
           </div>
-        </button>
-        {showDeals && (
-          <div className="px-4 pb-4 grid grid-cols-2 gap-2">
-            {DEALS.map((deal, i) => (
-              <div key={i} className="p-3 rounded-xl border" style={{ background: "#f0fdf4", borderColor: "#bbf7d0" }}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-base">{deal.icon}</span>
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full text-white" style={{ background: "#16a34a" }}>{deal.saving}</span>
-                </div>
-                <p className="text-xs font-bold leading-tight" style={{ color: C.forest }}>{deal.item}</p>
-                <p className="text-[10px] mt-0.5" style={{ color: C.stone }}>{deal.store} · bis {deal.expires}</p>
-                <p className="text-sm font-black mt-1" style={{ fontFamily: "'JetBrains Mono',monospace", color: "#16a34a" }}>€{deal.price}</p>
+
+          {/* Items */}
+          <div className="space-y-2">
+            {filtered.map((item) => (
+              <div
+                key={item.id}
+                className="flex items-center gap-3 bg-white rounded-xl border p-3 group transition-all hover:border-gray-300"
+                style={{ borderColor: C.border, opacity: item.checked ? 0.6 : 1 }}
+              >
+                <button
+                  onClick={() => toggle(item.id)}
+                  className="w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all"
+                  style={{
+                    borderColor: item.checked ? C.mint : C.border,
+                    background: item.checked ? C.mint : "transparent"
+                  }}
+                >
+                  {item.checked && <span className="text-white text-[11px] font-black">✓</span>}
+                </button>
+                <span className="flex-1 text-xs sm:text-sm font-medium" style={{ color: C.ink, textDecoration: item.checked ? "line-through" : "none" }}>
+                  {item.name}
+                </span>
+                <span className="text-xs font-semibold font-mono" style={{ color: C.stone }}>
+                  {item.amount}
+                </span>
+                {item.price > 0 && (
+                  <span className="text-xs font-bold font-mono" style={{ color: C.mint }}>
+                    {item.price.toFixed(2)} €
+                  </span>
+                )}
+                <button
+                  onClick={() => remove(item.id)}
+                  className="opacity-0 group-hover:opacity-100 text-xs p-1 text-gray-400 hover:text-red-500 rounded transition-opacity"
+                >
+                  ✕
+                </button>
               </div>
             ))}
-            <div className="col-span-2">
-              <input placeholder="Postleitzahl eingeben fur lokale Angebote (z.B. 80331)"
-                className="w-full px-3 py-2 rounded-xl border text-xs outline-none"
-                style={{ borderColor: C.border, background: "#f9fafb" }} />
+          </div>
+        </div>
+
+        {/* Right Col: Verified Supermarket Deals */}
+        {showDeals && (
+          <div className="space-y-4">
+            <div className="bg-white rounded-2xl border p-4 shadow-sm" style={{ borderColor: C.border }}>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold flex items-center gap-1.5" style={{ color: C.forest }}>
+                  <span>🏷️</span> Aktuelle Angebote der Woche
+                </h3>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                  Live Sparen
+                </span>
+              </div>
+              <p className="text-[11px] text-gray-500 mb-3">
+                Preisvergleich aus Prospekten (KW 37/38) für proteinreiche & gesunde Lebensmittel:
+              </p>
+
+              <div className="space-y-2.5">
+                {DEALS.map((d, idx) => (
+                  <div key={idx} className="p-2.5 rounded-xl border border-gray-100 bg-gray-50 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg p-1 rounded-lg bg-white shadow-xs">{d.icon}</span>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-extrabold px-1.5 py-0.2 rounded text-white bg-slate-700">{d.store}</span>
+                          <span className="text-xs font-bold text-gray-800 leading-tight">{d.item}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[10px] text-gray-400 mt-0.5">
+                          <span className="text-red-600 font-bold">{d.saving}</span>
+                          <span className="line-through">{d.oldPrice.toFixed(2)} €</span>
+                          <span>• Bis {d.expires}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-xs font-black font-mono text-emerald-600">{d.price.toFixed(2)} €</span>
+                      <button
+                        onClick={() => addDealToList(d)}
+                        className="text-[10px] px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition-all shadow-xs"
+                      >
+                        + Auf Liste
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+              <h4 className="text-xs font-bold text-amber-900 mb-1">💡 Smart Shopping Tipp</h4>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                Tiefkühl-Gemüse und Beeren besitzen durch Schockfrostung oft mehr Vitamine als tagelang gelagerte Frischware – und kosten im Schnitt 30-40% weniger.
+              </p>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Price Comparison & Savings Score */}
-      <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold" style={{ color: C.forest }}>💰 Preisvergleich & Ersparnis</h3>
-          <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: C.mintLight, color: C.forest }}>
-            Monatlich
-          </span>
-        </div>
-        {(() => {
-          const total = items.filter(i => !i.checked).reduce((s, i) => s + i.price, 0);
-          const checked = items.filter(i => i.checked).reduce((s, i) => s + i.price, 0);
-          const savings = items.reduce((s, i) => s + (i.price * 0.18), 0); // ~18% avg saving via deals
-          const monthSavings = savings * 4.3;
-          return (
-            <div className="grid grid-cols-3 gap-2">
-              <div className="text-center p-2.5 rounded-xl" style={{ background: C.cream }}>
-                <p className="text-xs" style={{ color: C.stone }}>Noch zu kaufen</p>
-                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>€{total.toFixed(2)}</p>
-              </div>
-              <div className="text-center p-2.5 rounded-xl" style={{ background: C.mintLight }}>
-                <p className="text-xs" style={{ color: C.stone }}>Bereits geholt</p>
-                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.mint }}>€{checked.toFixed(2)}</p>
-              </div>
-              <div className="text-center p-2.5 rounded-xl" style={{ background: "#fef3c7" }}>
-                <p className="text-xs" style={{ color: "#92400e" }}>Monat-Ersparnis</p>
-                <p className="text-lg font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: "#d97706" }}>€{monthSavings.toFixed(0)}</p>
-              </div>
-            </div>
-          );
-        })()}
-        <div className="mt-3 space-y-1.5">
-          {[
-            { store: "Aldi", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.82, 0), badge: "Günstigster", color: "#16a34a" },
-            { store: "Lidl", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.87, 0), badge: "Zweitgünstigster", color: "#2563eb" },
-            { store: "Rewe", total: items.filter(i => !i.checked).reduce((s, i) => s + i.price * 0.98, 0), badge: "Vollsortiment", color: "#7c3aed" },
-          ].map(s => (
-            <div key={s.store} className="flex items-center justify-between px-3 py-2 rounded-xl" style={{ background: "#f9fafb" }}>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold" style={{ color: C.forest }}>{s.store}</span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded-full font-semibold" style={{ background: s.color + "20", color: s.color }}>{s.badge}</span>
-              </div>
-              <span className="text-sm font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: s.color }}>€{s.total.toFixed(2)}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      {/* Category tabs */}
-      <div className="flex gap-2 mb-4 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-        {CATS.map((c) => (
-          <button key={c} onClick={() => setCat(c)}
-            className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all"
-            style={{ background: cat === c ? C.forest : C.white, color: cat === c ? C.white : C.stone, border: `1.5px solid ${cat === c ? C.forest : C.border}` }}>
-            {CAT_ICONS[c] || "📋"} {CATS_DISPLAY[c]}
-          </button>
-        ))}
-      </div>
-
-      {/* Add item */}
-      <div className="flex gap-2 mb-4">
-        <input value={newName} onChange={(e) => setNewName(e.target.value)}
-          placeholder="Artikel hinzufuegen..."
-          onKeyDown={(e) => e.key === "Enter" && addItem()}
-          className="flex-1 px-3 py-2.5 rounded-xl text-sm border outline-none"
-          style={{ borderColor: C.border, background: C.white }} />
-        <input value={newAmt} onChange={(e) => setNewAmt(e.target.value)}
-          placeholder="Menge"
-          className="w-20 px-3 py-2.5 rounded-xl text-sm border outline-none"
-          style={{ borderColor: C.border, background: C.white }} />
-        <button onClick={addItem} className="px-3 py-2.5 rounded-xl text-white font-bold text-sm" style={{ background: C.mint }}>+</button>
-      </div>
-
-      {/* List */}
-      {cat === "Alle" ? (
-        CATS.slice(1).map((catName) => {
-          const catItems = items.filter((it) => it.category === catName);
-          if (catItems.length === 0) return null;
-          return (
-            <div key={catName} className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm">{CAT_ICONS[catName]}</span>
-                <h3 className="text-xs font-bold uppercase tracking-wide" style={{ color: C.stone }}>{CATS_DISPLAY[catName]}</h3>
-                <div className="flex-1 h-px" style={{ background: C.border }} />
-              </div>
-              <div className="space-y-2">
-                {catItems.map((it) => <ItemRow key={it.id} item={it} onToggle={toggle} onRemove={remove} />)}
-              </div>
-            </div>
-          );
-        })
-      ) : (
-        <div className="space-y-2">
-          {filtered.map((it) => <ItemRow key={it.id} item={it} onToggle={toggle} onRemove={remove} />)}
-          {filtered.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-sm" style={{ color: C.stone }}>Keine Artikel in dieser Kategorie.</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Smart suggestions */}
-      <div className="mt-6 bg-white rounded-2xl border p-4" style={{ borderColor: C.border }}>
-        <h3 className="text-sm font-bold mb-3" style={{ color: C.forest }}>💡 Haeufig vergessen</h3>
-        <div className="flex flex-wrap gap-2">
-          {["Zitrone", "Knoblauch", "Salz & Pfeffer", "Essig", "Sesam", "Tomaten (Dose)", "Linsen"].map((s) => (
-            <button key={s}
-              onClick={() => setItems([...items, { id: Date.now(), name: s, amount: "1x", price: 0.99, category: "Vorraete", checked: false }])}
-              className="px-3 py-1 rounded-full text-xs font-semibold border transition-all hover:bg-green-50 hover:border-green-400"
-              style={{ borderColor: C.border, color: C.stone, background: C.white }}>
-              + {s}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Barcode CTA */}
-      <div className="mt-4 p-4 rounded-2xl border flex items-center justify-between gap-3"
-        style={{ background: "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)", borderColor: "#bbf7d0" }}>
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">📊</span>
-          <div>
-            <p className="text-sm font-bold" style={{ color: C.forest }}>Barcode scannen</p>
-            <p className="text-xs" style={{ color: C.stone }}>NutriScore, Nova-Gruppe & Blutzucker-Wirkung sofort pruefen</p>
-          </div>
-        </div>
-        <button onClick={() => setBarcodeOpen(true)}
-          className="shrink-0 px-4 py-2 rounded-xl font-bold text-xs text-white"
-          style={{ background: C.forest }}>
-          Scanner öffnen
-        </button>
       </div>
     </div>
   );

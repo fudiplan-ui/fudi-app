@@ -3,25 +3,19 @@ import { useParams, Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
-// â”€â”€ Scale a human-readable amount string by a factor â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Handles "150g", "2 EL", "Â½ StÃ¼ck", "1 StÃ¼ck", "8 StÃ¼ck", etc.
 function scaleAmount(amount: string, scale: number): string {
   if (scale === 1) return amount;
-  // Replace vulgar fractions before parsing
   const normalised = amount
-    .replace("Â½", "0.5").replace("Â¼", "0.25").replace("Â¾", "0.75")
-    .replace("â…“", "0.33").replace("â…”", "0.67");
+    .replace("1/2", "0.5").replace("1/4", "0.25").replace("3/4", "0.75");
   const match = normalised.match(/^([\d.]+)\s*(.*)/);
-  if (!match) return amount; // non-numeric (e.g. "nach Geschmack") â†’ unchanged
+  if (!match) return amount;
   const num  = parseFloat(match[1]);
   const unit = match[2].trim();
   const result = num * scale;
-  // Show as integer when clean, otherwise one decimal place
   const formatted = Number.isInteger(result) ? result.toString() : result.toFixed(1).replace(/\.0$/, "");
   return unit ? `${formatted} ${unit}` : formatted;
 }
 
-// â”€â”€ Blood sugar curve â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function BsCurve({ impact, color }: { impact: number; color: string }) {
   const base = 112, peak = base + impact;
   const rawPts = [base, base + impact * 0.3, peak, peak - impact * 0.08, base + impact * 0.55, base + impact * 0.28, base + 8, base];
@@ -49,7 +43,6 @@ function BsCurve({ impact, color }: { impact: number; color: string }) {
   );
 }
 
-// â”€â”€ Macro bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function MacroBar({ label, val, max, color }: { label: string; val: number; max: number; color: string }) {
   return (
     <div>
@@ -64,44 +57,183 @@ function MacroBar({ label, val, max, color }: { label: string; val: number; max:
   );
 }
 
-// â”€â”€ Star rating â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Stars({ rating }: { rating: number }) {
   return (
-    <div className="flex gap-0.5">
+    <div className="flex gap-0.5 items-center">
       {[1,2,3,4,5].map((s) => (
-        <span key={s} className="text-sm" style={{ color: s <= Math.round(rating) ? C.coral : C.border }}>â˜…</span>
+        <span key={s} className="text-sm" style={{ color: s <= Math.round(rating) ? "#f59e0b" : C.border }}>★</span>
       ))}
-      <span className="text-xs ml-1 font-semibold" style={{ color: C.stone }}>{rating}</span>
+      <span className="text-xs ml-1.5 font-semibold" style={{ color: C.stone }}>{rating.toFixed(1)}</span>
     </div>
   );
 }
 
-// â”€â”€ Steps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const STEPS_DATA = [
-  "Alle Zutaten abwiegen und vorbereiten. GemÃ¼se waschen und in mundgerechte StÃ¼cke schneiden.",
-  "Quinoa oder Reis nach Packungsanleitung kochen. Mit einer Prise Salz wÃ¼rzen.",
-  "Das Dressing aus Tahini, Zitronensaft, Knoblauch und OlivenÃ¶l zubereiten und gut verrÃ¼hren.",
-  "Alle Zutaten dekorativ in einer tiefen SchÃ¼ssel anrichten. Dressing darÃ¼ber geben.",
-  "Mit Sesam, frischen KrÃ¤utern und optional einem gekochten Ei garnieren und servieren.",
+// Rich ingredients and steps database per recipe ID
+const RECIPE_DATA_MAP: Record<string, { ingredients: { name: string; amount: string }[]; steps: string[]; vitamins: { label: string; pct: number }[] }> = {
+  "1": {
+    ingredients: [
+      { name: "Quinoa (gekocht)", amount: "150g" },
+      { name: "Kichererbsen (gekocht)", amount: "100g" },
+      { name: "Rote Paprika", amount: "1 Stück" },
+      { name: "Gurke", amount: "0.5 Stück" },
+      { name: "Kirschtomaten", amount: "8 Stück" },
+      { name: "Avocado", amount: "0.5 Stück" },
+      { name: "Tahini (Sesammus)", amount: "2 EL" },
+      { name: "Frischer Zitronensaft", amount: "2 EL" },
+      { name: "Natives Olivenöl", amount: "1 EL" },
+    ],
+    steps: [
+      "Quinoa gründlich mit heißem Wasser abspülen und in leicht gesalzenem Wasser ca. 15 Minuten quellen lassen.",
+      "Kichererbsen abgießen, trocken tupfen und in einer Pfanne mit Paprikapulver und Kreuzkümmel 5 Min. knusprig anrösten.",
+      "Gemüse waschen: Paprika und Gurke würfeln, Kirschtomaten halbieren, Avocado in zarte Spalten schneiden.",
+      "Für das Dressing Tahini mit Zitronensaft, etwas lauwarmem Wasser, Salz und Pfeffer cremig rühren.",
+      "Zutaten in einer Schüssel nebeneinander anrichten, mit Tahini-Dressing beträufeln und mit geröstetem Sesam toppen.",
+    ],
+    vitamins: [
+      { label: "Vitamin C", pct: 85 }, { label: "Vitamin K", pct: 60 },
+      { label: "Eisen", pct: 36 }, { label: "Magnesium", pct: 32 },
+      { label: "Kalzium", pct: 18 }, { label: "Zink", pct: 24 },
+    ]
+  },
+  "2": {
+    ingredients: [
+      { name: "Hähnchenbrustfilet (Bio)", amount: "250g" },
+      { name: "Römersalat-Herzen", amount: "2 Köpfe" },
+      { name: "Parmesan (Parmigiano Reggiano)", amount: "40g" },
+      { name: "Vollkorn-Croutons", amount: "40g" },
+      { name: "Griechischer Joghurt 0% (Dressing-Basis)", amount: "3 EL" },
+      { name: "Dijon-Senf & Knoblauch", amount: "1 TL" },
+      { name: "Natives Olivenöl", amount: "1 EL" },
+      { name: "Zitronensaft", amount: "1 EL" },
+    ],
+    steps: [
+      "Hähnchenbrust mit Salz, Pfeffer und Knoblauch einreiben. In einer Grillpfanne von jeder Seite ca. 5–6 Min. braten.",
+      "Römersalat waschen, gut trockenschleudern und in mundgerechte Stücke schneiden.",
+      "Für das leichte Low-Cal Caesar-Dressing Joghurt, Senf, Zitronensaft, geriebenen Knoblauch und einen Spritzer Olivenöl glattrühren.",
+      "Salat mit dem Dressing mischen, warmes Hähnchen in Tranchen schneiden und darauflegen.",
+      "Mit frisch gehobeltem Parmesan und Vollkorn-Croutons garnieren.",
+    ],
+    vitamins: [
+      { label: "Vitamin A", pct: 95 }, { label: "Vitamin B6", pct: 70 },
+      { label: "Niacin", pct: 65 }, { label: "Kalzium", pct: 28 },
+      { label: "Eisen", pct: 20 }, { label: "Zink", pct: 30 },
+    ]
+  },
+  "6": {
+    ingredients: [
+      { name: "Wildlachsfilet (frisch)", amount: "300g" },
+      { name: "Zarter grüner Spargel", amount: "200g" },
+      { name: "Fenchelknolle", amount: "1 Stück" },
+      { name: "Kirschtomaten am Strauch", amount: "150g" },
+      { name: "Natives Olivenöl", amount: "1.5 EL" },
+      { name: "Frischer Rosmarin & Thymian", amount: "2 Zweige" },
+      { name: "Bio-Zitrone", amount: "1 Stück" },
+    ],
+    steps: [
+      "Lachs trocken tupfen, mit Meersalz und Pfeffer würzen und die Hautseite leicht einritzen.",
+      "Spargelenden abbrechen, Fenchel in feine Scheiben hobeln.",
+      "In einer beschichteten Pfanne etwas Olivenöl erhitzen, Lachs auf der Hautseite bei mittlerer Hitze 4 Min. kross anbraten.",
+      "Gemüse dazugeben, Lachs wenden und Kräuterzweige einlegen. 3–4 Min. sanft garziehen lassen.",
+      "Mit frischem Zitronensaft beträufeln und sofort servieren. Liefert über 3000mg entzündungshemmende Omega-3-Fettsäuren.",
+    ],
+    vitamins: [
+      { label: "Vitamin D", pct: 100 }, { label: "Vitamin B12", pct: 95 },
+      { label: "Selen", pct: 88 }, { label: "Omega-3", pct: 100 },
+      { label: "Kalium", pct: 35 }, { label: "Magnesium", pct: 40 },
+    ]
+  },
+  "13": {
+    ingredients: [
+      { name: "Magerquark (speisefrisch)", amount: "250g" },
+      { name: "Eier (Größe M)", amount: "2 Stück" },
+      { name: "Zarte Haferflocken (gemahlen)", amount: "40g" },
+      { name: "Backpulver", amount: "0.5 TL" },
+      { name: "Frische Heidelbeeren", amount: "80g" },
+      { name: "Zimt & Bourbon-Vanille", amount: "1 Prise" },
+      { name: "Kokosöl zum Braten", amount: "1 TL" },
+    ],
+    steps: [
+      "Magerquark, Eier, gemahlene Haferflocken, Backpulver und Vanille mit dem Schneebesen zu einem geschmeidigen Teig verrühren.",
+      "Pfanne auf mittlerer Stufe erhitzen und mit etwas Kokosöl einpinseln.",
+      "Jeweils 2 Esslöffel Teig pro Pancake in die Pfanne geben, mit einigen Heidelbeeren belegen.",
+      "Von jeder Seite ca. 2 bis 3 Minuten goldbraun backen, bis sich kleine Bläschen bilden.",
+      "Warm servieren – liefert 42g biologisch hochwertiges Protein bei minimalem Blutzuckeranstieg!",
+    ],
+    vitamins: [
+      { label: "Vitamin B12", pct: 80 }, { label: "Riboflavin", pct: 60 },
+      { label: "Kalzium", pct: 45 }, { label: "Phosphor", pct: 40 },
+      { label: "Zink", pct: 25 }, { label: "Eisen", pct: 18 },
+    ]
+  },
+  "14": {
+    ingredients: [
+      { name: "Frische Freilandeier", amount: "3 Stück" },
+      { name: "Gehackte Tomaten (Dose)", amount: "400g" },
+      { name: "Rote Paprika", amount: "1 Stück" },
+      { name: "Zwiebel & Knoblauchzehe", amount: "1 Stück" },
+      { name: "Feta (Schafskäse)", amount: "50g" },
+      { name: "Kreuzkümmel (Cumin) & Koriander", amount: "1 TL" },
+      { name: "Frische Petersilie", amount: "1 Handvoll" },
+    ],
+    steps: [
+      "Zwiebel, Knoblauch und Paprika würfeln und in Olivenöl anschwitzen, bis sie weich sind.",
+      "Gewürze (Kreuzkümmel, Paprikapulver edelsüß) hinzufügen und kurz mitrösten.",
+      "Mit Tomaten ablöschen und die Sauce 10 Min. einköcheln lassen, mit Salz und Chili abschmecken.",
+      "Mit einem Löffel drei Mulden in die Sauce drücken und die Eier hineinschlagen.",
+      "Deckel auflegen und bei milder Hitze ca. 6–8 Min. stocken lassen. Mit Feta und Petersilie bestreuen.",
+    ],
+    vitamins: [
+      { label: "Lycopin", pct: 100 }, { label: "Vitamin C", pct: 90 },
+      { label: "Cholin", pct: 75 }, { label: "Vitamin A", pct: 50 },
+      { label: "Eisen", pct: 30 }, { label: "Kalzium", pct: 22 },
+    ]
+  },
+  "15": {
+    ingredients: [
+      { name: "Räuchertofu oder Naturtofu", amount: "200g" },
+      { name: "Brokkoliröschen", amount: "200g" },
+      { name: "Karotte", amount: "1 Stück" },
+      { name: "Zuckerschoten", amount: "100g" },
+      { name: "Natürliche Erdnussbutter (100%)", amount: "2 EL" },
+      { name: "Sojasauce (Tamari)", amount: "2 EL" },
+      { name: "Frischer Ingwer & Knoblauch", amount: "1 EL" },
+    ],
+    steps: [
+      "Tofu trockenpressen, in Würfel schneiden und in Maisstärke wälzen.",
+      "Im heißen Wok mit etwas Sesamöl von allen Seiten 6 Min. kross anbraten, dann herausnehmen.",
+      "Brokkoli, Karottenscheiben und Zuckerschoten im Wok 4 Min. bissfest pfannenrühren.",
+      "Erdnussbutter mit Tamari, warmem Wasser, Limettensaft und geriebenem Ingwer zur Sauce verrühren.",
+      "Tofu zurück in den Wok geben, Sauce unterrühren und 1 Minute glasieren. Auf Wunsch mit Sesam toppen.",
+    ],
+    vitamins: [
+      { label: "Vitamin C", pct: 100 }, { label: "Vitamin K", pct: 90 },
+      { label: "Magnesium", pct: 45 }, { label: "Eisen", pct: 38 },
+      { label: "Kalzium", pct: 35 }, { label: "Zink", pct: 28 },
+    ]
+  }
+};
+
+const DEFAULT_INGREDIENTS = [
+  { name: "Quinoa / Vollkornbasis", amount: "120g" },
+  { name: "Saisonales Frischgemüse", amount: "200g" },
+  { name: "Proteinquelle (Hähnchen, Lachs, Tofu)", amount: "150g" },
+  { name: "Kaltgepresstes Olivenöl", amount: "1 EL" },
+  { name: "Frische Gartenkräuter", amount: "1 Handvoll" },
+  { name: "Meersalz & bunter Pfeffer", amount: "nach Geschmack" },
 ];
 
-const INGREDIENTS = [
-  { name: "Quinoa (gekocht)", amount: "150g" },
-  { name: "Kichererbsen (gekocht)", amount: "80g" },
-  { name: "Rote Paprika", amount: "1 StÃ¼ck" },
-  { name: "Gurke", amount: "Â½ StÃ¼ck" },
-  { name: "Kirschtomaten", amount: "8 StÃ¼ck" },
-  { name: "Rote Zwiebel", amount: "Â¼ StÃ¼ck" },
-  { name: "Avocado", amount: "Â½ StÃ¼ck" },
-  { name: "Tahini", amount: "2 EL" },
-  { name: "Zitronensaft", amount: "2 EL" },
-  { name: "OlivenÃ¶l", amount: "1 EL" },
+const DEFAULT_STEPS = [
+  "Alle frischen Zutaten abwiegen, waschen und in mundgerechte Stücke vorbereiten.",
+  "Die Kohlenhydrat- bzw. Vollkornbasis schonend in leicht gesalzenem Wasser dämpfen oder kochen.",
+  "Die Proteinkomponente mit hochwertigen Gewürzen und wenig Öl bei mittlerer Hitze garen.",
+  "Ein leichtes Dressing aus Zitrone, Kräutern und gesundem Öl anrühren.",
+  "Alles harmonisch in einer Schale anrichten und sofort genießen.",
 ];
 
-const VITAMINS = [
-  { label: "Vitamin C", pct: 78 }, { label: "Vitamin K", pct: 55 },
-  { label: "Eisen", pct: 32 }, { label: "Magnesium", pct: 28 },
-  { label: "Kalzium", pct: 15 }, { label: "Zink", pct: 22 },
+const DEFAULT_VITAMINS = [
+  { label: "Vitamin C", pct: 65 }, { label: "Vitamin B-Komplex", pct: 50 },
+  { label: "Eisen", pct: 28 }, { label: "Magnesium", pct: 30 },
+  { label: "Kalzium", pct: 20 }, { label: "Zink", pct: 25 },
 ];
 
 export default function RecipeDetail() {
@@ -109,354 +241,166 @@ export default function RecipeDetail() {
   const recipe = RECIPES.find((r) => r.id === id) ?? RECIPES[0];
   const [tab, setTab]         = useState<"overview" | "nutrients" | "steps">("overview");
   const [portions, setPortions] = useState(recipe.portions);
-  const [saved, setSaved]     = useState(false);
-  const [checked, setChecked] = useState<boolean[]>(Array(INGREDIENTS.length).fill(false));
 
-  const [addedToast, setAddedToast] = useState(false);
-  const [timerSeconds, setTimerSeconds] = useState<number | null>(null);
-  const [timerRunning, setTimerRunning] = useState(false);
+  useEffect(() => {
+    setPortions(recipe.portions);
+  }, [recipe.id, recipe.portions]);
 
-  const startTimer = (duration: number) => {
-    setTimerSeconds(duration * 60);
-    setTimerRunning(true);
-    const interval = setInterval(() => {
-      setTimerSeconds(prev => {
-        if (!prev || prev <= 1) { clearInterval(interval); setTimerRunning(false); return 0; }
-        return prev - 1;
-      });
-    }, 1000);
+  const factor = portions / recipe.portions;
+  const currentData = (id && RECIPE_DATA_MAP[id]) ? RECIPE_DATA_MAP[id] : {
+    ingredients: DEFAULT_INGREDIENTS,
+    steps: DEFAULT_STEPS,
+    vitamins: DEFAULT_VITAMINS
   };
 
-  const formatTimer = (s: number | null) => {
-    if (s === null) return "00:00";
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
-  };
+  const scaledKcal = Math.round(recipe.kcal * factor);
+  const scaledP    = Math.round(recipe.protein * factor);
+  const scaledC    = Math.round(recipe.carbs * factor);
+  const scaledF    = Math.round(recipe.fat * factor);
 
-  const color = recipe.gi === "low" ? C.mint : C.coral;
-  const scale  = portions / recipe.portions;
-
-  const toggleIngredient = (i: number) => {
-    const next = [...checked];
-    next[i] = !next[i];
-    setChecked(next);
-  };
+  const giColor = recipe.gi === "low" ? C.mint : C.coral;
 
   return (
-    <div>
-      {/* Hero image */}
-      <div className="relative w-full h-64 md:h-80 overflow-hidden" style={{ background: C.mintLight }}>
-        <img src={recipe.img} alt={recipe.title} className="w-full h-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(45,80,22,0.65) 0%, transparent 60%)" }} />
-        <Link to="/rezepte" className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-sm font-bold" style={{ color: C.forest }}>â†</Link>
-        <button
-          onClick={() => setSaved(!saved)}
-          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center text-lg"
-        >
-          {saved ? "â¤ï¸" : "â™¡"}
-        </button>
-        <div className="absolute bottom-4 left-4 right-4">
-          <h1 className="text-2xl font-black text-white mb-2" style={{ fontFamily: "'DM Sans',sans-serif" }}>{recipe.title}</h1>
-          <div className="flex flex-wrap gap-2">
+    <div className="max-w-2xl mx-auto px-4 py-6">
+      <Link to="/rezepte" className="inline-flex items-center gap-1.5 text-xs mb-4 font-semibold hover:underline" style={{ color: C.stone }}>
+        ← Zurück zu Rezepten
+      </Link>
+
+      <div className="bg-white rounded-3xl overflow-hidden border mb-6 shadow-sm" style={{ borderColor: C.border }}>
+        <div className="h-64 relative overflow-hidden" style={{ background: C.mintLight }}>
+          <img src={recipe.img} alt={recipe.title} className="w-full h-full object-cover" />
+          <div className="absolute top-4 left-4 flex gap-2">
+            <span className="text-xs font-bold px-3 py-1 rounded-full text-white shadow-sm" style={{ background: giColor }}>
+              {recipe.gi === "low" ? "Low GI (Blutzuckerschonend)" : "Medium GI"}
+            </span>
+          </div>
+          <div className="absolute top-4 right-4">
+            <span className="text-xs font-bold px-3 py-1 rounded-full text-white backdrop-blur-md" style={{ background: "rgba(0,0,0,0.5)" }}>
+              {recipe.tag}
+            </span>
+          </div>
+        </div>
+
+        <div className="p-6">
+          <h1 className="text-2xl font-black mb-2" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>
+            {recipe.title}
+          </h1>
+
+          <div className="flex items-center justify-between pb-4 border-b mb-5" style={{ borderColor: C.border }}>
+            <Stars rating={recipe.rating} />
+            <div className="flex items-center gap-3 text-xs" style={{ color: C.stone }}>
+              <span>⏱ {recipe.time} Min.</span>
+              <span>🔥 {scaledKcal} kcal</span>
+              <span className="font-bold" style={{ color: C.mint }}>+{recipe.impact} mg/dL</span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-3 mb-6">
+            <span className="text-xs font-bold" style={{ color: C.forest }}>Portionen anpassen:</span>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setPortions(Math.max(1, portions - 1))}
+                className="w-8 h-8 rounded-full bg-white border flex items-center justify-center font-bold text-sm shadow-sm active:scale-95"
+                style={{ borderColor: C.border, color: C.forest }}
+              >-</button>
+              <span className="text-sm font-black w-6 text-center" style={{ color: C.forest }}>{portions}</span>
+              <button
+                onClick={() => setPortions(portions + 1)}
+                className="w-8 h-8 rounded-full bg-white border flex items-center justify-center font-bold text-sm shadow-sm active:scale-95"
+                style={{ borderColor: C.border, color: C.forest }}
+              >+</button>
+            </div>
+          </div>
+
+          {/* Navigation Tabs */}
+          <div className="flex border-b mb-6" style={{ borderColor: C.border }}>
             {[
-              { icon: "â±", val: `${recipe.time} min` },
-              { icon: "ðŸ‘¥", val: `${portions} Port.` },
-              { icon: "ðŸ”¥", val: `${Math.round(recipe.kcal * scale)} kcal` },
-            ].map((s) => (
-              <span key={s.val} className="text-xs font-semibold text-white bg-white/20 px-2 py-1 rounded-lg backdrop-blur-sm">{s.icon} {s.val}</span>
+              { key: "overview", label: "Zutaten" },
+              { key: "steps", label: "Zubereitung" },
+              { key: "nutrients", label: "Nährwerte & Glukose" }
+            ].map(t => (
+              <button
+                key={t.key}
+                onClick={() => setTab(t.key as any)}
+                className="flex-1 py-2.5 text-xs font-bold transition-all border-b-2"
+                style={{
+                  color: tab === t.key ? C.forest : C.stone,
+                  borderColor: tab === t.key ? C.mint : "transparent"
+                }}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
-        </div>
-      </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
-        {/* Quick info */}
-        <div className="flex flex-wrap items-center gap-4 mb-6">
-          <Stars rating={recipe.rating} />
-          <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white" style={{ background: color }}>
-            {recipe.gi === "low" ? "Low GI" : "Med GI"}
-          </span>
-          <span className="text-xs" style={{ color: C.stone }}>{recipe.tag}</span>
-          <div className="flex items-center gap-2 ml-auto">
-            <button onClick={() => setPortions(Math.max(1, portions - 1))} className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold" style={{ borderColor: C.border, color: C.forest }}>âˆ’</button>
-            <span className="text-sm font-bold w-12 text-center" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{portions} Port.</span>
-            <button onClick={() => setPortions(portions + 1)} className="w-7 h-7 rounded-lg border flex items-center justify-center font-bold" style={{ borderColor: C.border, color: C.forest }}>+</button>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex gap-1 mb-6 p-1 rounded-xl" style={{ background: C.cream }}>
-          {(["overview", "nutrients", "steps"] as const).map((t) => {
-            const labels = { overview: "Ãœbersicht", nutrients: "NÃ¤hrwerte", steps: "Zubereitung" };
-            return (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className="flex-1 py-2 rounded-lg text-sm font-semibold transition-all"
-                style={{ background: tab === t ? C.white : "transparent", color: tab === t ? C.forest : C.stone, boxShadow: tab === t ? "0 1px 4px rgba(0,0,0,0.08)" : "none" }}
-              >
-                {labels[t]}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Overview tab */}
-        {tab === "overview" && (
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Ingredients */}
+          {/* Tab Content */}
+          {tab === "overview" && (
             <div>
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Zutaten</h3>
-                <button
-                  onClick={() => {
-                    setAddedToast(true);
-                    setTimeout(() => setAddedToast(false), 2500);
-                  }}
-                  className="text-xs font-semibold px-2.5 py-1 rounded-lg transition-all active:scale-95"
-                  style={{ background: addedToast ? C.mint : C.mintLight, color: addedToast ? C.white : C.forest }}
-                >
-                  {addedToast ? "âœ“ Zur Liste hinzugefÃ¼gt!" : "+ Einkaufsliste"}
-                  + Einkaufsliste
-                </button>
-              </div>
+              <h3 className="text-sm font-black mb-3" style={{ color: C.forest }}>Frische Zutaten</h3>
               <div className="space-y-2">
-                {INGREDIENTS.map((ing, i) => (
-                  <label key={i} className="flex items-center gap-3 p-2 rounded-xl cursor-pointer transition-all hover:bg-gray-50">
-                    <input type="checkbox" checked={checked[i]} onChange={() => toggleIngredient(i)} className="rounded" style={{ accentColor: C.mint }} />
-                    <span className="flex-1 text-sm" style={{ color: checked[i] ? C.stone : C.ink, textDecoration: checked[i] ? "line-through" : "none" }}>{ing.name}</span>
-                    <span className="text-xs font-semibold" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.stone }}>
-                      {scaleAmount(ing.amount, scale)}
-                    </span>
-                  </label>
+                {currentData.ingredients.map((ing, i) => (
+                  <div key={i} className="flex justify-between items-center py-2 px-3 rounded-xl bg-gray-50 text-xs">
+                    <span className="font-medium" style={{ color: C.ink }}>{ing.name}</span>
+                    <span className="font-bold font-mono" style={{ color: C.mint }}>{scaleAmount(ing.amount, factor)}</span>
+                  </div>
                 ))}
               </div>
             </div>
+          )}
 
-            {/* Nutrition summary */}
+          {tab === "steps" && (
             <div>
-              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>NÃ¤hrwertÃ¼bersicht</h3>
-              <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
-                <div className="text-center mb-4">
-                  <span className="text-4xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>
-                    {Math.round(recipe.kcal * scale)}
-                  </span>
-                  <span className="text-sm ml-1" style={{ color: C.stone }}>kcal</span>
-                </div>
-                <div className="space-y-3">
-                  <MacroBar label="Protein" val={Math.round(recipe.protein * scale)} max={60} color={C.mint} />
-                  <MacroBar label="Kohlenhydrate" val={Math.round(recipe.carbs * scale)} max={100} color={C.coral} />
-                  <MacroBar label="Fett" val={Math.round(recipe.fat * scale)} max={50} color={C.forest} />
+              <h3 className="text-sm font-black mb-3" style={{ color: C.forest }}>Schritt-für-Schritt Zubereitung</h3>
+              <div className="space-y-4">
+                {currentData.steps.map((st, i) => (
+                  <div key={i} className="flex gap-3 text-xs leading-relaxed">
+                    <span className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center font-bold text-white text-[11px]" style={{ background: C.forest }}>
+                      {i + 1}
+                    </span>
+                    <span className="pt-0.5" style={{ color: C.ink }}>{st}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {tab === "nutrients" && (
+            <div className="space-y-5">
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <h3 className="text-xs font-bold mb-3" style={{ color: C.stone }}>Makronährstoff-Verteilung ({portions} Port.)</h3>
+                <div className="space-y-2.5">
+                  <MacroBar label="Protein" val={scaledP} max={60} color="#10b981" />
+                  <MacroBar label="Kohlenhydrate" val={scaledC} max={80} color="#f59e0b" />
+                  <MacroBar label="Gesunde Fette" val={scaledF} max={50} color="#6366f1" />
                 </div>
               </div>
-              {/* Supermarkt-Preisvergleich & No-Waste */}
-              <div className="bg-white rounded-2xl border p-4 mb-4" style={{ borderColor: C.border }}>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-bold text-xs uppercase tracking-wider" style={{ color: C.forest }}>
-                    ðŸ›’ Supermarkt-Preisvergleich
-                  </h4>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-green-800 bg-green-100">
-                    GÃ¼nstigster: Aldi SÃ¼d
-                  </span>
+
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="text-xs font-bold" style={{ color: C.stone }}>Blutzucker-Reaktion (Glukose-Impact)</h3>
+                  <span className="text-xs font-bold font-mono" style={{ color: giColor }}>+{recipe.impact} mg/dL</span>
                 </div>
-                <div className="space-y-1.5 text-xs">
-                  {[
-                    { store: "Aldi SÃ¼d", price: "1,89 â‚¬", badge: "Bester Preis", highlight: true },
-                    { store: "Lidl", price: "1,95 â‚¬", badge: "" },
-                    { store: "Rewe", price: "2,45 â‚¬", badge: "" },
-                    { store: "Edeka", price: "2,65 â‚¬", badge: "" },
-                    { store: "Bio-Supermarkt", price: "3,35 â‚¬", badge: "100% Bio" },
-                  ].map((s) => (
-                    <div
-                      key={s.store}
-                      className={`flex items-center justify-between p-2 rounded-xl ${
-                        s.highlight ? "bg-emerald-50/80 border border-emerald-200 font-bold" : "hover:bg-gray-50"
-                      }`}
-                    >
-                      <span className="text-gray-800">{s.store}</span>
-                      <div className="flex items-center gap-2">
-                        {s.badge && <span className="text-[10px] text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">{s.badge}</span>}
-                        <span style={{ fontFamily: "'JetBrains Mono',monospace", color: s.highlight ? C.forest : C.stone }}>
-                          {s.price} / Port.
-                        </span>
-                      </div>
+                <BsCurve impact={recipe.impact} color={giColor} />
+                <p className="text-[11px] text-gray-500 mt-2 leading-relaxed">
+                  Dieser Wert prognostiziert den maximalen Glukoseanstieg nach Verzehr. Werte unter +30 mg/dL verhindern Insulinfetzen und Heißhungerattacken.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-xs font-bold mb-2.5" style={{ color: C.stone }}>Mikronährstoffe (% Tagesbedarf)</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  {currentData.vitamins.map((v, i) => (
+                    <div key={i} className="flex justify-between items-center p-2 rounded-xl border text-xs" style={{ borderColor: C.border }}>
+                      <span style={{ color: C.ink }}>{v.label}</span>
+                      <span className="font-bold font-mono" style={{ color: C.mint }}>{v.pct}%</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-3 pt-3 border-t flex items-center justify-between text-xs" style={{ borderColor: C.border }}>
-                  <span className="text-green-700 font-semibold">ðŸŒ± +20 EcoPoints gutgeschrieben</span>
-                  <span className="text-gray-500 font-mono">Spare bis zu 1,46 â‚¬</span>
-                </div>
-              </div>
-
-              {/* BS impact teaser */}
-              <div className="rounded-2xl p-4" style={{ background: color + "14", border: `1.5px solid ${color}30` }}>
-                <p className="text-xs font-bold mb-1" style={{ color: C.stone }}>Blutzucker-Anstieg (erwartet)</p>
-                <p className="text-3xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color }}>+{recipe.impact} <span className="text-base font-medium" style={{ color: C.stone }}>mg/dL</span></p>
-                <button onClick={() => setTab("nutrients")} className="mt-2 text-xs font-semibold" style={{ color }}>Vollanalyse ansehen â†’</button>
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Nutrients tab */}
-        {tab === "nutrients" && (
-          <div className="space-y-5">
-            {/* BS chart */}
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h3 className="font-bold mb-1" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Blutzucker-Analyse</h3>
-              <p className="text-xs mb-4" style={{ color: C.stone }}>Erwarteter Verlauf nach der Mahlzeit (Startwert: 112 mg/dL)</p>
-              <div className="flex items-start gap-6 mb-4">
-                <div>
-                  <p className="text-xs" style={{ color: C.stone }}>Anstieg</p>
-                  <p className="text-4xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color }}>+{recipe.impact}</p>
-                  <p className="text-xs" style={{ color: C.stone }}>mg/dL</p>
-                </div>
-                <div>
-                  <p className="text-xs" style={{ color: C.stone }}>Peak nach</p>
-                  <p className="text-2xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>45 min</p>
-                </div>
-                <div>
-                  <p className="text-xs" style={{ color: C.stone }}>Normal nach</p>
-                  <p className="text-2xl font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>
-                    {recipe.impact < 30 ? "2h" : recipe.impact < 50 ? "2.5h" : "3.5h"}
-                  </p>
-                </div>
-              </div>
-              <BsCurve impact={recipe.impact} color={color} />
-              <div className="flex justify-between text-[10px] mt-1" style={{ color: C.stone }}>
-                {["0h", "30min", "1h", "1.5h", "2h", "2.5h", "3h", "4h"].map((t) => <span key={t}>{t}</span>)}
-              </div>
-              <div className="mt-4 p-3 rounded-xl text-sm" style={{ background: color + "10" }}>
-                <p className="font-semibold mb-1" style={{ color }}>Empfehlungen</p>
-                <ul className="space-y-1 text-xs" style={{ color: C.inkMid }}>
-                  <li>â€¢ Kombiniere mit einem Glas Wasser vor der Mahlzeit</li>
-                  <li>â€¢ {recipe.gi === "low" ? "Dieses Gericht ist gut fÃ¼r stabile Blutzuckerwerte geeignet." : "Kombiniere mit Ballaststoffen fÃ¼r einen langsameren Anstieg."}</li>
-                </ul>
-              </div>
-            </div>
-
-            {/* Detailed nutrients */}
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>NÃ¤hrstoff-Detail</h3>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2">
-                {[
-                  { label: "Kalorien", val: `${Math.round(recipe.kcal * scale)} kcal` },
-                  { label: "Protein", val: `${Math.round(recipe.protein * scale)}g` },
-                  { label: "Kohlenhydrate", val: `${Math.round(recipe.carbs * scale)}g` },
-                  { label: "davon Zucker", val: `${Math.round(recipe.carbs * 0.3 * scale)}g` },
-                  { label: "Fett", val: `${Math.round(recipe.fat * scale)}g` },
-                  { label: "Ballaststoffe", val: `${Math.round(recipe.carbs * 0.15 * scale)}g` },
-                  { label: "Salz", val: "0.8g" },
-                  { label: "GI (geschÃ¤tzt)", val: recipe.gi === "low" ? "â‰ˆ 38" : "â‰ˆ 58" },
-                ].map((n) => (
-                  <div key={n.label} className="flex justify-between py-1 border-b text-sm" style={{ borderColor: C.border }}>
-                    <span style={{ color: C.stone }}>{n.label}</span>
-                    <span className="font-semibold" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{n.val}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Vitamins */}
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Vitamine &amp; Mineralien (% Tagesbedarf)</h3>
-              <div className="space-y-2.5">
-                {VITAMINS.map((v) => (
-                  <div key={v.label}>
-                    <div className="flex justify-between text-xs mb-1">
-                      <span style={{ color: C.stone }}>{v.label}</span>
-                      <span className="font-semibold" style={{ fontFamily: "'JetBrains Mono',monospace", color: v.pct >= 50 ? C.mint : C.stone }}>{v.pct}%</span>
-                    </div>
-                    <div className="h-1.5 rounded-full" style={{ background: C.border }}>
-                      <div className="h-full rounded-full" style={{ width: `${v.pct}%`, background: v.pct >= 50 ? C.mint : C.coral }} />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Steps tab */}
-        {tab === "steps" && (
-          <div className="space-y-4">
-            {STEPS_DATA.map((step, i) => (
-              <div key={i} className="flex gap-4 bg-white rounded-2xl border p-4" style={{ borderColor: C.border }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-black text-white shrink-0 mt-0.5" style={{ background: C.forest }}>
-                  {i + 1}
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm leading-relaxed" style={{ color: C.inkMid }}>{step}</p>
-                  {i === 1 && (
-                    <div className="mt-2">
-                      {timerSeconds === null ? (
-                        <button
-                          onClick={() => startTimer(recipe.time || 20)}
-                          className="text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 shadow-sm"
-                          style={{ background: C.mint, color: C.white }}
-                        >
-                          â± Koch-Timer starten ({recipe.time || 20} min)
-                        </button>
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 rounded-xl bg-emerald-50 border border-emerald-200">
-                          <span className="text-lg font-black font-mono text-emerald-800">
-                            â± {formatTimer(timerSeconds)}
-                          </span>
-                          <button
-                            onClick={() => setTimerRunning(!timerRunning)}
-                            className="text-xs px-2.5 py-1 rounded-md font-bold bg-white border border-emerald-300 text-emerald-900 shadow-xs"
-                          >
-                            {timerRunning ? "Pause" : "Weiter"}
-                          </button>
-                          <button
-                            onClick={() => { setTimerSeconds(null); setTimerRunning(false); }}
-                            className="text-xs px-2 py-1 rounded-md text-gray-500 hover:text-gray-800"
-                          >
-                            Stop
-                          </button>
-                          {timerSeconds === 0 && (
-                            <span className="text-xs font-bold text-amber-600 animate-bounce">
-                              🔔 Fertig!
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-            <div className="rounded-2xl p-4 text-center" style={{ background: C.mintLight }}>
-              <p className="text-base font-bold mb-1" style={{ color: C.forest }}>Guten Appetit! 🎉</p>
-              <p className="text-xs" style={{ color: C.stone }}>Mahlzeit als gegessen markieren?</p>
-              <Link to="/dashboard" className="mt-2 inline-block px-5 py-2 rounded-xl text-sm font-bold text-white" style={{ background: C.forest }}>
-                Zum Dashboard
-              </Link>
-            </div>
-          </div>
-        )}
-
-        {/* Similar recipes */}
-        <div className="mt-8">
-          <h3 className="font-bold mb-3" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Ã„hnliche Rezepte</h3>
-          <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
-            {RECIPES.filter((r) => r.id !== recipe.id).slice(0, 4).map((r) => (
-              <Link key={r.id} to={`/rezepte/${r.id}`} className="shrink-0 w-36 bg-white rounded-xl border overflow-hidden hover:-translate-y-0.5 transition-transform block" style={{ borderColor: C.border }}>
-                <div className="h-20 overflow-hidden" style={{ background: C.mintLight }}>
-                  <img src={r.img} alt={r.title} className="w-full h-full object-cover" />
-                </div>
-                <div className="p-2">
-                  <p className="text-[11px] font-semibold leading-tight" style={{ color: C.forest }}>{r.title}</p>
-                  <p className="text-[10px] mt-0.5" style={{ fontFamily: "'JetBrains Mono',monospace", color: r.gi === "low" ? C.mint : C.coral }}>+{r.impact} mg/dL</p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
-
