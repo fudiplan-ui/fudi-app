@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
+import { RECIPES_DB } from "../data/recipesDatabase";
 
 function scaleAmount(amount: string, scale: number): string {
   if (scale === 1) return amount;
@@ -303,7 +304,7 @@ const DEFAULT_DETAIL: RecipeDetailData = {
 
 export default function RecipeDetail() {
   const { id } = useParams<{ id: string }>();
-  const recipe = RECIPES.find((r) => r.id === id) ?? RECIPES[0];
+  const recipe = RECIPES_DB.find((r) => r.id === id) ?? RECIPES.find((r) => r.id === id) ?? RECIPES[0];
   const [tab, setTab]         = useState<"overview" | "nutrients" | "steps" | "health">("overview");
   const [portions, setPortions] = useState(recipe.portions);
 
