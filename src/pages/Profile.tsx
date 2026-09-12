@@ -1,326 +1,475 @@
-﻿import { useState } from "react";
+import { useState } from "react";
+import { Link } from "react-router";
 import { C } from "../shared/colors";
 
-const SECTIONS = ["Profil", "Gesundheit", "Ziele", "Praeferenzen", "Abo", "Datenschutz"];
-
-function Toggle({ label, sub, val, onChange }: { label: string; sub?: string; val: boolean; onChange: (v: boolean) => void }) {
-  return (
-    <div className="flex items-center gap-3 py-3 border-b last:border-b-0" style={{ borderColor: C.border }}>
-      <div className="flex-1">
-        <p className="text-sm font-medium" style={{ color: C.forest }}>{label}</p>
-        {sub && <p className="text-xs mt-0.5" style={{ color: C.stone }}>{sub}</p>}
-      </div>
-      <button onClick={() => onChange(!val)} className="relative shrink-0 transition-colors"
-        style={{ width: 40, height: 22, borderRadius: 11, background: val ? C.mint : C.border }}>
-        <div className="absolute top-0.5 w-4.5 h-4.5 rounded-full bg-white shadow transition-transform"
-          style={{ width: 18, height: 18, left: val ? "calc(100% - 20px)" : 2 }} />
-      </button>
-    </div>
-  );
-}
-
-function Field({ label, defaultValue, type = "text" }: { label: string; defaultValue?: string; type?: string }) {
-  const [val, setVal] = useState(defaultValue || "");
-  return (
-    <div>
-      <label className="block text-xs font-medium mb-1" style={{ color: C.stone }}>{label}</label>
-      <input type={type} value={val} onChange={(e) => setVal(e.target.value)}
-        className="w-full px-3 py-2 rounded-xl text-sm border outline-none"
-        style={{ borderColor: C.border, background: C.white, color: C.ink }} />
-    </div>
-  );
-}
+const SECTIONS = ["Profil", "Gesundheit", "Ziele", "Präferenzen", "Abo", "Business & API", "Datenschutz"];
 
 export default function Profile() {
-  // Load user profile from localStorage
-  const rawProfile = typeof window !== "undefined" ? localStorage.getItem("fudi_user_profile") : null;
-  const userProfile = rawProfile ? JSON.parse(rawProfile) : {};
-  const displayName = userProfile.name || "Nutzer";
-  const displayEmail = userProfile.email || "";
-  const displayInitial = (userProfile.name || "N")[0].toUpperCase();
   const [section, setSection] = useState("Profil");
-  const [notifEat, setNotifEat]     = useState(true);
-  const [notifBs, setNotifBs]       = useState(true);
-  const [notifShop, setNotifShop]   = useState(false);
-  const [notifWeekly, setNotifWeekly] = useState(true);
-  const [unit, setUnit]             = useState<"mg/dL" | "mmol/L">("mg/dL");
-  const [kcalUnit, setKcalUnit]     = useState<"kcal" | "kJ">("kcal");
-  const [goal, setGoal]             = useState("Abnehmen");
-  const [activity, setActivity]     = useState(2);
-  const [dietType, setDietType]     = useState("Allesesser");
-  const [plan, setPlan]             = useState("Pro");
-  // Notification logic
-  const requestNotifPermission = async () => {
-    if (!("Notification" in window)) {
-      alert("Dein Browser unterstuetzt keine Benachrichtigungen.");
-      return false;
-    }
-    if (Notification.permission === "granted") return true;
-    if (Notification.permission === "denied") {
-      alert("Benachrichtigungen sind gesperrt. Bitte in den Browser-Einstellungen erlauben.");
-      return false;
-    }
-    const perm = await Notification.requestPermission();
-    return perm === "granted";
+  const [name, setName] = useState("Max Mustermann");
+  const [email, setEmail] = useState("max@example.com");
+  const [age, setAge] = useState("32");
+  const [weight, setWeight] = useState("78");
+  const [height, setHeight] = useState("182");
+  const [activity, setActivity] = useState("moderat");
+  const [diets, setDiets] = useState<string[]>(["Low GI", "High Protein"]);
+  const [allergies, setAllergies] = useState<string[]>([]);
+  const [goal, setGoal] = useState("Muskelaufbau & Glukosestabilität");
+  const [unit, setUnit] = useState("mg/dL");
+  const [savedToast, setSavedToast] = useState(false);
+
+  // Business & API State
+  const [apiKey, setApiKey] = useState("fudi_live_9a7d8c6b2e1f483a99e0123");
+  const [keyCopied, setKeyCopied] = useState(false);
+  const [webhookUrl, setWebhookUrl] = useState("https://api.ihre-praxis.de/fudi-webhook");
+  const [apiEndpointSelected, setApiEndpointSelected] = useState("recipes");
+
+  const toggleDiet = (d: string) => {
+    setDiets(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d]);
   };
 
-  const sendTestNotif = (title, body) => {
-    if (Notification.permission === "granted") {
-      new Notification(title, { body, icon: "/favicon.svg" });
-    }
+  const toggleAllergy = (a: string) => {
+    setAllergies(prev => prev.includes(a) ? prev.filter(x => x !== a) : [...prev, a]);
   };
 
-  const handleNotifToggle = async (setter, currentVal, title, body) => {
-    if (!currentVal) {
-      // Turning ON: request permission first
-      const granted = await requestNotifPermission();
-      if (!granted) return;
-      setter(true);
-      sendTestNotif(title, body + " (Testbenachrichtigung)");
-    } else {
-      setter(false);
-    }
-    // Persist to localStorage
-    const profile = JSON.parse(localStorage.getItem("fudi_user_profile") || "{}");
-    localStorage.setItem("fudi_user_profile", JSON.stringify(profile));
+  const handleSave = () => {
+    setSavedToast(true);
+    setTimeout(() => setSavedToast(false), 2500);
   };
 
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(apiKey);
+    setKeyCopied(true);
+    setTimeout(() => setKeyCopied(false), 2000);
+  };
+
+  const handleRegenerateKey = () => {
+    const newKey = "fudi_live_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    setApiKey(newKey);
+    alert("Neuer Produktions-API-Schlüssel generiert!");
+  };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-black" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest, letterSpacing: "-0.03em" }}>
-          Profil & Einstellungen
-        </h1>
-      </div>
-
-      <div className="grid md:grid-cols-4 gap-5">
-        {/* Sidebar nav */}
-        <div className="md:col-span-1">
-          <div className="bg-white rounded-2xl border overflow-hidden" style={{ borderColor: C.border }}>
-            {/* Avatar */}
-            <div className="p-4 text-center border-b" style={{ borderColor: C.border }}>
-              <div className="w-16 h-16 rounded-full mx-auto mb-2 flex items-center justify-center text-2xl font-black text-white" style={{ background: C.forest }}>
-                {displayInitial}
-              </div>
-              <p className="text-sm font-bold" style={{ color: C.forest }}>{displayName}</p>
-              <p className="text-xs" style={{ color: C.stone }}>{displayEmail}</p>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full mt-1 inline-block" style={{ background: C.mintLight, color: C.forest }}>
-                Pro
-              </span>
-            </div>
-            {/* Nav */}
-            <div className="py-1">
-              {SECTIONS.map((s) => (
-                <button key={s} onClick={() => setSection(s)}
-                  className="w-full text-left px-4 py-2.5 text-sm transition-colors"
-                  style={{ background: section === s ? C.mintLight : "transparent", color: section === s ? C.forest : C.stone, fontWeight: section === s ? 600 : 400 }}>
-                  {s}
-                </button>
-              ))}
-            </div>
+    <div className="min-h-screen p-4 md:p-8" style={{ background: C.sandLight }}>
+      <div className="max-w-4xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+              Mein FUDI Profil & Einstellungen
+            </h1>
+            <p className="text-xs md:text-sm text-slate-600">
+              Verwalte deine metabolischen Parameter, Ernährungsformen, dein Abo und B2B API-Zugänge.
+            </p>
           </div>
+          <button
+            onClick={handleSave}
+            className="px-5 py-2.5 rounded-xl text-white font-bold text-xs shadow-md bg-emerald-800 hover:bg-emerald-900 transition-all"
+          >
+            Änderungen speichern
+          </button>
         </div>
 
-        {/* Content */}
-        <div className="md:col-span-3">
-          {/* Profil */}
+        {savedToast && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-white text-xs md:text-sm font-bold shadow-2xl flex items-center gap-2 bg-emerald-800 animate-bounce">
+            <span>✅</span> Einstellungen erfolgreich gespeichert!
+          </div>
+        )}
+
+        {/* Section Navigation */}
+        <div className="flex border-b text-xs font-bold overflow-x-auto bg-white p-2 rounded-2xl border shadow-xs" style={{ borderColor: C.border }}>
+          {SECTIONS.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSection(s)}
+              className={`px-4 py-2.5 rounded-xl whitespace-nowrap transition-all ${
+                section === s
+                  ? "bg-emerald-800 text-white font-black shadow-xs"
+                  : "text-slate-600 hover:bg-gray-100 font-semibold"
+              }`}
+            >
+              {s === "Business & API" ? "💼 Business & API" : s}
+            </button>
+          ))}
+        </div>
+
+        {/* Main Content Card */}
+        <div className="bg-white rounded-3xl p-6 md:p-8 border shadow-sm space-y-6" style={{ borderColor: C.border }}>
+          
+          {/* 1. PROFIL */}
           {section === "Profil" && (
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h2 className="text-lg font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Persoenliche Daten</h2>
-              <div className="grid grid-cols-2 gap-3 mb-5">
-                <Field label="Vorname" defaultValue="Max" />
-                <Field label="Nachname" defaultValue="Mustermann" />
-                <Field label="E-Mail" defaultValue="max@email.de" type="email" />
-                <Field label="Telefon" defaultValue="+49 170 123456" />
-                <Field label="Geburtsdatum" defaultValue="1990-05-15" type="date" />
+            <div className="space-y-4">
+              <h2 className="text-base font-bold text-slate-900">Persönliche Angaben</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium mb-1" style={{ color: C.stone }}>Geschlecht</label>
-                  <select className="w-full px-3 py-2 rounded-xl text-sm border outline-none" style={{ borderColor: C.border, background: C.white }}>
-                    <option>MÃ¤nnlich</option><option>Weiblich</option><option>Divers</option>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Vollständiger Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl border text-xs bg-gray-50 focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">E-Mail-Adresse</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl border text-xs bg-gray-50 focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Alter</label>
+                  <input
+                    type="number"
+                    value={age}
+                    onChange={e => setAge(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl border text-xs bg-gray-50 focus:bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Körpergewicht (kg)</label>
+                  <input
+                    type="number"
+                    value={weight}
+                    onChange={e => setWeight(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl border text-xs bg-gray-50 focus:bg-white"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* 2. GESUNDHEIT & METABOLIK */}
+          {section === "Gesundheit" && (
+            <div className="space-y-4">
+              <h2 className="text-base font-bold text-slate-900">Metabolische Parameter & Blutzucker-Einheit</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Bevorzugte Blutzuckereinheit</label>
+                  <div className="flex gap-2">
+                    {["mg/dL", "mmol/L"].map(u => (
+                      <button
+                        key={u}
+                        onClick={() => setUnit(u)}
+                        className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all ${
+                          unit === u ? "bg-slate-900 text-white" : "bg-gray-50 text-slate-600 hover:bg-gray-100"
+                        }`}
+                      >
+                        {u}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">Aktivitätsniveau</label>
+                  <select
+                    value={activity}
+                    onChange={e => setActivity(e.target.value)}
+                    className="w-full px-3.5 py-2 rounded-xl border text-xs bg-gray-50 focus:bg-white text-slate-700 font-semibold"
+                  >
+                    <option value="sedentaer">Sedentär (überwiegend sitzend)</option>
+                    <option value="moderat">Moderat (2–3x Sport / Woche)</option>
+                    <option value="aktiv">Sehr aktiv (4–6x Training / Woche)</option>
+                    <option value="leistung">Leistungssportler (&gt;7x Training)</option>
                   </select>
                 </div>
               </div>
-              <div className="flex justify-between items-center pt-3 border-t" style={{ borderColor: C.border }}>
-                <div>
-                  <p className="text-xs" style={{ color: C.stone }}>Avatar</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{ background: C.forest }}>M</div>
-                    <button className="text-xs font-semibold" style={{ color: C.mint }}>Bild hochladen</button>
-                  </div>
-                </div>
-                <button className="px-5 py-2.5 rounded-xl text-sm font-bold text-white" style={{ background: C.forest }}>Speichern</button>
-              </div>
             </div>
           )}
 
-          {/* Gesundheit */}
-          {section === "Gesundheit" && (
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h2 className="text-lg font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Gesundheitsprofil</h2>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <Field label="Gewicht (kg)" defaultValue="73.2" type="number" />
-                <Field label="GrÃ¶ÃŸe (cm)" defaultValue="180" type="number" />
-                <Field label="HbA1c (%)" defaultValue="5.8" type="number" />
-                <Field label="Ã˜ Blutzucker (mg/dL)" defaultValue="118" type="number" />
-              </div>
-              <div className="p-3 rounded-xl mb-4" style={{ background: C.mintLight }}>
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: C.stone }}>BMI</span>
-                  <span className="font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>22.6 â€“ Normal</span>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-2" style={{ color: C.stone }}>Diabetes</label>
-                <div className="flex gap-2">
-                  {["Nein", "Typ 1", "Typ 2", "PrÃ¤diabetes"].map((d) => (
-                    <button key={d} className="flex-1 py-2 rounded-lg text-xs font-semibold border"
-                      style={{ borderColor: d === "Nein" ? C.forest : C.border, background: d === "Nein" ? C.forest : C.white, color: d === "Nein" ? C.white : C.stone }}>
-                      {d}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Ziele */}
+          {/* 3. ZIELE */}
           {section === "Ziele" && (
-            <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-              <h2 className="text-lg font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Ziele &amp; Aktivitaet</h2>
-              <div className="mb-4">
-                <label className="block text-xs font-medium mb-2" style={{ color: C.stone }}>Gewichtsziel</label>
-                <div className="flex gap-2">
-                  {["Abnehmen", "Halten", "Zunehmen"].map((g) => (
-                    <button key={g} onClick={() => setGoal(g)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all"
-                      style={{ background: goal === g ? C.forest : C.white, color: goal === g ? C.white : C.stone, borderColor: goal === g ? C.forest : C.border }}>
-                      {g}
+            <div className="space-y-4">
+              <h2 className="text-base font-bold text-slate-900">Dein Hauptziel</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  { title: "Glukose-Stabilität & Anti-Heißhunger", desc: "Verhindert Nachmittagstiefs und Insulinkicks." },
+                  { title: "Nachhaltiger Fettabbau (Keto / Low-Carb)", desc: "Aktiviert den zellulären Fettstoffwechsel." },
+                  { title: "Muskelaufbau & Hypertrophie", desc: "Maximale Proteinsynthese bei stabiler Insulinsensitivität." },
+                  { title: "Mikrobiom & Darmgesundheit", desc: "Schwerpunkt auf resistente Stärke & Präbiotika." },
+                ].map(g => (
+                  <div
+                    key={g.title}
+                    onClick={() => setGoal(g.title)}
+                    className={`p-4 rounded-2xl border cursor-pointer transition-all ${
+                      goal === g.title
+                        ? "bg-emerald-50 border-emerald-500 ring-2 ring-emerald-200"
+                        : "bg-gray-50/70 border-gray-200 hover:bg-gray-100"
+                    }`}
+                  >
+                    <p className="text-xs font-bold text-slate-900">{g.title}</p>
+                    <p className="text-[11px] text-slate-500 mt-1">{g.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 4. PRÄFERENZEN & ALLERGIEN */}
+          {section === "Präferenzen" && (
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Bevorzugte Ernährungsformen</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Low GI", "High Protein", "Keto", "Low Carb", "Vegan", "Vegetarisch", "Glutenfrei", "Paleo"].map(d => (
+                    <button
+                      key={d}
+                      onClick={() => toggleDiet(d)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                        diets.includes(d) ? "bg-emerald-800 text-white border-emerald-900" : "bg-gray-50 text-slate-600 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {diets.includes(d) ? "✓ " : "+ "}{d}
                     </button>
                   ))}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <Field label="Zielgewicht (kg)" defaultValue="70" type="number" />
-                <Field label="Proteinziel (g/Tag)" defaultValue="120" type="number" />
-              </div>
-              <div className="mb-4">
-                <label className="block text-xs font-medium mb-2" style={{ color: C.stone }}>
-                  Aktivitaetslevel: <span style={{ fontFamily: "'JetBrains Mono',monospace", color: C.mint }}>
-                    {["Sitzend", "Leicht aktiv", "Moderat", "Sehr aktiv", "Extrem"][activity]}
-                  </span>
-                </label>
-                <input type="range" min={0} max={4} value={activity} onChange={(e) => setActivity(Number(e.target.value))}
-                  className="w-full" style={{ accentColor: C.mint }} />
-              </div>
-              <div className="p-3 rounded-xl" style={{ background: C.mintLight }}>
-                <div className="flex justify-between text-sm">
-                  <span style={{ color: C.stone }}>Tagesbedarf (TDEE)</span>
-                  <span className="font-black" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>2.240 kcal</span>
+
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Allergene ausschließen</h3>
+                <div className="flex flex-wrap gap-2">
+                  {["Gluten", "Laktose", "Fisch", "Krebstiere", "Erdnüsse", "Schalenfrüchte", "Soja", "Histamin"].map(a => (
+                    <button
+                      key={a}
+                      onClick={() => toggleAllergy(a)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                        allergies.includes(a) ? "bg-rose-700 text-white border-rose-800" : "bg-gray-50 text-slate-600 border-gray-200 hover:bg-gray-100"
+                      }`}
+                    >
+                      {allergies.includes(a) ? "✕ " : "+ "}{a}
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* PrÃ¤ferenzen */}
-          {section === "Praeferenzen" && (
-            <div className="space-y-4">
-              <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-                <h2 className="text-lg font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Benachrichtigungen</h2>
-                <Toggle label="Mahlzeiten-Erinnerungen" sub="Erinnert dich taeglich ans Essen" val={notifEat} onChange={(v) => handleNotifToggle(setNotifEat, notifEat, "Zeit zu essen!", "Vergiss deine Mahlzeit nicht.")} />
-                <Toggle label="Blutzucker messen" sub="Erinnerung nach jeder Mahlzeit" val={notifBs} onChange={(v) => handleNotifToggle(setNotifBs, notifBs, "Blutzucker messen!", "Messe deinen Blutzucker nach der Mahlzeit.")} />
-                <Toggle label="Einkaufsliste" sub="Bei niedrigem Vorrat benachrichtigen" val={notifShop} onChange={(v) => handleNotifToggle(setNotifShop, notifShop, "Einkaufsliste!", "Dein Vorrat ist niedrig – Zeit einzukaufen.")} />
-                <Toggle label="Woechentlicher Bericht" sub="Jeden Montag deine Stats" val={notifWeekly} onChange={(v) => handleNotifToggle(setNotifWeekly, notifWeekly, "Dein Wochenbericht ist bereit!", "Schau dir deine Stats der letzten Woche an.")} />
-              </div>
-              <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-                <h2 className="text-lg font-bold mb-4" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Einheiten &amp; Sprache</h2>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-xs font-medium block mb-1.5" style={{ color: C.stone }}>Blutzucker-Einheit</label>
-                    <div className="flex gap-2">
-                      {(["mg/dL", "mmol/L"] as const).map((u) => (
-                        <button key={u} onClick={() => setUnit(u)} className="flex-1 py-2 rounded-lg text-xs font-semibold border"
-                          style={{ background: unit === u ? C.forest : C.white, color: unit === u ? C.white : C.stone, borderColor: unit === u ? C.forest : C.border }}>
-                          {u}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-xs font-medium block mb-1.5" style={{ color: C.stone }}>Energieeinheit</label>
-                    <div className="flex gap-2">
-                      {(["kcal", "kJ"] as const).map((u) => (
-                        <button key={u} onClick={() => setKcalUnit(u)} className="flex-1 py-2 rounded-lg text-xs font-semibold border"
-                          style={{ background: kcalUnit === u ? C.forest : C.white, color: kcalUnit === u ? C.white : C.stone, borderColor: kcalUnit === u ? C.forest : C.border }}>
-                          {u}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Abo */}
+          {/* 5. ABO */}
           {section === "Abo" && (
             <div className="space-y-4">
-              <div className="rounded-2xl p-5" style={{ background: C.forest }}>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide mb-1" style={{ color: C.mint }}>Aktueller Plan</p>
-                    <p className="text-3xl font-black text-white" style={{ fontFamily: "'DM Sans',sans-serif" }}>Pro</p>
-                    <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.6)" }}>â‚¬9,90 / Monat Â· NÃ¤chste Abrechnung 1. Okt. 2026</p>
-                  </div>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: C.mint, color: C.white }}>Aktiv</span>
+              <div className="rounded-3xl p-6 bg-slate-900 text-white flex flex-col md:flex-row items-start justify-between gap-4">
+                <div>
+                  <span className="text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300">
+                    Aktiver Plan
+                  </span>
+                  <h3 className="text-2xl font-black mt-1">FUDI Business & Praxis Pro</h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Voller API-Zugriff, 1.240 Rezepte, unbegrenzte Kundenprofile & Barcode-Integration.
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-black font-mono text-emerald-400">29,90 €</span>
+                  <span className="text-xs text-slate-400 block">/ Monat zzgl. MwSt.</span>
                 </div>
               </div>
-              <div className="bg-white rounded-2xl border p-5" style={{ borderColor: C.border }}>
-                <h3 className="font-bold mb-3" style={{ color: C.forest }}>Plan verwalten</h3>
-                <div className="space-y-2">
-                  {["Auf Business upgraden", "Zahlungsmethode Ã¤ndern", "Rechnungen herunterladen", "Abo pausieren"].map((a) => (
-                    <button key={a} className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-gray-50"
-                      style={{ borderColor: C.border, color: C.inkMid }}>
-                      {a} â†’
-                    </button>
-                  ))}
-                  <button className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-red-50"
-                    style={{ borderColor: "#fca5a5", color: "#D94F3D" }}>
-                    Abo kÃ¼ndigen
-                  </button>
-                </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+                <button
+                  onClick={() => setSection("Business & API")}
+                  className="p-3.5 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-emerald-50 hover:border-emerald-300 font-bold text-xs text-slate-800 flex items-center justify-between"
+                >
+                  <span>🔑 Zum B2B API Dashboard & Schlüsseln</span>
+                  <span>›</span>
+                </button>
+                <Link
+                  to="/preise"
+                  className="p-3.5 rounded-2xl border border-gray-200 bg-gray-50 hover:bg-gray-100 font-bold text-xs text-slate-800 flex items-center justify-between"
+                >
+                  <span>💳 Zahlungsart & Rechnungen verwalten</span>
+                  <span>›</span>
+                </Link>
               </div>
             </div>
           )}
 
-          {/* Datenschutz */}
-          {section === "Datenschutz" && (
-            <div className="bg-white rounded-2xl border p-5 space-y-4" style={{ borderColor: C.border }}>
-              <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Datenschutz</h2>
-              <p className="text-sm" style={{ color: C.stone }}>Wir nehmen deinen Datenschutz ernst. Hier kannst du deine Daten verwalten.</p>
-              <div className="space-y-2">
-                <button className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium"
-                  style={{ borderColor: C.border, color: C.inkMid }}>
-                  ðŸ“¥ Meine Daten exportieren (JSON / PDF)
-                </button>
-                <button className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium"
-                  style={{ borderColor: C.border, color: C.inkMid }}>
-                  ðŸª Cookie-Einstellungen verwalten
-                </button>
-                <button className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium"
-                  style={{ borderColor: C.border, color: C.inkMid }}>
-                  ðŸ” Zwei-Faktor-Authentifizierung aktivieren
-                </button>
-                <button className="w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition-all hover:bg-red-50"
-                  style={{ borderColor: "#fca5a5", color: "#D94F3D" }}>
-                  ðŸ—‘ï¸ Account dauerhaft lÃ¶schen
-                </button>
+          {/* 6. BUSINESS & API (Full B2B Hub) */}
+          {section === "Business & API" && (
+            <div className="space-y-6 animate-fade-in">
+              <div>
+                <h2 className="text-base font-bold text-slate-900">FUDI Business API Hub</h2>
+                <p className="text-xs text-slate-500">
+                  Verbinde FUDI mit deiner Praxissoftware, Fitness-App oder deinem Firmenfitness-Portal.
+                </p>
               </div>
-              <div className="p-3 rounded-xl text-xs" style={{ background: C.mintLight, color: C.forest }}>
-                ðŸ›¡ï¸ Deine Daten werden verschlÃ¼sselt gespeichert und nie an Dritte weitergegeben. DSGVO-konform.
+
+              {/* API Key Box */}
+              <div className="p-5 rounded-2xl bg-gray-50 border border-gray-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">Dein Produktions-API-Schlüssel (Live)</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">
+                    Status: Aktiv (100.000 Calls/Mo)
+                  </span>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="password"
+                    value={apiKey}
+                    readOnly
+                    className="flex-1 px-3.5 py-2 rounded-xl border text-xs font-mono bg-white text-slate-800"
+                  />
+                  <button
+                    onClick={handleCopyKey}
+                    className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-slate-900 hover:bg-slate-800 flex items-center gap-1.5 shrink-0"
+                  >
+                    <span>{keyCopied ? "✓ Kopiert!" : "📋 Kopieren"}</span>
+                  </button>
+                  <button
+                    onClick={handleRegenerateKey}
+                    className="px-3 py-2 rounded-xl text-xs font-bold border bg-white hover:bg-gray-100 text-slate-700 shrink-0"
+                  >
+                    Neu generieren
+                  </button>
+                </div>
+                <p className="text-[10px] text-slate-400">
+                  ⚠️ Halte deinen Schlüssel geheim. Nutze ihn nur in Server-zu-Server Requests (Header: <code>Authorization: Bearer fudi_live_...</code>).
+                </p>
+              </div>
+
+              {/* Quota & Usage Gauge */}
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <div className="p-3.5 rounded-2xl border border-gray-100 bg-white">
+                  <p className="text-[10px] text-gray-500">Monatliche Anfragen</p>
+                  <p className="text-base font-black font-mono text-slate-900 mt-0.5">14.820 / 100.000</p>
+                  <div className="w-full bg-gray-100 h-1.5 rounded-full mt-2 overflow-hidden">
+                    <div className="bg-emerald-600 h-full rounded-full" style={{ width: "14.8%" }} />
+                  </div>
+                </div>
+                <div className="p-3.5 rounded-2xl border border-gray-100 bg-white">
+                  <p className="text-[10px] text-gray-500">Ø Latenz (P95)</p>
+                  <p className="text-base font-black font-mono text-emerald-700 mt-0.5">38 ms</p>
+                  <p className="text-[10px] text-emerald-600 mt-1">✓ Hochverfügbar</p>
+                </div>
+                <div className="p-3.5 rounded-2xl border border-gray-100 bg-white">
+                  <p className="text-[10px] text-gray-500">Verknüpfte Mandanten</p>
+                  <p className="text-base font-black font-mono text-slate-900 mt-0.5">24 Kunden</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Multi-Tenant</p>
+                </div>
+              </div>
+
+              {/* Interactive Endpoint Explorer */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  Interaktiver Endpoint-Explorer
+                </h3>
+                <div className="flex gap-2">
+                  {[
+                    { id: "recipes", label: "GET /api/v1/recipes" },
+                    { id: "glucose", label: "POST /api/v1/glucose-impact" },
+                    { id: "plan",    label: "POST /api/v1/meal-plan/generate" }
+                  ].map(ep => (
+                    <button
+                      key={ep.id}
+                      onClick={() => setApiEndpointSelected(ep.id)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all ${
+                        apiEndpointSelected === ep.id ? "bg-slate-900 text-white" : "bg-gray-100 text-slate-600 hover:bg-gray-200"
+                      }`}
+                    >
+                      {ep.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Endpoint Code preview */}
+                <div className="p-4 rounded-2xl bg-slate-950 text-emerald-400 font-mono text-xs overflow-x-auto border border-gray-800">
+                  {apiEndpointSelected === "recipes" && (
+                    <pre>{`// cURL Beispiel
+curl -X GET "https://api.fudi.de/v1/recipes?diet=keto&limit=5" \\
+  -H "Authorization: Bearer ${apiKey}"
+
+// Response (200 OK)
+{
+  "status": "success",
+  "count": 5,
+  "data": [
+    { "id": "1", "title": "Wildlachsfilet mit Brokkoli", "kcal": 490, "gi": "low", "impact_mg_dl": 14 }
+  ]
+}`}</pre>
+                  )}
+                  {apiEndpointSelected === "glucose" && (
+                    <pre>{`// POST Glukose-Simulation
+curl -X POST "https://api.fudi.de/v1/glucose-impact" \\
+  -H "Authorization: Bearer ${apiKey}" \\
+  -H "Content-Type: application/json" \\
+  -d '{"food": "Helle Pasta", "start_bs": 105, "swap": "Konjak-Nudeln"}'
+
+// Response (200 OK)
+{
+  "original_peak": 159,
+  "optimized_peak": 113,
+  "saved_delta_mg_dl": 46
+}`}</pre>
+                  )}
+                  {apiEndpointSelected === "plan" && (
+                    <pre>{`// POST Automatischer Wochenplan
+curl -X POST "https://api.fudi.de/v1/meal-plan/generate" \\
+  -H "Authorization: Bearer ${apiKey}" \\
+  -d '{"diet": "High Protein", "days": 7, "kcal_target": 2200}'
+
+// Response (200 OK): Erstellt 28 personalisierte Mahlzeiten`}</pre>
+                  )}
+                </div>
+              </div>
+
+              {/* Webhook Settings */}
+              <div className="p-5 rounded-2xl border border-gray-200 bg-white space-y-3">
+                <h3 className="text-xs font-bold text-slate-700">Webhook-Integration (Echtzeit-Events)</h3>
+                <input
+                  type="text"
+                  value={webhookUrl}
+                  onChange={e => setWebhookUrl(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl border text-xs font-mono bg-gray-50 focus:bg-white"
+                />
+                <p className="text-[10px] text-slate-500">
+                  Events: <code>user.meal_logged</code>, <code>glucose.spike_detected</code>, <code>workout.completed</code>.
+                </p>
               </div>
             </div>
           )}
+
+          {/* 7. DATENSCHUTZ */}
+          {section === "Datenschutz" && (
+            <div className="space-y-4">
+              <h2 className="text-base font-bold text-slate-900">Datenschutz & DSGVO-Rechte</h2>
+              <p className="text-xs text-slate-600">
+                Deine Gesundheitsdaten gehören ausschließlich dir und werden niemals an Dritte verkauft.
+              </p>
+              <div className="space-y-2">
+                <button
+                  onClick={() => alert("Datenexport als JSON wird vorbereitet...")}
+                  className="w-full text-left px-4 py-3 rounded-2xl border border-gray-200 text-xs font-bold text-slate-700 hover:bg-gray-50 flex items-center justify-between"
+                >
+                  <span>📥 Vollständigen Datenexport anfordern (JSON / CSV)</span>
+                  <span>›</span>
+                </button>
+                <button
+                  onClick={() => alert("Cookie-Präferenzen gespeichert.")}
+                  className="w-full text-left px-4 py-3 rounded-2xl border border-gray-200 text-xs font-bold text-slate-700 hover:bg-gray-50 flex items-center justify-between"
+                >
+                  <span>🍪 Cookie- & Tracking-Einstellungen anpassen</span>
+                  <span>›</span>
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm("Möchtest du deinen Account und alle gespeicherten Daten wirklich unwiderruflich löschen?")) {
+                      localStorage.clear();
+                      alert("Account erfolgreich gelöscht.");
+                      window.location.href = "/";
+                    }
+                  }}
+                  className="w-full text-left px-4 py-3 rounded-2xl border border-rose-200 text-xs font-bold text-rose-700 hover:bg-rose-50 flex items-center justify-between"
+                >
+                  <span>🗑️ Account und alle Daten dauerhaft löschen</span>
+                  <span>›</span>
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
+
       </div>
     </div>
   );

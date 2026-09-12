@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
 
-// â”€â”€ Mini donut chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Mini donut chart ──────────────────────────────────────────────
 function Donut({ slices, size = 72 }: { slices: { val: number; color: string }[]; size?: number }) {
   const r = size / 2 - 8, cx = size / 2, cy = size / 2;
   const total = slices.reduce((a, s) => a + s.val, 0);
@@ -27,7 +27,7 @@ function Donut({ slices, size = 72 }: { slices: { val: number; color: string }[]
   );
 }
 
-// â”€â”€ Circular progress â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Circular progress ─────────────────────────────────────────────
 function CircleProgress({ pct, color, size = 64, label }: { pct: number; color: string; size?: number; label: string }) {
   const r = size / 2 - 5, cx = size / 2, cy = size / 2;
   const circ = 2 * Math.PI * r;
@@ -43,7 +43,7 @@ function CircleProgress({ pct, color, size = 64, label }: { pct: number; color: 
   );
 }
 
-// â”€â”€ Small bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Small bar ─────────────────────────────────────────────────────
 function Bar({ pct, color }: { pct: number; color: string }) {
   return (
     <div className="h-2 rounded-full overflow-hidden" style={{ background: C.border }}>
@@ -52,7 +52,7 @@ function Bar({ pct, color }: { pct: number; color: string }) {
   );
 }
 
-// â”€â”€ Stat card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Stat card ─────────────────────────────────────────────────────
 function StatCard({ icon, label, value, unit, sub, accent, children }: {
   icon: string; label: string; value: string; unit?: string;
   sub?: string; accent: string; children?: React.ReactNode;
@@ -75,7 +75,7 @@ function StatCard({ icon, label, value, unit, sub, accent, children }: {
   );
 }
 
-// â”€â”€ Blood sugar mini chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Blood sugar mini chart ────────────────────────────────────────
 function BsChart() {
   const pts = [112, 118, 142, 158, 145, 130, 120, 115, 112];
   const w = 200, h = 50;
@@ -100,7 +100,7 @@ function BsChart() {
   );
 }
 
-// â”€â”€ Weekly mini calendar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Weekly mini calendar ──────────────────────────────────────────
 const DAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 const WEEK_DATA = [
   { meals: 3, kcal: 1820, bs: 118 },
@@ -112,17 +112,17 @@ const WEEK_DATA = [
   { meals: 0, kcal: 0,    bs: 0  },
 ];
 
-// â”€â”€ Meal timeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Meal timeline ─────────────────────────────────────────────────
 // status: "done" = gegessen | "planned" = geplant, noch nicht gegessen | "empty" = nicht geplant
 const MEALS = [
-  { time: "07:30", label: "FrÃ¼hstÃ¼ck",  recipe: "Haferbrei mit Beeren", kcal: 340, img: RECIPES[3].img, status: "done"    },
-  { time: "10:00", label: "Snack",      recipe: "NÃ¼sse & Obst",         kcal: 180, img: RECIPES[6].img, status: "done"    },
+  { time: "07:30", label: "Frühstück",  recipe: "Haferbrei mit Beeren", kcal: 340, img: RECIPES[3].img, status: "done"    },
+  { time: "10:00", label: "Snack",      recipe: "Nüsse & Obst",         kcal: 180, img: RECIPES[6].img, status: "done"    },
   { time: "12:30", label: "Mittag",     recipe: "Buddha Bowl",          kcal: 420, img: RECIPES[0].img, status: "done"    },
   { time: "15:30", label: "Snack",      recipe: "Quinoa Salat",         kcal: 210, img: RECIPES[11].img, status: "planned" },
   { time: "19:00", label: "Abendessen", recipe: "â€”",                    kcal: 0,   img: "",              status: "empty"   },
 ] as const;
 
-// â”€â”€ Dashboard page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Dashboard page ────────────────────────────────────────────────
 export default function Dashboard() {
   // Load user profile from localStorage
   const rawProfile = typeof window !== "undefined" ? localStorage.getItem("fudi_user_profile") : null;
@@ -167,7 +167,7 @@ export default function Dashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         <StatCard icon="ðŸ”¥" label="Kalorien" value="940" unit="/ 2.240 kcal" sub="+8%" accent={C.coral}>
           <Bar pct={42} color={C.coral} />
-          <p className="text-[10px] mt-1" style={{ color: C.stone }}>1.300 kcal noch verfÃ¼gbar</p>
+          <p className="text-[10px] mt-1" style={{ color: C.stone }}>1.300 kcal noch verfügbar</p>
         </StatCard>
 
         <StatCard icon="ðŸ¥©" label="Makros" value="" unit="" accent={C.mint}>
@@ -222,7 +222,7 @@ export default function Dashboard() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Heutige Mahlzeiten</h2>
-            <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>+ HinzufÃ¼gen</Link>
+            <Link to="/rezepte" className="text-sm font-semibold" style={{ color: C.mint }}>+ Hinzufügen</Link>
           </div>
 
           <div className="space-y-3">
@@ -268,7 +268,7 @@ export default function Dashboard() {
                     ) : isPlanned ? (
                       <span className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold border-2" style={{ borderColor: C.coral, color: C.coral }}>â—‹</span>
                     ) : (
-                      <Link to="/rezepte" className="text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80" style={{ background: C.mintLight, color: C.forest }}>WÃ¤hlen</Link>
+                      <Link to="/rezepte" className="text-xs font-semibold px-2.5 py-1.5 rounded-lg transition-colors hover:opacity-80" style={{ background: C.mintLight, color: C.forest }}>Wählen</Link>
                     )}
                   </div>
                 </div>
@@ -279,7 +279,7 @@ export default function Dashboard() {
           {/* Recommended recipes */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Empfehlungen fÃ¼r dich</h2>
+              <h2 className="text-lg font-bold" style={{ fontFamily: "'DM Sans',sans-serif", color: C.forest }}>Empfehlungen für dich</h2>
               <Link to="/rezepte" className="text-sm" style={{ color: C.stone }}>Alle</Link>
             </div>
             <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: "none" }}>
@@ -342,8 +342,8 @@ export default function Dashboard() {
               })}
             </div>
             <div className="mt-3 pt-3 border-t flex justify-between text-xs" style={{ borderColor: C.border }}>
-              <div><span style={{ color: C.stone }}>Ã˜ Kcal</span><br /><b style={{ color: C.forest }}>1.920</b></div>
-              <div className="text-center"><span style={{ color: C.stone }}>Ã˜ Blutzucker</span><br /><b style={{ color: C.mint, fontFamily: "'JetBrains Mono',monospace" }}>118 mg/dL</b></div>
+              <div><span style={{ color: C.stone }}>Ø Kcal</span><br /><b style={{ color: C.forest }}>1.920</b></div>
+              <div className="text-center"><span style={{ color: C.stone }}>Ø Blutzucker</span><br /><b style={{ color: C.mint, fontFamily: "'JetBrains Mono',monospace" }}>118 mg/dL</b></div>
               <div className="text-right"><span style={{ color: C.stone }}>Mahlzeiten</span><br /><b style={{ color: C.forest }}>20 / 28</b></div>
             </div>
           </div>
@@ -355,18 +355,18 @@ export default function Dashboard() {
               <span className="text-xs font-bold text-white">Ernaehrungs-Tipp</span>
             </div>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.8)" }}>
-              Dein Blutzucker ist <strong className="text-white">morgens 12% hÃ¶her</strong> als abends. Versuche ein Low-GI FrÃ¼hstÃ¼ck wie Haferbrei mit NÃ¼ssen.
+              Dein Blutzucker ist <strong className="text-white">morgens 12% höher</strong> als abends. Versuche ein Low-GI Frühstück wie Haferbrei mit Nüssen.
             </p>
             <Link to="/stats" className="mt-3 block text-xs font-semibold" style={{ color: C.mint }}>Stats ansehen â†’</Link>
           </div>
 
-          {/* KÃ¼hlschrank-Scan Banner */}
+          {/* Kühlschrank-Scan Banner */}
           <div className="bg-gradient-to-br from-emerald-600 to-teal-800 text-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
             <div className="relative z-10">
               <span className="text-xs uppercase font-bold tracking-wider text-emerald-200">No-Waste Chef</span>
-              <h4 className="font-bold text-base mt-0.5 mb-1">KÃ¼hlschrank scannen</h4>
+              <h4 className="font-bold text-base mt-0.5 mb-1">Kühlschrank scannen</h4>
               <p className="text-xs text-emerald-100 mb-3">
-                Fotografiere deine VorrÃ¤te: FUDI findet passende Low-GI Rezepte und verhindert Food-Waste.
+                Fotografiere deine Vorräte: FUDI findet passende Low-GI Rezepte und verhindert Food-Waste.
               </p>
               <button
                 onClick={() => setScannerOpen(true)}

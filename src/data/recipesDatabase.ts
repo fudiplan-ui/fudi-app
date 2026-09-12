@@ -1,3 +1,11 @@
+export interface RecipeIngredient {
+  name: string;
+  amount: string;
+}
+
+export interface RecipeStep {
+  text: string;
+}
 
 export interface RecipeItem {
   id: string;
@@ -19,25 +27,69 @@ export interface RecipeItem {
   portions: number;
   img: string;
   chefTip: string;
+  ingredients: RecipeIngredient[];
+  steps: string[];
+  organBenefit: { organ: string; effect: string; highlight: string };
+  vitaminList: { label: string; pct: number }[];
 }
 
-const IMGS = [
-  "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1540189549386-31038686e927?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1665401015549-712c0dc5ef85?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1633760040841-1f708ce95c56?w=600&h=400&fit=crop&auto=format",
-  "https://images.unsplash.com/photo-1716816211582-ef70b1cd2e70?w=600&h=400&fit=crop&auto=format",
-];
+// Curated high-res food photo pools from Unsplash
+const IMAGES_BY_CATEGORY: Record<string, string[]> = {
+  salat_bowl: [
+    "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop&auto=format", // Quinoa Bowl
+    "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&h=600&fit=crop&auto=format", // Fresh Green Salad
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop&auto=format", // Healthy colorful bowl
+    "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=600&fit=crop&auto=format", // Avocado egg bowl
+    "https://images.unsplash.com/photo-1540189549386-31038686e927?w=800&h=600&fit=crop&auto=format", // Mediterranean salad
+  ],
+  fisch: [
+    "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&h=600&fit=crop&auto=format", // Grilled salmon
+    "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=800&h=600&fit=crop&auto=format", // Salmon steak with greens
+    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=800&h=600&fit=crop&auto=format", // Tuna salad
+    "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&h=600&fit=crop&auto=format", // White fish filet
+  ],
+  fleisch: [
+    "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=600&fit=crop&auto=format", // Steak grilled
+    "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800&h=600&fit=crop&auto=format", // Chicken breast herbs
+    "https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=800&h=600&fit=crop&auto=format", // Grilled beef steak
+    "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?w=800&h=600&fit=crop&auto=format", // Chicken salad
+  ],
+  fruehstueck: [
+    "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&h=600&fit=crop&auto=format", // Protein pancakes berries
+    "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=800&h=600&fit=crop&auto=format", // Oatmeal berries chia
+    "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&h=600&fit=crop&auto=format", // Shakshuka eggs pan
+    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800&h=600&fit=crop&auto=format", // Green smoothie bowl
+  ],
+  suppe_eintopf: [
+    "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&h=600&fit=crop&auto=format", // Warm soup bowl
+    "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=600&fit=crop&auto=format", // Pho / Asian soup
+    "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800&h=600&fit=crop&auto=format", // Lentil stew
+  ],
+  pasta_grain: [
+    "https://images.unsplash.com/photo-1621996346565-e3d5d6281518?w=800&h=600&fit=crop&auto=format", // Healthy pasta
+    "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800&h=600&fit=crop&auto=format", // Zucchini noodles pasta
+    "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&h=600&fit=crop&auto=format", // Risotto / grains
+  ]
+};
+
+function pickImageForRecipe(title: string, tag: string): string {
+  const t = (title + " " + tag).toLowerCase();
+  let pool = IMAGES_BY_CATEGORY.salat_bowl;
+  if (t.includes("lachs") || t.includes("fisch") || t.includes("thunfisch") || t.includes("garnelen") || t.includes("seafood")) {
+    pool = IMAGES_BY_CATEGORY.fisch;
+  } else if (t.includes("steak") || t.includes("rinder") || t.includes("hähnchen") || t.includes("beef") || t.includes("chicken") || t.includes("fleisch")) {
+    pool = IMAGES_BY_CATEGORY.fleisch;
+  } else if (t.includes("pancake") || t.includes("hafer") || t.includes("müsli") || t.includes("shakshuka") || t.includes("frühstück") || t.includes("quark") || t.includes("smoothie")) {
+    pool = IMAGES_BY_CATEGORY.fruehstueck;
+  } else if (t.includes("suppe") || t.includes("dal") || t.includes("curry") || t.includes("eintopf") || t.includes("pho")) {
+    pool = IMAGES_BY_CATEGORY.suppe_eintopf;
+  } else if (t.includes("pasta") || t.includes("nudel") || t.includes("reis") || t.includes("spaghetti")) {
+    pool = IMAGES_BY_CATEGORY.pasta_grain;
+  }
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) hash = (hash * 31 + title.charCodeAt(i)) >>> 0;
+  return pool[hash % pool.length];
+}
 
 const COUNTRIES = [
   "Japan", "Italien", "Griechenland", "Mexiko", "Indien", "Thailand", "Vietnam",
@@ -82,114 +134,163 @@ const BASE_DISHES = [
   { name: "Koreanisches Beef Bulgogi mit Kimchi", country: "Korea", tag: "Abendessen", diet: "High Protein", baseKcal: 480, baseP: 48, baseC: 24, baseF: 18, gi: "low" },
   { name: "Indisches Rotes Linsen-Dal mit Ingwer", country: "Indien", tag: "Mittag", diet: "Vegan", baseKcal: 380, baseP: 24, baseC: 56, baseF: 8, gi: "low" },
   { name: "Vietnamesische Pho Bo Kräuter-Rinderbrühe", country: "Vietnam", tag: "Abendessen", diet: "Glutenfrei", baseKcal: 390, baseP: 38, baseC: 38, baseF: 10, gi: "low" },
-  { name: "Mexikanische Fajita Bowl mit Guacamole", country: "Mexiko", tag: "Mittag", diet: "Low Carb", baseKcal: 460, baseP: 36, baseC: 22, baseF: 24, gi: "low" },
-  { name: "Marokkanische Kichererbsen-Gemüse-Tagine", country: "Marokko", tag: "Abendessen", diet: "Vegan", baseKcal: 370, baseP: 18, baseC: 52, baseF: 11, gi: "low" },
-  { name: "Spanische Knoblauch-Garnelen (Gambas al Ajillo)", country: "Spanien", tag: "Abendessen", diet: "Keto", baseKcal: 390, baseP: 38, baseC: 4, baseF: 24, gi: "low" },
-  { name: "Georgisches Lobio Bohnengericht im Tontopf", country: "Georgien", tag: "Mittag", diet: "Vegan", baseKcal: 410, baseP: 22, baseC: 54, baseF: 12, gi: "low" },
-  { name: "Türkisches Menemen mit Paprika & Feta", country: "Türkei", tag: "Frühstück", diet: "Vegetarisch", baseKcal: 340, baseP: 22, baseC: 14, baseF: 20, gi: "low" },
-  { name: "Äthiopisches Misir Wot mit Injera Fladen", country: "Äthiopien", tag: "Abendessen", diet: "Vegan", baseKcal: 420, baseP: 24, baseC: 62, baseF: 9, gi: "low" },
-  { name: "Brasilianischer Moqueca Fischeintopf", country: "Brasilien", tag: "Abendessen", diet: "Paleo", baseKcal: 470, baseP: 42, baseC: 16, baseF: 25, gi: "low" }
+  { name: "Mexikanische Fajita Bowl mit Guacamole", country: "Mexiko", tag: "Mittag", diet: "Low Carb", baseKcal: 440, baseP: 36, baseC: 22, baseF: 24, gi: "low" },
+  { name: "Garnelen-Spieße mit Knoblauch-Kräutern", country: "Spanien", tag: "Abendessen", diet: "Keto", baseKcal: 320, baseP: 44, baseC: 4, baseF: 14, gi: "low" },
+  { name: "Zucchini-Nudeln mit Walnuss-Basilikum Pesto", country: "Italien", tag: "Abendessen", diet: "Keto", baseKcal: 370, baseP: 14, baseC: 8, baseF: 32, gi: "low" },
+  { name: "Marokkanisches Kichererbsen-Tajine", country: "Marokko", tag: "Mittag", diet: "Vegan", baseKcal: 410, baseP: 18, baseC: 62, baseF: 10, gi: "low" },
+  { name: "Bio-Rührei mit Avocado & Räucherlachs", country: "Schweden", tag: "Frühstück", diet: "Keto", baseKcal: 460, baseP: 34, baseC: 4, baseF: 34, gi: "low" },
+  { name: "Edamame-Soba Nudelsalat mit Sesam", country: "Japan", tag: "Mittag", diet: "Vegan", baseKcal: 390, baseP: 24, baseC: 52, baseF: 10, gi: "low" },
+  { name: "Kurkuma-Goldene-Milch Chia Pudding", country: "Indien", tag: "Snack", diet: "Vegetarisch", baseKcal: 260, baseP: 12, baseC: 22, baseF: 14, gi: "low" },
+  { name: "Gebackener Feta mit mediterranem Ofengemüse", country: "Griechenland", tag: "Abendessen", diet: "Vegetarisch", baseKcal: 430, baseP: 22, baseC: 16, baseF: 32, gi: "low" },
+  { name: "Truthan-Avocado Vollkorn-Wrap", country: "USA", tag: "Mittag", diet: "High Protein", baseKcal: 420, baseP: 38, baseC: 32, baseF: 14, gi: "low" },
+  { name: "Matcha-Spirulina Protein Smoothie", country: "Japan", tag: "Post-Workout", diet: "Vegan", baseKcal: 290, baseP: 30, baseC: 26, baseF: 6, gi: "low" },
 ];
 
-export function generateRecipesDatabase(targetCount = 1240): RecipeItem[] {
-  const result: RecipeItem[] = [];
-  let currentId = 1;
+const VARIATIONS = [
+  "Klassisch", "Mediterran", "Low-Carb Style", "Keto Spezial", "Power High-Protein",
+  "No-Waste Fresh", "Detox & Vital", "Mikrobiom Booster", "Post-Workout Refuel",
+  "Anti-Entzündlich", "Clean Eating Edition", "Superfood Infused"
+];
 
-  for (const base of BASE_DISHES) {
-    const v = VITAMINS[currentId % VITAMINS.length];
-    result.push({
-      id: String(currentId),
-      title: base.name,
-      country: base.country,
-      tag: base.tag,
-      diet: base.diet,
-      allergies: ["Glutenfrei", "Laktosefrei"].slice(0, (currentId % 2) + 1),
-      vitamins: v.name,
-      organ: v.organ,
-      kcal: base.baseKcal,
-      protein: base.baseP,
-      carbs: base.baseC,
-      fat: base.baseF,
-      time: 15 + ((currentId * 3) % 25),
-      rating: Number((4.6 + ((currentId % 5) * 0.08)).toFixed(1)),
-      gi: base.gi as "low" | "med",
-      impact: 12 + ((currentId * 4) % 24),
-      portions: 2,
-      img: IMGS[currentId % IMGS.length],
-      chefTip: CHEF_TIPS[currentId % CHEF_TIPS.length]
-    });
-    currentId++;
+function generateIngredientsForDish(dishName: string, diet: string): RecipeIngredient[] {
+  const d = dishName.toLowerCase();
+  if (d.includes("lachs") || d.includes("fisch")) {
+    return [
+      { name: "Wildlachs-Filet (nachhaltig)", amount: "200g" },
+      { name: "Brokkoli-Röschen", amount: "180g" },
+      { name: "Zitrone (Bio-Abrieb & Saft)", amount: "0.5 Stück" },
+      { name: "Kaltgepresstes Olivenöl", amount: "1 EL" },
+      { name: "Dill & Meersalz", amount: "nach Geschmack" }
+    ];
   }
-
-  const modifiers = [
-    "mit Sesam & Limette", "mit gerösteten Nüssen", "auf Blattspinat & Knoblauch",
-    "mit fermentiertem Kimchi", "mit Avocado & Koriander", "mit gebackenen Süßkartoffeln",
-    "an Safran-Kräuter-Dressing", "mit Ingwer-Soja-Reduktion", "mit frischen Granatapfelkernen",
-    "mit Trüffelöl & Meersalz", "mit gegrillten Zucchini & Pinienkernen", "mit Tahini & Kreuzkümmel",
-    "an Zitrone & wildem Oregano", "mit Cashew-Pfeffer-Kruste", "mit geschmorten Schalotten"
+  if (d.includes("hähnchen") || d.includes("caesar") || d.includes("chicken")) {
+    return [
+      { name: "Hähnchenbrustfilet (Bio)", amount: "180g" },
+      { name: "Römersalat-Herzen", amount: "150g" },
+      { name: "Kirschtomaten", amount: "8 Stück" },
+      { name: "Parmesan gerieben", amount: "20g" },
+      { name: "Griechischer Joghurt Dressing", amount: "2 EL" }
+    ];
+  }
+  if (d.includes("pancake") || d.includes("hafer") || d.includes("shakshuka") || d.includes("frühstück") || d.includes("quark")) {
+    return [
+      { name: "Bio-Eier oder Magerquark", amount: "2 Stück / 150g" },
+      { name: "Zarte Haferflocken", amount: "50g" },
+      { name: "Waldbeeren (frisch oder TK)", amount: "80g" },
+      { name: "Chiasamen", amount: "1 EL" },
+      { name: "Ceylon-Zimt", amount: "1 Prise" }
+    ];
+  }
+  if (d.includes("tofu") || d.includes("vegan") || d.includes("dal") || d.includes("linse") || d.includes("quinoa") || d.includes("bowl")) {
+    return [
+      { name: "Quinoa oder Rote Linsen", amount: "120g" },
+      { name: "Räuchertofu oder Kichererbsen", amount: "120g" },
+      { name: "Avocado", amount: "0.5 Stück" },
+      { name: "Babyspinat frisch", amount: "80g" },
+      { name: "Sesam & Tahini Dressing", amount: "2 EL" }
+    ];
+  }
+  return [
+    { name: "Rinderhüftsteak oder Hauptprotein", amount: "180g" },
+    { name: "Kräuterseitlinge oder Pilze", amount: "120g" },
+    { name: "Grüner Spargel oder Zucchini", amount: "150g" },
+    { name: "Ghee oder Olivenöl", amount: "1 EL" },
+    { name: "Rosmarin & Fleur de Sel", amount: "nach Geschmack" }
   ];
-
-  while (result.length < targetCount) {
-    const country = COUNTRIES[result.length % COUNTRIES.length];
-    const diet = DIETS[result.length % DIETS.length];
-    const meal = MEALS[result.length % MEALS.length];
-    const v = VITAMINS[result.length % VITAMINS.length];
-    const baseDish = BASE_DISHES[result.length % BASE_DISHES.length];
-    const mod = modifiers[result.length % modifiers.length];
-
-    let p = 30 + ((result.length * 7) % 28);
-    let c = 10 + ((result.length * 11) % 45);
-    let f = 10 + ((result.length * 5) % 20);
-    let giType: "low" | "med" = "low";
-
-    if (diet === "Keto" || diet === "Low Carb") {
-      c = 4 + (result.length % 12);
-      f = 22 + (result.length % 16);
-      p = 38 + (result.length % 22);
-    } else if (diet === "High Protein") {
-      p = 44 + (result.length % 20);
-      c = 20 + (result.length % 30);
-    } else if (diet === "Vegan") {
-      p = 22 + (result.length % 16);
-      c = 45 + (result.length % 30);
-      f = 12 + (result.length % 10);
-      if (c > 50) giType = "med";
-    }
-
-    const kcal = Math.round(p * 4.1 + c * 4.1 + f * 9.1);
-
-    const allergiesList = [];
-    if (result.length % 2 === 0) allergiesList.push("Glutenfrei");
-    if (result.length % 3 === 0) allergiesList.push("Laktosefrei");
-    if (result.length % 5 === 0) allergiesList.push("Nussfrei");
-    if (result.length % 7 === 0) allergiesList.push("Histaminarm");
-
-    result.push({
-      id: String(currentId),
-      title: `${country} ${baseDish.name.split(" ")[0]} ${mod}`,
-      country,
-      tag: meal,
-      diet,
-      allergies: allergiesList,
-      vitamins: v.name,
-      organ: v.organ,
-      kcal,
-      protein: p,
-      carbs: c,
-      fat: f,
-      time: 10 + ((result.length * 5) % 35),
-      rating: Number((4.5 + ((result.length % 6) * 0.1)).toFixed(1)),
-      gi: giType,
-      impact: Math.min(38, Math.max(9, Math.round(c * 0.45 - p * 0.15))),
-      portions: (result.length % 3) + 1,
-      img: IMGS[result.length % IMGS.length],
-      chefTip: CHEF_TIPS[result.length % CHEF_TIPS.length]
-    });
-
-    currentId++;
-  }
-
-  return result;
 }
 
-export const RECIPES_DB: RecipeItem[] = generateRecipesDatabase(1240);
+function generateStepsForDish(dishName: string): string[] {
+  return [
+    "Zutaten frisch waschen, trocken tupfen und in mundgerechte Stücke schneiden.",
+    "Pfanne oder Wok auf mittlerer bis hoher Stufe erhitzen und wertvolles Öl sanft erwärmen.",
+    "Hauptprotein bzw. Basis-Komponente gleichmäßig anbraten, bis eine feine Kruste entsteht.",
+    "Gemüse, Gewürze und Kräuter hinzufügen und schonend bissfest dünsten (ca. 4–6 Min.).",
+    "Mit frischem Zitronensaft, feinen Kräutern und Gewürzen abschmecken und warm anrichten."
+  ];
+}
+
+// Generate the 1,240 Database Entries
+export const RECIPES_DB: RecipeItem[] = [];
+
+let counter = 1;
+BASE_DISHES.forEach((base, bIdx) => {
+  VARIATIONS.forEach((v, vIdx) => {
+    COUNTRIES.forEach((c, cIdx) => {
+      if (counter > 1240) return;
+
+      const id = String(counter);
+      const title = `${base.name} (${v})`;
+      const diet = DIETS[(bIdx + vIdx) % DIETS.length];
+      const mealTag = MEALS[(bIdx + cIdx) % MEALS.length];
+      const vit = VITAMINS[(bIdx + vIdx + cIdx) % VITAMINS.length];
+      const chef = CHEF_TIPS[(bIdx + vIdx) % CHEF_TIPS.length];
+
+      // Realistic macro variances
+      const kcalVar = ((bIdx * 17 + vIdx * 13 + cIdx * 7) % 60) - 30;
+      const pVar = ((bIdx * 7 + vIdx * 5) % 10) - 5;
+      const cVar = ((vIdx * 9 + cIdx * 3) % 14) - 7;
+      const fVar = ((bIdx * 3 + cIdx * 5) % 8) - 4;
+
+      const kcal = Math.max(220, base.baseKcal + kcalVar);
+      const protein = Math.max(12, base.baseP + pVar);
+      const carbs = Math.max(4, base.baseC + cVar);
+      const fat = Math.max(6, base.baseF + fVar);
+      const time = 15 + ((bIdx * 5 + vIdx * 3) % 35);
+      const rating = 4.6 + ((bIdx + vIdx + cIdx) % 5) * 0.08;
+      const impact = base.gi === "low" ? 12 + ((bIdx + cIdx) % 8) : 26 + ((bIdx + vIdx) % 12);
+
+      const allergies: string[] = [];
+      if (diet !== "Glutenfrei" && base.baseC > 30) allergies.push("Glutenhaltiges Getreide");
+      if (title.toLowerCase().includes("lachs") || title.toLowerCase().includes("fisch")) allergies.push("Fisch");
+      if (title.toLowerCase().includes("erdnuss") || title.toLowerCase().includes("walnuss")) allergies.push("Schalenfrüchte");
+      if (title.toLowerCase().includes("quark") || title.toLowerCase().includes("feta") || title.toLowerCase().includes("caesar")) allergies.push("Milch / Laktose");
+      if (allergies.length === 0) allergies.push("Keine bekannten Allergene");
+
+      const img = pickImageForRecipe(title, mealTag);
+      const ingredients = generateIngredientsForDish(title, diet);
+      const steps = generateStepsForDish(title);
+
+      const organBenefit = {
+        organ: vit.organ,
+        effect: `Optimiert ${vit.organ} durch gezielte Mikronährstoffdichte und ${vit.name}.`,
+        highlight: `Hält den Blutzuckerspiegel stabil (Peak: nur +${impact} mg/dL) und liefert langanhaltende Energie.`
+      };
+
+      const vitaminList = [
+        { label: vit.name.split("&")[0].trim(), pct: 85 },
+        { label: vit.name.split("&")[1] ? vit.name.split("&")[1].trim() : "Antioxidantien", pct: 72 },
+        { label: "Vitamin C", pct: 60 },
+        { label: "Magnesium", pct: 45 },
+        { label: "Zink", pct: 35 }
+      ];
+
+      RECIPES_DB.push({
+        id,
+        title,
+        country: c,
+        tag: mealTag,
+        diet,
+        allergies,
+        vitamins: vit.name,
+        organ: vit.organ,
+        kcal,
+        protein,
+        carbs,
+        fat,
+        time,
+        rating: parseFloat(rating.toFixed(1)),
+        gi: base.gi as "low" | "med",
+        impact,
+        portions: 2,
+        img,
+        chefTip: chef,
+        ingredients,
+        steps,
+        organBenefit,
+        vitaminList
+      });
+
+      counter++;
+    });
+  });
+});
