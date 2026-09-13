@@ -22,7 +22,7 @@ export interface WorkoutItem {
 }
 
 const WORKOUTS: WorkoutItem[] = [
-  // 1. Kraft Push
+  // 1. Push Hypertrophie
   {
     id: 1,
     name: "Push Hypertrophie (Brust / Schulter / Trizeps)",
@@ -34,14 +34,40 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Pectoralis Major, Deltoideus anterior, Triceps brachii",
     targetedMuscleGroups: ["Brust & Trizeps", "Schulter & Nacken"],
     steps: [
-      { name: "Warm-up: Schulter-Rotatorenmanschette", durationOrReps: "5 Min.", musclesTrained: "Infraspinatus, Supraspinatus", techniqueTip: "Mit leichtem Theraband kontrolliert nach außen rotieren." },
-      { name: "Schrägbankdrücken mit Kurzhanteln", durationOrReps: "4 Sätze x 8–10 Wdh.", musclesTrained: "Clavicularer Anteil Pectoralis Major", techniqueTip: "30-Grad-Winkel, Ellbogen leicht nach innen führen." },
-      { name: "Flachbankdrücken Langhantel", durationOrReps: "3 Sätze x 8 Wdh.", musclesTrained: "Pectoralis Major, Triceps brachii", techniqueTip: "Schulterblätter fest auf die Bank ziehen (Retraktion)." },
-      { name: "Seitheben am Kabelzug", durationOrReps: "4 Sätze x 12–15 Wdh.", musclesTrained: "Deltoideus lateralis", techniqueTip: "Kleine Finger leicht anheben für maximalen seitlichen Schulterfokus." },
-      { name: "Dips am Barren", durationOrReps: "3 Sätze bis Muskelversagen", musclesTrained: "Unterer Pectoralis, Trizeps", techniqueTip: "Leichte Vorneigung des Oberkörpers schont das Schultergelenk." },
+      {
+        name: "Schrägbankdrücken mit Kurzhanteln",
+        durationOrReps: "4 Sätze x 8–10 Wdh. (Kadenz 3-1-1-0)",
+        musclesTrained: "Clavicularer Anteil Pectoralis Major, Vordere Schulter",
+        techniqueTip: "Bank auf 30° einstellen. Schulterblätter hinten unten fixieren. 3 Sekunden kontrolliert absenken, am tiefsten Punkt Dehnung spüren, explosiv hochdrücken ohne die Ellbogen durchzustrecken."
+      },
+      {
+        name: "Flachbankdrücken Langhantel",
+        durationOrReps: "3 Sätze x 8 Wdh.",
+        musclesTrained: "Pectoralis Major, Triceps brachii, Core",
+        techniqueTip: "Füße fest in den Boden rammen (Leg Drive). Stange auf Brustbeinhöhe absenken, Unterarme senkrecht zum Boden halten."
+      },
+      {
+        name: "Seitheben am Kabelzug / Kurzhantel",
+        durationOrReps: "4 Sätze x 12–15 Wdh.",
+        musclesTrained: "Deltoideus lateralis (Seitliche Schulter)",
+        techniqueTip: "Leichte Vorneigung des Oberkörpers (15°). Bewegung aus dem Ellbogen führen, Handgelenke nicht über Ellbogenhöhe heben."
+      },
+      {
+        name: "Dips am Barren (Körpergewicht / Zusatz)",
+        durationOrReps: "3 Sätze x 10 Wdh. bis Muskelversagen",
+        musclesTrained: "Unterer Pectoralis, Trizeps",
+        techniqueTip: "Oberkörper leicht nach vorn neigen für Brustfokus. Bei 90° Beugung stoppen um die Schulterkapsel zu schonen."
+      },
+      {
+        name: "Trizepsdrücken am Tau (Kabelzug)",
+        durationOrReps: "3 Sätze x 12 Wdh. mit 2s Peak-Kontraktion",
+        musclesTrained: "Triceps brachii (Laterales & Mediales Köpfchen)",
+        techniqueTip: "Oberarme am Brustkorb anlegen. Am Tiefpunkt das Tau nach außen spreizen und den Muskel 2 Sekunden maximal kontrahieren."
+      }
     ]
   },
-  // 2. Kraft Pull
+
+  // 2. Pull Fokus
   {
     id: 2,
     name: "Pull Fokus (Rückenbreite / Bizeps / Nacken)",
@@ -53,13 +79,34 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Latissimus dorsi, Rhomboidei, Biceps brachii, Trapezius",
     targetedMuscleGroups: ["Rücken & Bizeps", "Schulter & Nacken"],
     steps: [
-      { name: "Klimmzüge im Obergriff (Pronation)", durationOrReps: "4 Sätze x 6–8 Wdh.", musclesTrained: "Latissimus dorsi, Teres major", techniqueTip: "Aus dem toten Hängen starten, Brust aktiv zur Stange ziehen." },
-      { name: "Vorgebeugtes Langhantelrudern", durationOrReps: "4 Sätze x 8–10 Wdh.", musclesTrained: "Rhomboidei, Latissimus, Erector spinae", techniqueTip: "Rücken im 45°-Winkel gerade halten, Stange zum Bauchnabel ziehen." },
-      { name: "Facepulls am Seilzug", durationOrReps: "3 Sätze x 15 Wdh.", musclesTrained: "Deltoideus posterior, Infraspinatus", techniqueTip: "Seil zu den Augenbrauen ziehen, Schultern nach hinten drehen." },
-      { name: "Incline Biceps Curls", durationOrReps: "3 Sätze x 10–12 Wdh.", musclesTrained: "Biceps brachii (langer Kopf)", techniqueTip: "Volle Dehnung am Tiefpunkt spüren, kein Schwung aus den Schultern." },
+      {
+        name: "Klimmzüge im schulterbreiten Obergriff",
+        durationOrReps: "4 Sätze x 6–8 Wdh.",
+        musclesTrained: "Latissimus dorsi, Teres major, Bizeps",
+        techniqueTip: "Aus dem vollen Hang starten. Zuerst die Schulterblätter nach unten ziehen (Scapula Pull), dann das Brustbein aktiv zur Stange ziehen."
+      },
+      {
+        name: "Vorgebeugtes Langhantelrudern",
+        durationOrReps: "4 Sätze x 8–10 Wdh.",
+        musclesTrained: "Rhomboidei, Latissimus, Trapezius, Erector spinae",
+        techniqueTip: "Oberkörper 45° nach vorn neigen, Rücken wie ein Brett gerade spannen. Stange entlang der Oberschenkel Richtung Bauchnabel führen."
+      },
+      {
+        name: "Facepulls mit Seil (Haltungs-Schutz)",
+        durationOrReps: "3 Sätze x 15 Wdh.",
+        musclesTrained: "Deltoideus posterior, Infraspinatus, Rhomboiden",
+        techniqueTip: "Kabel auf Augenhöhe. Seilenden zu den Schläfen ziehen und die Schultern bewusst nach hinten-außen rotieren (Anti-Rundrücken)."
+      },
+      {
+        name: "Incline Dumbbell Biceps Curls",
+        durationOrReps: "3 Sätze x 10–12 Wdh.",
+        musclesTrained: "Biceps brachii (Langer Kopf)",
+        techniqueTip: "Schrägbank auf 60°. Arme hängen senkrecht herab. Volle Dehnung in der unteren Position vor Einleitung des Curls."
+      }
     ]
   },
-  // 3. Kraft Legs
+
+  // 3. Leg Day
   {
     id: 3,
     name: "Leg Day (Quadrizeps, Ischios & Gluteus)",
@@ -71,15 +118,69 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Quadriceps femoris, Gluteus maximus, Ischiocrurale Muskeln",
     targetedMuscleGroups: ["Beine & Gluteus"],
     steps: [
-      { name: "Kniebeugen mit Langhantel (Back Squats)", durationOrReps: "4 Sätze x 6–8 Wdh.", musclesTrained: "Quadriceps, Gluteus maximus", techniqueTip: "Fersen fest in den Boden drücken, Knie in Fußspitzenrichtung führen." },
-      { name: "Rumänisches Kreuzheben (RDL)", durationOrReps: "3 Sätze x 10 Wdh.", musclesTrained: "Biceps femoris, Semitendinosus", techniqueTip: "Hüfte nach hinten schieben, Knie nur minimal beugen (Hinge)." },
-      { name: "Bulgarische Ausfallschritte (Split Squats)", durationOrReps: "3 Sätze x 10 Wdh./Bein", musclesTrained: "Gluteus medius, Quadriceps", techniqueTip: "Oberkörper leicht nach vorn neigen für Gluteus-Fokus." },
-      { name: "Wadenheben stehend", durationOrReps: "4 Sätze x 15 Wdh.", musclesTrained: "Gastrocnemius, Soleus", techniqueTip: "2 Sekunden Dehnung am Tiefpunkt halten." },
+      {
+        name: "Barbell Back Squats (Tiefe Kniebeuge)",
+        durationOrReps: "4 Sätze x 6–8 Wdh.",
+        musclesTrained: "Quadriceps, Gluteus maximus, Adduktoren",
+        techniqueTip: "Stange auf dem oberen Trapez ablegen. Hüfte nach hinten-unten absenken bis mindestens 90°. Knie drücken aktiv nach außen in Fußrichtung."
+      },
+      {
+        name: "Rumänisches Kreuzheben (RDL)",
+        durationOrReps: "3 Sätze x 10 Wdh.",
+        musclesTrained: "Biceps femoris, Semitendinosus, Gluteus",
+        techniqueTip: "Knie nur minimal beugen (Soft Knees). Hüfte wie gegen eine Wand nach hinten schieben, Rücken neutral halten, Dehnung in den Oberschenkelrückseiten spüren."
+      },
+      {
+        name: "Bulgarische Ausfallschritte (Split Squats)",
+        durationOrReps: "3 Sätze x 10 Wdh. pro Bein",
+        musclesTrained: "Gluteus medius, Quadriceps, Rumpfstabilität",
+        techniqueTip: "Hinterer Fuß auf Bank auflegen. Vorderes Knie bleibt stabil über dem Mittelfuß. Tiefe Dehnung des hinteren Hüftbeugers."
+      },
+      {
+        name: "Stehendes Wadenheben mit Dehnpause",
+        durationOrReps: "4 Sätze x 15 Wdh.",
+        musclesTrained: "Gastrocnemius, Soleus",
+        techniqueTip: "Auf Zehenballen explosiv hochdrücken, 1 Sekunde halten, dann 2 Sekunden tiefe Dehnung unterhalb der Stufenkante spüren."
+      }
     ]
   },
-  // 4. Yoga Asana Flow
+
+  // 4. Core & Abdominals
   {
     id: 4,
+    name: "Core Athletic & Anti-Rotations Stabilität",
+    icon: "🛡️",
+    category: "Kraft",
+    difficulty: "Mittel",
+    duration: 35,
+    kcal: 260,
+    muscles: "Transversus abdominis, Rectus abdominis, Obliquus internus/externus",
+    targetedMuscleGroups: ["Core & Rücken"],
+    steps: [
+      {
+        name: "Pallof Press am Kabelzug (Anti-Rotation)",
+        durationOrReps: "3 Sätze x 12 Wdh. pro Seite",
+        musclesTrained: "Schräge Bauchmuskeln, Tiefenstabilisatoren",
+        techniqueTip: "Seitlich zum Kabelzug stehen. Griff vor die Brust halten und gerade nach vorn strecken. Der Körper darf sich um keinen Millimeter verdrehen."
+      },
+      {
+        name: "Hängendes Knie- & Beinheben",
+        durationOrReps: "3 Sätze x 10–12 Wdh.",
+        musclesTrained: "Unterer Rectus abdominis, Iliopsoas",
+        techniqueTip: "Kein Schwung holen! Das Becken aktiv nach oben einrollen (Posterior Pelvic Tilt), nicht nur die Beine anheben."
+      },
+      {
+        name: "Dead Bug mit Atemkontrolle",
+        durationOrReps: "3 Sätze x 10 Wdh. pro Seite",
+        musclesTrained: "Transversus abdominis, Zwerchfell",
+        techniqueTip: "Rücken fest in die Matte pressen (kein Hohlkreuz). Diagonalen Arm und Bein kontrolliert strecken bei vollem Ausatmen."
+      }
+    ]
+  },
+
+  // 5. Vinyasa Yoga Flow
+  {
+    id: 5,
     name: "Vinyasa Yoga & Asana Balance Flow",
     icon: "🧘‍♀️",
     category: "Yoga",
@@ -89,16 +190,75 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Transversus abdominis, Erector spinae, Psoas major, Gluteus medius",
     targetedMuscleGroups: ["Core & Rücken", "Beine & Gluteus"],
     steps: [
-      { name: "Herabschauender Hund (Adho Mukha Svanasana)", durationOrReps: "5 tiefe Atemzüge", musclesTrained: "Ischiocrurale Muskeln, Schulterblatt-Stabilisatoren", techniqueTip: "Fersen Richtung Boden schieben, Rücken lang machen, Steißbein zum Himmel." },
-      { name: "Krieger I & II (Virabhadrasana I/II)", durationOrReps: "Je 45 Sek. pro Seite", musclesTrained: "Quadrizeps, Psoas major, Gesäßmuskeln", techniqueTip: "Vorderes Knie über dem Sprunggelenk fixieren, Becken parallel ausrichten." },
-      { name: "Kobra (Bhujangasana)", durationOrReps: "3 Wiederholungen", musclesTrained: "Erector spinae, Pectoralis minor", techniqueTip: "Brustbein heben ohne Druck auf die Lendenwirbelsäule auszuüben." },
-      { name: "Die Taube (Kapotasana Hüftöffner)", durationOrReps: "Je 60 Sek. pro Seite", musclesTrained: "Piriformis, Hüftbeuger", techniqueTip: "Spannung mit jedem Ausatmen lösen, Becken gerade halten." },
-      { name: "Der Baum (Vrikshasana Balance)", durationOrReps: "Je 45 Sek. pro Seite", musclesTrained: "Fußgewölbe, Peroneus, Abduktoren, Tiefenmuskeln", techniqueTip: "Blick auf einen festen Punkt richten, Fuß an Wade oder Oberschenkel." },
+      {
+        name: "Herabschauender Hund (Adho Mukha Svanasana)",
+        durationOrReps: "5 tiefe Ujjayi-Atemzüge",
+        musclesTrained: "Ischiocrurale Muskeln, Waden, Schulterblatt-Stabilisatoren",
+        techniqueTip: "Hände schulterbreit auffächern. Fersen Richtung Boden schieben, Rücken lang machen, Sitzbeinhöcker nach oben-hinten strecken."
+      },
+      {
+        name: "Krieger I & II Sequenz (Virabhadrasana)",
+        durationOrReps: "Je 45 Sek. pro Seite",
+        musclesTrained: "Quadrizeps, Psoas major, Gluteus medius, Deltoideus",
+        techniqueTip: "Vorderes Knie exakt über dem Sprunggelenk fixieren. Hinteres Bein aktiv durchstrecken, Außenkante des hinteren Fußes erden."
+      },
+      {
+        name: "Die Kobra (Bhujangasana Herzöffnung)",
+        durationOrReps: "3 Wiederholungen mit 5s Haltephase",
+        musclesTrained: "Autochthone Rückenmuskeln, Pectoralis Minor",
+        techniqueTip: "Hände neben der Brust aufsetzen. Brustbein sanft heben aus Kraft des oberen Rückens, ohne Gewicht auf die Hände zu stützen."
+      },
+      {
+        name: "Die Taube (Eka Pada Rajakapotasana)",
+        durationOrReps: "Je 60 Sek. tiefe Entspannung pro Seite",
+        musclesTrained: "Piriformis, Hüftbeuger, Gesäßmuskeln",
+        techniqueTip: "Hüfte parallel zum vorderen Mattenrand ausrichten. Bei Ausatmung den Oberkörper über das gebeugte Knie nach vorn absenken."
+      },
+      {
+        name: "Der Baum (Vrikshasana Balance)",
+        durationOrReps: "Je 45 Sek. pro Seite",
+        musclesTrained: "Fußgewölbe, Peroneus, Abduktoren, Tiefenmuskeln",
+        techniqueTip: "Blick auf einen festen Punkt (Drishti). Fußsohle an die Wade oder den Oberschenkel (niemals an die Knieinnenseite) pressen."
+      }
     ]
   },
-  // 5. Tai Chi & Qi Gong
+
+  // 6. Yin Yoga Faszien-Dehnung
   {
-    id: 5,
+    id: 6,
+    name: "Yin Yoga Faszien-Release & Tiefenentspannung",
+    icon: "🌸",
+    category: "Yoga",
+    difficulty: "Anfänger",
+    duration: 45,
+    kcal: 150,
+    muscles: "Faszienzüge der Körperrückseite, Hüftkapsel, Lendenwirbelsäule",
+    targetedMuscleGroups: ["Core & Rücken", "Beine & Gluteus"],
+    steps: [
+      {
+        name: "Die Schmetterlings-Pose (Baddha Konasana)",
+        durationOrReps: "3 Minuten passiv halten",
+        musclesTrained: "Adduktoren, Lendenfaszie, Hüftöffner",
+        techniqueTip: "Fußsohlen berühren sich, Knie fallen nach außen. Den Oberkörper rund und vollkommen ohne Muskelanspannung nach vorn sinken lassen."
+      },
+      {
+        name: "Die Raupe (Vorbeuge sitzend)",
+        durationOrReps: "3–4 Minuten passiv halten",
+        musclesTrained: "Gesamte dorsale Faszienkette (Rückseite)",
+        techniqueTip: "Beine locker strecken. Schwerkraft wirken lassen, Stirn Richtung Knie sinken lassen, Kopf entspannen."
+      },
+      {
+        name: "Der Liegende Schwan (Sphinx)",
+        durationOrReps: "3 Minuten",
+        musclesTrained: "Lendenwirbelsäule, Bauchdecke, Thymusdrüse",
+        techniqueTip: "Auf dem Bauch liegend auf die Unterarme stützen. Gesäßmuskeln komplett entspannen, sanfte Kompression im unteren Rücken zulassen."
+      }
+    ]
+  },
+
+  // 7. Tai Chi 24er Peking-Form
+  {
+    id: 7,
     name: "Tai Chi 24er Peking-Form & Qi-Gong Fluss",
     icon: "☯️",
     category: "TaiChi",
@@ -108,16 +268,69 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Soleus, Vastus medialis, Core Tiefenstabilisatoren, Nacken",
     targetedMuscleGroups: ["Core & Rücken", "Beine & Gluteus", "Schulter & Nacken"],
     steps: [
-      { name: "Eröffnung des Tai Chi (Qi Shi)", durationOrReps: "3 Zyklen", musclesTrained: "Schultergürtel, Zwerchfell", techniqueTip: "Arme wie schwebend heben, Knie sanft beugen, Atem mit Bewegung synchronisieren." },
-      { name: "Die Mähne des Wildpferdes teilen (Ye Ma Fen Zong)", durationOrReps: "4 Schritte links/rechts", musclesTrained: "Rotatoren, Quadriceps, Hüftrotatoren", techniqueTip: "Gewicht fließend auf das hintere Bein verlagern, Armbogen weit halten." },
-      { name: "Der weiße Kranich breitet seine Flügel aus", durationOrReps: "3 Wiederholungen", musclesTrained: "Gleichgewichtssinn, Fußgelenksstabilisatoren", techniqueTip: "Standbein fest verwurzeln, Fingerkuppen leicht und entspannt führen." },
-      { name: "Wolkenhände (Yun Shou)", durationOrReps: "5 Wiederholungen beidseitig", musclesTrained: "Obliquus internus/externus, Schultern", techniqueTip: "Hüfte führt die Arme, Blick folgt der oberen Handfläche." },
-      { name: "Den Tiger umarmen & zum Berg zurückkehren", durationOrReps: "3 Min. Abschluss", musclesTrained: "Gesamter Körper, Parasympathikus", techniqueTip: "Tiefe Bauchatmung zur Senkung von Cortisol und Puls." },
+      {
+        name: "Eröffnung des Tai Chi (Qi Shi)",
+        durationOrReps: "3 langsame Zyklen",
+        musclesTrained: "Schultergürtel, Zwerchfell, Fußgewölbe",
+        techniqueTip: "Arme wie schwebend bis Schulterhöhe heben, Knie sanft beugen, Atem mit Bewegung synchronisieren (Yin & Yang)."
+      },
+      {
+        name: "Die Mähne des Wildpferdes teilen (Ye Ma Fen Zong)",
+        durationOrReps: "4 Schritte im fließenden Wechsel",
+        musclesTrained: "Rotatoren, Quadriceps, Hüftrotatoren",
+        techniqueTip: "Schritt im 45°-Bogen. Gewicht fließend von hinten nach vorn verlagern, die Arme führen eine weit kreisende Schutzbewegung aus."
+      },
+      {
+        name: "Der weiße Kranich breitet seine Flügel aus",
+        durationOrReps: "3 Wiederholungen beidseitig",
+        musclesTrained: "Gleichgewichtssinn, Fußgelenksstabilisatoren",
+        techniqueTip: "Standbein fest im Boden verwurzeln, anderes Bein nur mit der Zehenspitze aufsetzen. Flügel weit und entspannt öffnen."
+      },
+      {
+        name: "Wolkenhände (Yun Shou)",
+        durationOrReps: "5 Wiederholungen mit Seitschritt",
+        musclesTrained: "Obliquus internus/externus, Schultern",
+        techniqueTip: "Die Bewegung entspringt aus der Taille (Dantian). Der Blick folgt sanft der jeweils oberen Handfläche wie einer Wolke."
+      }
     ]
   },
-  // 6. HIIT & Ausdauer
+
+  // 8. Ba Duan Jin (8 Brokate)
   {
-    id: 6,
+    id: 8,
+    name: "Ba Duan Jin (Die Acht Brokate des Qi Gong)",
+    icon: "🕊️",
+    category: "TaiChi",
+    difficulty: "Anfänger",
+    duration: 30,
+    kcal: 140,
+    muscles: "Ganzkörper-Meridiane, Schultern, Brustkorb-Kapazität",
+    targetedMuscleGroups: ["Core & Rücken", "Schulter & Nacken"],
+    steps: [
+      {
+        name: "1. Brokat: Den Himmel mit beiden Händen stützen",
+        durationOrReps: "6 Wiederholungen",
+        musclesTrained: "Interkostalmuskeln, Wirbelsäulen-Längsstreckung",
+        techniqueTip: "Hände vor dem Unterbauch verschränken, nach oben schieben und den Blick den Händen folgen lassen. Reguliert den Dreifachen Erwärmer."
+      },
+      {
+        name: "2. Brokat: Den Bogen spannen wie auf einen Adler",
+        durationOrReps: "6 Wiederholungen (Reiterstellung Ma Bu)",
+        musclesTrained: "Adduktoren, Quadrizeps, Rhomboiden",
+        techniqueTip: "Tiefe Kniebeuge einnehmen. Einen Arm waagerecht strecken mit Zeigefingerhaltung (Schwertfinger), andere Hand zieht die Sehne."
+      },
+      {
+        name: "3. Brokat: Milz und Magen durch Einzelarm-Heben regulieren",
+        durationOrReps: "6 Wiederholungen im Wechsel",
+        musclesTrained: "Schräge Bauchmuskeln, Zwerchfell, Flanken",
+        techniqueTip: "Eine Handfläche drückt nach oben in den Himmel, die andere nach unten zur Erde. Sanfte Dehnung im Oberbauch."
+      }
+    ]
+  },
+
+  // 9. HIIT Tabata Fatburn
+  {
+    id: 9,
     name: "HIIT Tabata Fatburn & Mitochondrien-Boost",
     icon: "🔥",
     category: "Ausdauer",
@@ -127,9 +340,57 @@ const WORKOUTS: WorkoutItem[] = [
     muscles: "Gesamtkörper, Myokard, Typ-II Muskelfasern",
     targetedMuscleGroups: ["Beine & Gluteus", "Core & Rücken"],
     steps: [
-      { name: "Burpees mit Hochstrecksprung", durationOrReps: "40s Belastung / 20s Pause", musclesTrained: "Ganzkörper & Herzkreislauf", techniqueTip: "Brust bis zum Boden, explosive Landung auf dem ganzen Fuß." },
-      { name: "Mountain Climbers Sprint", durationOrReps: "40s Belastung / 20s Pause", musclesTrained: "Rectus abdominis, Schultern", techniqueTip: "Hüfte flach halten, Knie Richtung Ellbogen treiben." },
-      { name: "Jump Squats explosiv", durationOrReps: "40s Belastung / 20s Pause", musclesTrained: "Quadrizeps, Waden, Gesäß", techniqueTip: "Weich landen, Hüfte sofort wieder nach hinten absenken." },
+      {
+        name: "Burpees mit explosivem Hochstrecksprung",
+        durationOrReps: "40s Belastung / 20s Pause",
+        musclesTrained: "Ganzkörper, Brust, Beine, Herzkreislauf",
+        techniqueTip: "Brust bis zum Boden führen. Hüfte explosiv nach vorn schnappen lassen und weich auf dem ganzen Fuß landen."
+      },
+      {
+        name: "Mountain Climbers im Höchsttempo",
+        durationOrReps: "40s Belastung / 20s Pause",
+        musclesTrained: "Rectus abdominis, Schultern, Hüftbeuger",
+        techniqueTip: "Liegestützposition halten. Schultern über den Handgelenken fixieren, Knie im Sekundentakt zur Brust treiben."
+      },
+      {
+        name: "Jump Squats (Kniebeugensprung)",
+        durationOrReps: "40s Belastung / 20s Pause",
+        musclesTrained: "Quadrizeps, Gesäß, Waden",
+        techniqueTip: "Bis in die Hocke absenken, dann explosionsartig nach oben abspringen. Lautlos und weich auf den Fußballen abfedern."
+      }
+    ]
+  },
+
+  // 10. Pilates Reformer Matwork
+  {
+    id: 10,
+    name: "Pilates Core Reformer Matwork",
+    icon: "🩰",
+    category: "Mobilitaet",
+    difficulty: "Mittel",
+    duration: 35,
+    kcal: 190,
+    muscles: "Powerhouse, Beckenboden, Multifidi, Transversus",
+    targetedMuscleGroups: ["Core & Rücken"],
+    steps: [
+      {
+        name: "The Hundred (Klassische Hunderter-Atmung)",
+        durationOrReps: "100 pumpende Armbewegungen",
+        musclesTrained: "Rectus abdominis, Transversus, Zwerchfell",
+        techniqueTip: "Kopf und Schulterblätter heben. Beine im 45°-Winkel gestreckt halten. 5 Zählzeiten einatmen, 5 Zählzeiten kraftvoll ausatmen."
+      },
+      {
+        name: "Criss-Cross (Diagonale Rumpf-Präzision)",
+        durationOrReps: "3 Sätze x 16 Wdh. (8 pro Seite)",
+        musclesTrained: "Obliquus internus/externus",
+        techniqueTip: "Nicht am Nacken ziehen! Die Achselhöhle zieht zum gegenüberliegenden Knie, Ellbogen bleiben maximal weit geöffnet."
+      },
+      {
+        name: "Swimming (Dynamische Rückenstreckung)",
+        durationOrReps: "3 Sätze x 30 Sekunden",
+        musclesTrained: "Erector spinae, Gluteus, hintere Schulter",
+        techniqueTip: "In Bauchlage Arme und Beine paddelnd in der Luft bewegen. Nacken in Verlängerung der Wirbelsäule halten."
+      }
     ]
   }
 ];
@@ -443,18 +704,76 @@ export default function FitnessTracker() {
               </div>
             </div>
 
-            {/* Exercise Steps & Technique tips */}
-            <div className="mt-4 pt-4 border-t border-white/10 space-y-2">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400">Übungs-Ablauf & Muskel-Fokus:</p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {/* Exercise Steps & Visual Posture Execution Cards */}
+            <div className="mt-6 pt-5 border-t border-white/10 space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h4 className="text-sm font-black uppercase tracking-wider text-emerald-400">
+                    Visuelle Übungsausführung & Haltungs-Guide:
+                  </h4>
+                  <p className="text-xs text-slate-300">
+                    Detaillierte Schritt-für-Schritt Haltungskarten mit anatomischen Zielmuskeln und Technik-Tipps.
+                  </p>
+                </div>
+                <span className="text-xs font-mono text-slate-400 bg-white/10 px-3 py-1 rounded-full">
+                  {activeWorkout.steps.length} Positionen
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {activeWorkout.steps.map((st, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
-                    <div className="flex items-center justify-between font-bold mb-1">
-                      <span className="text-white">{i + 1}. {st.name}</span>
-                      <span className="text-emerald-400 font-mono">{st.durationOrReps}</span>
+                  <div
+                    key={i}
+                    className="p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-emerald-500/60 transition-all space-y-3"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="w-6 h-6 rounded-full bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-mono font-bold text-xs flex items-center justify-center">
+                          {i + 1}
+                        </span>
+                        <h5 className="font-bold text-xs md:text-sm text-white">{st.name}</h5>
+                      </div>
+                      <span className="text-[11px] font-mono font-bold text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 shrink-0">
+                        {st.durationOrReps}
+                      </span>
                     </div>
-                    <p className="text-[11px] text-slate-300">🎯 Muskeln: <i>{st.musclesTrained}</i></p>
-                    <p className="text-[10px] text-slate-400 mt-1">💡 Tipp: {st.techniqueTip}</p>
+
+                    {/* Anatomical Target Muscles Highlight */}
+                    <div className="p-2.5 rounded-xl bg-slate-950/70 border border-white/5 space-y-1">
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                        <span>🎯</span> <span>Gezielte Muskelgruppen:</span>
+                      </div>
+                      <p className="text-xs text-slate-200 font-mono font-medium">
+                        {st.musclesTrained}
+                      </p>
+                    </div>
+
+                    {/* Step-by-Step Technique & Posture Cue */}
+                    <div className="text-xs text-slate-300 leading-relaxed space-y-1">
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                        <span>💡</span> <span>Exakte Haltung & Ausführung:</span>
+                      </div>
+                      <p className="text-slate-300 bg-white/5 p-2.5 rounded-xl border border-white/5">
+                        {st.techniqueTip}
+                      </p>
+                    </div>
+
+                    {/* Audio Coach Trigger for this exercise */}
+                    <button
+                      onClick={() => {
+                        if ('speechSynthesis' in window) {
+                          window.speechSynthesis.cancel();
+                          const u = new SpeechSynthesisUtterance(`Übung ${i+1}: ${st.name}. ${st.techniqueTip}`);
+                          u.lang = 'de-DE';
+                          u.rate = 0.95;
+                          window.speechSynthesis.speak(u);
+                        }
+                      }}
+                      className="text-[11px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1 pt-1"
+                    >
+                      <span>🔊</span> <span>Technik-Coach vorlesen</span>
+                    </button>
                   </div>
                 ))}
               </div>

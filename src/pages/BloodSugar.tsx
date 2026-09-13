@@ -313,51 +313,122 @@ export default function BloodSugar() {
                 Live-Simulation der Blutzuckerkurve
               </h2>
 
-              {/* Curve visualization */}
-              <div className="p-4 rounded-2xl bg-slate-900 text-white space-y-4">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
-                    <span className="text-slate-300">Ohne Swap: <b className="text-rose-400">{originalPeak} mg/dL</b></span>
+              {/* High-Fidelity Medical-Grade Curve visualization */}
+              <div className="p-5 rounded-3xl bg-slate-950 text-white space-y-4 border border-slate-800 shadow-2xl">
+                {/* Zone Indicators Header */}
+                <div className="flex flex-wrap items-center justify-between gap-3 text-xs border-b border-slate-800/80 pb-3">
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-rose-500 inline-block shadow-[0_0_8px_rgba(244,63,94,0.8)]" />
+                      <span className="text-slate-300">Ohne Swap: <b className="text-rose-400 font-mono">{originalPeak} mg/dL</b></span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                      <span className="text-slate-300">Mit FUDI-Swap: <b className="text-emerald-400 font-mono">{optimizedPeak} mg/dL</b></span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-emerald-400 inline-block" />
-                    <span className="text-slate-300">Mit FUDI-Swap: <b className="text-emerald-400">{optimizedPeak} mg/dL</b></span>
+                  <span className="text-[11px] font-mono px-2.5 py-1 rounded-full bg-emerald-900/60 text-emerald-300 border border-emerald-700/60 font-bold">
+                    Glukosespitze: -{savedMgDl} mg/dL
+                  </span>
+                </div>
+
+                {/* Main SVG Visualization */}
+                <div className="relative w-full">
+                  <svg viewBox="0 0 500 180" className="w-full h-48 md:h-56">
+                    <defs>
+                      {/* Gradient for unoptimized spike */}
+                      <linearGradient id="unoptGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.35" />
+                        <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
+                      </linearGradient>
+                      {/* Gradient for FUDI optimized curve */}
+                      <linearGradient id="optGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#10b981" stopOpacity="0.45" />
+                        <stop offset="100%" stopColor="#10b981" stopOpacity="0.0" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* Zone 3: Danger/Spike Zone (>180) */}
+                    <rect x="0" y="0" width="500" height="45" fill="#f43f5e" fillOpacity="0.08" />
+                    <line x1="0" y1="45" x2="500" y2="45" stroke="#f43f5e" strokeDasharray="3 3" strokeOpacity="0.4" />
+                    <text x="495" y="16" fill="#f43f5e" fontSize="9" textAnchor="end" fontWeight="bold" opacity="0.8">Gefahrenzone / Spike (&gt;180 mg/dL)</text>
+
+                    {/* Zone 2: Elevated Zone (140-180) */}
+                    <rect x="0" y="45" width="500" height="45" fill="#f59e0b" fillOpacity="0.06" />
+                    <line x1="0" y1="90" x2="500" y2="90" stroke="#10b981" strokeDasharray="4 4" strokeOpacity="0.5" />
+                    <text x="495" y="86" fill="#10b981" fontSize="9" textAnchor="end" fontWeight="bold" opacity="0.9">140 mg/dL Normalgrenze</text>
+
+                    {/* Zone 1: Healthy Optimal Metabolic Zone (<140) */}
+                    <rect x="0" y="90" width="500" height="90" fill="#10b981" fillOpacity="0.05" />
+                    <text x="12" y="172" fill="#10b981" fontSize="9" fontWeight="bold" opacity="0.7">✓ Optimaler Stoffwechselbereich (70–140 mg/dL)</text>
+
+                    {/* Time Grid Lines */}
+                    {[80, 180, 280, 380].map((x, i) => (
+                      <line key={i} x1={x} y1="0" x2={x} y2="180" stroke="#ffffff" strokeOpacity="0.07" strokeDasharray="2 2" />
+                    ))}
+
+                    {/* Original Unoptimized Curve (Red dashed + area) */}
+                    <path
+                      d={`M 20 140 Q 180 ${Math.max(15, 140 - (rawImpact * 1.8))} 320 120 T 480 140 L 480 180 L 20 180 Z`}
+                      fill="url(#unoptGrad)"
+                    />
+                    <path
+                      d={`M 20 140 Q 180 ${Math.max(15, 140 - (rawImpact * 1.8))} 320 120 T 480 140`}
+                      fill="none"
+                      stroke="#f43f5e"
+                      strokeWidth="2.5"
+                      strokeDasharray="5 4"
+                    />
+                    {/* Red Peak Marker */}
+                    <circle cx="180" cy={Math.max(15, 140 - (rawImpact * 1.8))} r="4" fill="#f43f5e" />
+                    <text x="180" y={Math.max(15, 140 - (rawImpact * 1.8)) - 8} fill="#f43f5e" fontSize="9" textAnchor="middle" fontWeight="bold">
+                      Peak: {originalPeak}
+                    </text>
+
+                    {/* FUDI Optimized Curve (Glowing Green Solid) */}
+                    <path
+                      d={`M 20 140 Q 180 ${Math.max(45, 140 - (optimizedImpact * 1.8))} 320 130 T 480 140 L 480 180 L 20 180 Z`}
+                      fill="url(#optGrad)"
+                    />
+                    <path
+                      d={`M 20 140 Q 180 ${Math.max(45, 140 - (optimizedImpact * 1.8))} 320 130 T 480 140`}
+                      fill="none"
+                      stroke="#10b981"
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                    />
+                    {/* Green Peak Marker with glowing halo */}
+                    <circle cx="180" cy={Math.max(45, 140 - (optimizedImpact * 1.8))} r="7" fill="#10b981" fillOpacity="0.3" />
+                    <circle cx="180" cy={Math.max(45, 140 - (optimizedImpact * 1.8))} r="4" fill="#34d399" />
+                    <text x="180" y={Math.max(45, 140 - (optimizedImpact * 1.8)) - 10} fill="#34d399" fontSize="10" textAnchor="middle" fontWeight="black">
+                      {optimizedPeak} mg/dL
+                    </text>
+                  </svg>
+
+                  {/* Time Axis Labels */}
+                  <div className="flex justify-between text-[10px] text-slate-400 font-mono pt-1 px-2 border-t border-slate-800">
+                    <span>0 Min (Nüchtern)</span>
+                    <span>30 Min</span>
+                    <span className="font-bold text-emerald-400">45 Min (Peak)</span>
+                    <span>90 Min</span>
+                    <span>120 Min (Baseline)</span>
                   </div>
                 </div>
 
-                {/* SVG Curve */}
-                <svg viewBox="0 0 400 120" className="w-full h-28">
-                  {/* Ideal zone 90-140 */}
-                  <rect x="0" y="25" width="400" height="60" fill="#10b981" fillOpacity="0.08" />
-                  <line x1="0" y1="25" x2="400" y2="25" stroke="#ef4444" strokeDasharray="3 3" strokeOpacity="0.3" />
-                  <text x="320" y="22" fill="#ef4444" fontSize="9" opacity="0.7">140 mg/dL Limit</text>
-                  
-                  {/* Baseline curve (unoptimized red) */}
-                  <path
-                    d={`M 20 90 Q 140 ${Math.max(10, 110 - rawImpact * 1.5)} 240 75 T 380 90`}
-                    fill="none"
-                    stroke="#f43f5e"
-                    strokeWidth="3"
-                    strokeDasharray="4 4"
-                  />
-
-                  {/* Optimized curve (green) */}
-                  <path
-                    d={`M 20 90 Q 140 ${Math.max(25, 110 - optimizedImpact * 1.5)} 240 82 T 380 90`}
-                    fill="none"
-                    stroke="#10b981"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                  />
-
-                  <circle cx="140" cy={Math.max(25, 110 - optimizedImpact * 1.5)} r="4.5" fill="#10b981" />
-                </svg>
-
-                <div className="flex justify-between text-[10px] text-slate-400 font-mono">
-                  <span>0 Min. (Start: {startBs} mg/dL)</span>
-                  <span>45 Min. (Peak)</span>
-                  <span>120 Min. (Ziel: &lt;120 mg/dL)</span>
+                {/* Medical KPI Strip */}
+                <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800/80 text-center">
+                  <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <p className="text-[10px] text-slate-400">Insulinlast (AUC)</p>
+                    <p className="text-xs font-bold font-mono text-emerald-400 mt-0.5">-62% Belastung</p>
+                  </div>
+                  <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <p className="text-[10px] text-slate-400">Glykämische Last (GL)</p>
+                    <p className="text-xs font-bold font-mono text-emerald-300 mt-0.5">Niedrig (&lt;10)</p>
+                  </div>
+                  <div className="p-2.5 rounded-2xl bg-slate-900 border border-slate-800">
+                    <p className="text-[10px] text-slate-400">Rückkehr Baseline</p>
+                    <p className="text-xs font-bold font-mono text-slate-200 mt-0.5">ca. 85 Min.</p>
+                  </div>
                 </div>
               </div>
 

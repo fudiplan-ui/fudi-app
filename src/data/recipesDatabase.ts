@@ -72,23 +72,43 @@ const IMAGES_BY_CATEGORY: Record<string, string[]> = {
   ]
 };
 
+const EXACT_DISH_IMAGES: Record<string, string> = {
+  "buddha bowl": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop&auto=format",
+  "caesar salat": "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=800&h=600&fit=crop&auto=format",
+  "quinoa-avocado": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800&h=600&fit=crop&auto=format",
+  "haferbrei": "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=800&h=600&fit=crop&auto=format",
+  "wildlachs": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&h=600&fit=crop&auto=format",
+  "pancake": "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&h=600&fit=crop&auto=format",
+  "shakshuka": "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?w=800&h=600&fit=crop&auto=format",
+  "tofu": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&h=600&fit=crop&auto=format",
+  "rinderhüftsteak": "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=600&fit=crop&auto=format",
+  "thunfisch": "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=800&h=600&fit=crop&auto=format",
+  "griechischer bauernsalat": "https://images.unsplash.com/photo-1540189549386-31038686e927?w=800&h=600&fit=crop&auto=format",
+  "bulgogi": "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800&h=600&fit=crop&auto=format",
+  "dal": "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800&h=600&fit=crop&auto=format",
+  "pho": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=800&h=600&fit=crop&auto=format",
+  "fajita": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?w=800&h=600&fit=crop&auto=format",
+  "garnelen": "https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&h=600&fit=crop&auto=format",
+  "zucchini-nudeln": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800&h=600&fit=crop&auto=format",
+  "tajine": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&h=600&fit=crop&auto=format",
+  "rührei": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=800&h=600&fit=crop&auto=format",
+  "soba": "https://images.unsplash.com/photo-1621996346565-e3d5d6281518?w=800&h=600&fit=crop&auto=format",
+  "chia": "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?w=800&h=600&fit=crop&auto=format",
+  "feta": "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=800&h=600&fit=crop&auto=format",
+  "wrap": "https://images.unsplash.com/photo-1567575990843-105a1c70d76e?w=800&h=600&fit=crop&auto=format",
+  "smoothie": "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=800&h=600&fit=crop&auto=format"
+};
+
 function pickImageForRecipe(title: string, tag: string): string {
-  const t = (title + " " + tag).toLowerCase();
-  let pool = IMAGES_BY_CATEGORY.salat_bowl;
-  if (t.includes("lachs") || t.includes("fisch") || t.includes("thunfisch") || t.includes("garnelen") || t.includes("seafood")) {
-    pool = IMAGES_BY_CATEGORY.fisch;
-  } else if (t.includes("steak") || t.includes("rinder") || t.includes("hähnchen") || t.includes("beef") || t.includes("chicken") || t.includes("fleisch")) {
-    pool = IMAGES_BY_CATEGORY.fleisch;
-  } else if (t.includes("pancake") || t.includes("hafer") || t.includes("müsli") || t.includes("shakshuka") || t.includes("frühstück") || t.includes("quark") || t.includes("smoothie")) {
-    pool = IMAGES_BY_CATEGORY.fruehstueck;
-  } else if (t.includes("suppe") || t.includes("dal") || t.includes("curry") || t.includes("eintopf") || t.includes("pho")) {
-    pool = IMAGES_BY_CATEGORY.suppe_eintopf;
-  } else if (t.includes("pasta") || t.includes("nudel") || t.includes("reis") || t.includes("spaghetti")) {
-    pool = IMAGES_BY_CATEGORY.pasta_grain;
+  const t = title.toLowerCase();
+  for (const [key, url] of Object.entries(EXACT_DISH_IMAGES)) {
+    if (t.includes(key)) return url;
   }
-  let hash = 0;
-  for (let i = 0; i < title.length; i++) hash = (hash * 31 + title.charCodeAt(i)) >>> 0;
-  return pool[hash % pool.length];
+  if (t.includes("lachs") || t.includes("fisch")) return "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=800&h=600&fit=crop&auto=format";
+  if (t.includes("steak") || t.includes("fleisch")) return "https://images.unsplash.com/photo-1544025162-d76694265947?w=800&h=600&fit=crop&auto=format";
+  if (t.includes("pancake") || t.includes("frühstück")) return "https://images.unsplash.com/photo-1528207776546-365bb710ee93?w=800&h=600&fit=crop&auto=format";
+  if (t.includes("suppe") || t.includes("dal")) return "https://images.unsplash.com/photo-1584269600464-37b1b58a9fe7?w=800&h=600&fit=crop&auto=format";
+  return "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&h=600&fit=crop&auto=format";
 }
 
 const COUNTRIES = [
