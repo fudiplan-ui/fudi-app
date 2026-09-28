@@ -5,6 +5,10 @@ export const C = {
   cream:   "#FAF7F2",
   stone:   "#6B705C",
   white:   "#FFFFFF",
+  // page backgrounds (App-Seiten)
+  sand:      "#F3EFE7",
+  sandLight: "#F7F4EC",
+  bg:        "#FFFFFF",
   // derived
   mintLight:   "#7FB06918",
   coralLight:  "#F4A26118",
@@ -20,4 +24,4 @@ export const C = {
   warning: "#F4A261",
   danger:  "#D94F3D",
   info:    "#4A90A4",
-};
+} as const;

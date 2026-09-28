@@ -1,8 +1,12 @@
-﻿import FridgeScannerModal from "../components/FridgeScannerModal";
-import { useState } from "react";
-import { Link } from "react-router";
+﻿import { lazy, Suspense, useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES } from "../shared/images";
+import { useAuth } from "../lib/authContext";
+
+// Lazy: Der Scanner zieht die große Rezeptdatenbank mit – deshalb erst
+// beim Öffnen des Scanners laden (spart ~2 MB Initial-Download).
+const FridgeScannerModal = lazy(() => import("../components/FridgeScannerModal"));
 
 // ── Mini donut chart ──────────────────────────────────────────────
 function Donut({ slices, size = 72 }: { slices: { val: number; color: string }[]; size?: number }) {
@@ -132,6 +136,52 @@ export default function Dashboard() {
     return Number(localStorage.getItem("fudi_water_ml") || 1500);
   });
 
+  // Stripe-Rueckkehr: Session serverseitig verifizieren, dann PRO aktivieren
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { activatePro } = useAuth();
+  const [checkoutNotice, setCheckoutNotice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const sessionId = searchParams.get("session_id");
+    if (!sessionId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch("/api/verify-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ session_id: sessionId }),
+        });
+        const data = await res.json();
+        if (cancelled) return;
+        if (data.valid) {
+          activatePro();
+          setCheckoutNotice("Zahlung erfolgreich â€“ FUDI PRO ist jetzt aktiv!");
+        } else {
+          setCheckoutNotice(
+            "Die Zahlung konnte nicht verifiziert werden. Falls du bereits bezahlt hast, kontaktiere bitte den Support."
+          );
+        }
+      } catch {
+        if (!cancelled) {
+          setCheckoutNotice(
+            "Verifikation momentan nicht mÃ¶glich. Dein Abo wird aktiviert, sobald die Verbindung steht."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          const next = new URLSearchParams(searchParams);
+          next.delete("session_id");
+          setSearchParams(next, { replace: true });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [searchParams, setSearchParams, activatePro]);
+
   const addWater = (amount: number) => {
     setWaterMl((prev) => {
       const next = Math.min(3500, prev + amount);
@@ -145,6 +195,11 @@ export default function Dashboard() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
+      {checkoutNotice && (
+        <div className="mb-4 px-4 py-3 rounded-xl text-sm font-semibold" style={{ background: C.mintLight, color: C.forest }}>
+          {checkoutNotice}
+        </div>
+      )}
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
@@ -378,7 +433,11 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <FridgeScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
+          {scannerOpen && (
+            <Suspense fallback={null}>
+              <FridgeScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
+            </Suspense>
+          )}
 
           {/* Quick links */}
           <div className="bg-white rounded-2xl border p-4" style={{ borderColor: C.border }}>

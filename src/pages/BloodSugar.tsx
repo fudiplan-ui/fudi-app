@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { C } from "../shared/colors";
+import { predictGlucose } from "../lib/bloodSugar";
 
 interface FoodItem {
   id: string;
@@ -114,14 +115,13 @@ export default function BloodSugar() {
   const food = FOODS.find(f => f.id === selectedFoodId) || FOODS[0];
   const activeSwap = INGREDIENT_SWAPS.find(s => s.id === selectedSwapId) || null;
 
-  // Calculations
-  const rawImpact = Math.round(food.baseImpact * portionFactor);
-  const originalPeak = startBs + rawImpact;
-
-  const reduction = activeSwap ? Math.round(activeSwap.reductionMgDl * portionFactor) : 0;
-  const optimizedImpact = Math.max(8, rawImpact - reduction);
-  const optimizedPeak = startBs + optimizedImpact;
-  const savedMgDl = originalPeak - optimizedPeak;
+  // Calculations (getestete Kernlogik aus src/lib/bloodSugar.ts)
+  const { rawImpact, originalPeak, optimizedImpact, optimizedPeak, savedMgDl } = predictGlucose(
+    food.baseImpact,
+    startBs,
+    portionFactor,
+    activeSwap ? activeSwap.reductionMgDl : 0
+  );
 
   // Add to Diary
   const handleAddToDiary = () => {

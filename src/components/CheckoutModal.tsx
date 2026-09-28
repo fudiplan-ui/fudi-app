@@ -39,17 +39,21 @@ export default function CheckoutModal({
       });
 
       const data = await res.json();
-      if (data.url) {
+      if (res.ok && data.url) {
+        // Weiterleitung zu Stripe – PRO wird erst NACH serverseitiger
+        // Verifikation der Checkout-Session aktiviert (siehe Dashboard).
         window.location.href = data.url;
       } else {
-        // Fallback demo activation
-        localStorage.setItem("fudi_pro_active", "true");
-        window.location.href = "/dashboard?upgraded=pro";
+        setError(
+          data.error ||
+            "Das Checkout konnte nicht gestartet werden. Bitte versuche es erneut."
+        );
       }
-    } catch (err: any) {
-      // Offline / dev fallback
-      localStorage.setItem("fudi_pro_active", "true");
-      window.location.href = "/dashboard?upgraded=pro";
+    } catch {
+      // Netzwerkfehler: KEIN Demo-Aktivieren mehr – das war ein Bypass.
+      setError(
+        "Keine Verbindung zum Server. Bitte prüfe deine Internetverbindung und versuche es erneut."
+      );
     } finally {
       setLoading(false);
     }

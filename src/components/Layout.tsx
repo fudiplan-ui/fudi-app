@@ -1,6 +1,7 @@
 ﻿import { useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { C } from "../shared/colors";
+import { useAuth } from "../lib/authContext";
 
 const NAV_LINKS = [
   { to: "/rezepte",    label: "Rezepte" },
@@ -23,7 +24,17 @@ const APP_PATHS = ["/dashboard", "/rezepte", "/planer", "/einkauf", "/profil", "
 export function TopNav({ authenticated = false }: { authenticated?: boolean }) {
   const [open, setOpen] = useState(false);
   const loc = useLocation();
+  const nav = useNavigate();
+  const { session, isPro, logout } = useAuth();
   const isActive = (to: string) => loc.pathname.startsWith(to);
+  const isLoggedIn = authenticated || !!session;
+  const initial = (session?.name || "F").charAt(0).toUpperCase();
+
+  const handleLogout = () => {
+    logout();
+    setOpen(false);
+    nav("/", { replace: true });
+  };
 
   return (
     <nav
@@ -51,19 +62,27 @@ export function TopNav({ authenticated = false }: { authenticated?: boolean }) {
 
         {/* Right */}
         <div className="hidden md:flex items-center gap-2.5">
-          {authenticated ? (
+          {isLoggedIn ? (
             <>
               <Link to="/dashboard" className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors hover:bg-gray-50" style={{ color: C.stone }}>
                 Dashboard
               </Link>
-              {typeof window !== "undefined" && localStorage.getItem("fudi_pro_active") === "true" && (
+              {isPro && (
                 <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-400 text-amber-950 shadow-sm">
                   PRO
                 </span>
               )}
-              <Link to="/profil" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold transition-transform hover:scale-105" style={{ background: C.mint }}>
-                M
+              <Link to="/profil" className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold transition-transform hover:scale-105" style={{ background: C.mint }} title={session?.name}>
+                {initial}
               </Link>
+              <button
+                onClick={handleLogout}
+                className="text-xs font-medium px-2.5 py-1.5 rounded-lg transition-colors hover:bg-gray-100"
+                style={{ color: C.stone }}
+                title="Abmelden"
+              >
+                Abmelden
+              </button>
             </>
           ) : (
             <>
@@ -97,9 +116,20 @@ export function TopNav({ authenticated = false }: { authenticated?: boolean }) {
               {l.label}
             </Link>
           ))}
-          <Link to="/register" className="mt-2 py-2.5 text-center text-sm font-semibold rounded-lg text-white" style={{ background: C.forest }} onClick={() => setOpen(false)}>
-            Kostenlos starten
-          </Link>
+          {isLoggedIn ? (
+            <>
+              <Link to="/dashboard" className="py-2 text-sm font-medium" style={{ color: C.inkMid }} onClick={() => setOpen(false)}>
+                Dashboard
+              </Link>
+              <button onClick={handleLogout} className="py-2 text-sm font-medium text-left" style={{ color: C.danger }}>
+                Abmelden
+              </button>
+            </>
+          ) : (
+            <Link to="/register" className="mt-2 py-2.5 text-center text-sm font-semibold rounded-lg text-white" style={{ background: C.forest }} onClick={() => setOpen(false)}>
+              Kostenlos starten
+            </Link>
+          )}
         </div>
       </div>
     </nav>
@@ -155,9 +185,9 @@ export default function Layout({ children, authenticated = false }: { children: 
             <span>•</span>
             <Link to="/preise" className="hover:underline">Preise &amp; Abos</Link>
             <span>•</span>
-            <span className="text-gray-400 cursor-not-allowed">Impressum</span>
+            <Link to="/impressum" className="hover:underline">Impressum</Link>
             <span>•</span>
-            <span className="text-gray-400 cursor-not-allowed">Datenschutz (DSGVO)</span>
+            <Link to="/datenschutz" className="hover:underline">Datenschutz (DSGVO)</Link>
           </div>
           <p className="text-[11px] leading-relaxed max-w-2xl mx-auto opacity-75">
             <b>Gesundheitlicher Hinweis:</b> FUDI bietet ernährungswissenschaftliche Bildungs- und Planungs-Tools auf Basis des Glykämischen Index (GI) und Nährwerttabellen. Die Blutzucker-Berechnungen sind modellbasierte Schätzungen und stellen keine medizinische Diagnose, Behandlungsempfehlung oder Ersatz für eine ärztliche Konsultation dar.

@@ -1,7 +1,9 @@
 ﻿import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { C } from "../shared/colors";
 import { IMG } from "../shared/images";
+import { useAuth } from "../lib/authContext";
+import { estimateTdee } from "../lib/bloodSugar";
 
 const DIET_TYPES = [
   { emoji: "🥗", label: "Vegan" },
@@ -39,15 +41,24 @@ const DIABETES_TYPES = [
   { key: "pre", label: "Praadiabetes", icon: "⚠️" },
 ];
 
-function toggleArr(arr, setArr, val) {
+function toggleArr<T>(arr: T[], setArr: (v: T[]) => void, val: T): void {
   setArr(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
 }
 
-function saveProfile(profile) {
+function saveProfile(profile: Record<string, unknown>): void {
   localStorage.setItem("fudi_user_profile", JSON.stringify(profile));
 }
 
-function Field({ label, type = "text", placeholder, value, onChange, tooltip }) {
+interface FieldProps {
+  label: string;
+  type?: string;
+  placeholder?: string;
+  value: string;
+  onChange: (v: string) => void;
+  tooltip?: string;
+}
+
+function Field({ label, type = "text", placeholder, value, onChange, tooltip }: FieldProps) {
   const [showTip, setShowTip] = useState(false);
   return (
     <div>
@@ -83,7 +94,7 @@ function Field({ label, type = "text", placeholder, value, onChange, tooltip }) 
   );
 }
 
-function GoogleButton({ label }) {
+function GoogleButton({ label }: { label: string }) {
   return (
     <button
       type="button"
@@ -105,13 +116,35 @@ function GoogleButton({ label }) {
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const { login } = useAuth();
   const nav = useNavigate();
-  const handleLogin = () => {
-    if (!email || !pw) return;
-    const profile = JSON.parse(localStorage.getItem("fudi_user_profile") || "{}");
-    if (!profile.name) { profile.name = email.split("@")[0]; saveProfile(profile); }
-    nav("/dashboard");
+  const location = useLocation();
+
+  const handleLogin = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const result = await login(email, pw);
+      if (!result.ok) {
+        setError(result.error || "Anmeldung fehlgeschlagen.");
+        return;
+      }
+      // Bestehendes lokales Profil mit Namen füllen (falls vorhanden)
+      const profile = JSON.parse(localStorage.getItem("fudi_user_profile") || "{}");
+      if (!profile.name) {
+        profile.name = result.session?.name || email.split("@")[0];
+        profile.email = result.session?.email || email;
+        saveProfile(profile);
+      }
+      const from = (location.state as { from?: string } | null)?.from;
+      nav(from || "/dashboard", { replace: true });
+    } finally {
+      setBusy(false);
+    }
   };
+
   return (
     <div className="flex flex-col gap-4">
       <GoogleButton label="Mit Google anmelden" />
@@ -120,9 +153,21 @@ function LoginForm() {
         <span className="text-xs" style={{ color: C.stone }}>oder per E-Mail</span>
         <div className="flex-1 h-px" style={{ background: C.border }} />
       </div>
+      {error && (
+        <div className="px-3 py-2.5 rounded-xl text-xs font-semibold" style={{ background: "#D94F3D18", color: C.danger }}>
+          {error}
+        </div>
+      )}
       <Field label="E-Mail" type="email" placeholder="du@beispiel.de" value={email} onChange={setEmail} />
       <Field label="Passwort" type="password" placeholder="••••••••" value={pw} onChange={setPw} />
-      <button onClick={handleLogin} className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95" style={{ background: C.forest }}>Einloggen →</button>
+      <button
+        onClick={handleLogin}
+        disabled={busy}
+        className="w-full py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+        style={{ background: C.forest }}
+      >
+        {busy ? "Wird geprüft…" : "Einloggen →"}
+      </button>
       <p className="text-center text-sm" style={{ color: C.stone }}>
         Noch kein Konto?{" "}
         <Link to="/registrieren" className="font-semibold" style={{ color: C.mint }}>Jetzt registrieren</Link>
@@ -133,10 +178,13 @@ function LoginForm() {
 
 function RegisterForm() {
   const nav = useNavigate();
+  const { register } = useAuth();
   const [step, setStep] = useState(0);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const [gender, setGender] = useState("");
   const [birthYear, setBirthYear] = useState("");
   const [height, setHeight] = useState("");
@@ -144,17 +192,42 @@ function RegisterForm() {
   const [diabetes, setDiabetes] = useState("none");
   const [hba1c, setHba1c] = useState("");
   const [dietType, setDietType] = useState("");
-  const [allergens, setAllergens] = useState([]);
-  const [cuisines, setCuisines] = useState([]);
+  const [allergens, setAllergens] = useState<string[]>([]);
+  const [cuisines, setCuisines] = useState<string[]>([]);
   const [goal, setGoal] = useState("");
   const [targetWeight, setTargetWeight] = useState("");
   const [activity, setActivity] = useState(2);
-  const TDEE_ACTIVITY = [1.2, 1.375, 1.55, 1.725, 1.9];
-  const bmr = weight && height && birthYear ? Math.round(10 * Number(weight) + 6.25 * Number(height) - 5 * (new Date().getFullYear() - Number(birthYear)) + (gender === "maennlich" ? 5 : -161)) : 0;
-  const tdee = bmr ? Math.round(bmr * TDEE_ACTIVITY[activity]) : 2240;
-  const handleFinish = () => {
-    saveProfile({ name, email, gender, birthYear, height, weight, diabetes, hba1c, dietType, allergens, cuisines, goal, targetWeight, activity, tdee, createdAt: new Date().toISOString() });
-    setStep(4);
+  const { bmr, tdee } = estimateTdee(
+    Number(weight),
+    Number(height),
+    Number(birthYear),
+    gender as "maennlich" | "weiblich" | "divers" | "",
+    activity
+  );
+  const handleFinish = async () => {
+    setBusy(true);
+    setFormError(null);
+    try {
+      const result = await register(email, pw, name);
+      if (!result.ok) {
+        setFormError(result.error || "Registrierung fehlgeschlagen.");
+        setStep(0);
+        return;
+      }
+      saveProfile({ name: result.session?.name || name, email: result.session?.email || email, gender, birthYear, height, weight, diabetes, hba1c, dietType, allergens, cuisines, goal, targetWeight, activity, tdee, createdAt: new Date().toISOString() });
+      setStep(4);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  // Validierung Schritt 0 → 1 (Konto-Daten)
+  const handleNextFromAccount = () => {
+    setFormError(null);
+    if (!name.trim()) { setFormError("Bitte gib deinen Vornamen ein."); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) { setFormError("Bitte gib eine gültige E-Mail-Adresse ein."); return; }
+    if (pw.length < 8) { setFormError("Das Passwort muss mindestens 8 Zeichen lang sein."); return; }
+    setStep(1);
   };
   const stepLabels = ["Konto", "Koerper", "Ernaehrung", "Ziele"];
   return (
@@ -169,6 +242,11 @@ function RegisterForm() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+      {formError && (
+        <div className="px-3 py-2.5 rounded-xl text-xs font-semibold mb-4" style={{ background: "#D94F3D18", color: C.danger }}>
+          {formError}
         </div>
       )}
       {step === 0 && (
@@ -272,7 +350,7 @@ function RegisterForm() {
           </div>
           <div className="p-3 rounded-xl" style={{ background: C.mintLight }}>
             <p className="text-xs font-semibold" style={{ color: C.forest }}>Geschaetzter Tagesbedarf (TDEE)</p>
-            <p className="text-2xl font-black mt-1" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{tdee.toLocaleString("de-DE")} kcal</p>
+            <p className="text-2xl font-black mt-1" style={{ fontFamily: "'JetBrains Mono',monospace", color: C.forest }}>{(tdee || 2240).toLocaleString("de-DE")} kcal</p>
             {bmr > 0 && <p className="text-[11px] mt-0.5" style={{ color: C.stone }}>Grundumsatz (BMR): {bmr} kcal</p>}
           </div>
         </div>
@@ -290,8 +368,8 @@ function RegisterForm() {
           {step > 0 && (
             <button type="button" onClick={() => setStep(step - 1)} className="flex-1 py-2.5 rounded-xl text-sm font-semibold border" style={{ borderColor: C.border, color: C.stone }}>Zurueck</button>
           )}
-          <button type="button" onClick={() => step === 3 ? handleFinish() : setStep(step + 1)} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95" style={{ background: C.forest }}>
-            {step === 3 ? "Profil erstellen" : "Weiter →"}
+          <button type="button" onClick={() => step === 3 ? handleFinish() : step === 0 ? handleNextFromAccount() : setStep(step + 1)} disabled={busy} className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-60" style={{ background: C.forest }}>
+            {step === 3 ? (busy ? "Konto wird erstellt…" : "Profil erstellen") : "Weiter →"}
           </button>
         </div>
       )}

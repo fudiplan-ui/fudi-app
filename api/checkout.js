@@ -10,11 +10,11 @@
     return res.status(500).json({ error: 'Stripe secret key not configured' });
   }
 
-  // Live Price IDs for FUDI
+  // Live Price IDs for FUDI (überschreibbar über Env-Variablen)
   const PRICE_MAP = {
-    pro_monthly: 'price_1UC2dSPoNfLOPXfNxxZtGTrm',
-    pro_yearly: 'price_1UC2dTPoNfLOPXfNNhynoFX8',
-    biz_monthly: 'price_1UC2dTPoNfLOPXfNv2TkBIKx'
+    pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_1UC2dSPoNfLOPXfNxxZtGTrm',
+    pro_yearly: process.env.STRIPE_PRICE_PRO_YEARLY || 'price_1UC2dTPoNfLOPXfNNhynoFX8',
+    biz_monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY || 'price_1UC2dTPoNfLOPXfNv2TkBIKx',
   };
 
   const priceKey = plan === 'business' ? 'biz_monthly' : (yearly ? 'pro_yearly' : 'pro_monthly');
@@ -27,8 +27,9 @@
       'line_items[0][price]': priceId,
       'line_items[0][quantity]': '1',
       'mode': 'subscription',
-      'success_url': `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}&upgraded=pro`,
-      'cancel_url': `${origin}/preise`
+      'metadata[plan]': priceKey,
+      'success_url': `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      'cancel_url': `${origin}/preise?checkout=abgebrochen`,
     });
 
     const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
