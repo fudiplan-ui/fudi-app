@@ -10,11 +10,12 @@
     return res.status(500).json({ error: 'Stripe secret key not configured' });
   }
 
-  // Live Price IDs for FUDI (überschreibbar über Env-Variablen)
+  // Live Price IDs for FUDI (Account acct_1UCGsqQ, verifiziert via API am 2026-09-28)
+  // Überschreibbar über Env-Variablen, falls Preise in Stripe geändert werden.
   const PRICE_MAP = {
-    pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_1UC2dSPoNfLOPXfNxxZtGTrm',
-    pro_yearly: process.env.STRIPE_PRICE_PRO_YEARLY || 'price_1UC2dTPoNfLOPXfNNhynoFX8',
-    biz_monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY || 'price_1UC2dTPoNfLOPXfNv2TkBIKx',
+    pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_1UCI6JQ2LYrFBbOpEjPOFziQ',   // FUDI Pro, 9,99 €/Monat
+    pro_yearly: process.env.STRIPE_PRICE_PRO_YEARLY || 'price_1UCI6KQ2LYrFBbOp7BOWiGgD',    // FUDI Pro, 79,99 €/Jahr
+    biz_monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY || 'price_1UCI6KQ2LYrFBbOpwmei5lXs',  // Family & Coach, 199,99 €/Monat
   };
 
   const priceKey = plan === 'business' ? 'biz_monthly' : (yearly ? 'pro_yearly' : 'pro_monthly');
