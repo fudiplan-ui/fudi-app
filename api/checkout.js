@@ -15,7 +15,7 @@
   const PRICE_MAP = {
     pro_monthly: process.env.STRIPE_PRICE_PRO_MONTHLY || 'price_1UCI6JQ2LYrFBbOpEjPOFziQ',   // FUDI Pro, 9,99 €/Monat
     pro_yearly: process.env.STRIPE_PRICE_PRO_YEARLY || 'price_1UCI6KQ2LYrFBbOp7BOWiGgD',    // FUDI Pro, 79,99 €/Jahr
-    biz_monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY || 'price_1UCI6KQ2LYrFBbOpwmei5lXs',  // Family & Coach, 199,99 €/Monat
+    biz_monthly: process.env.STRIPE_PRICE_BIZ_MONTHLY || 'price_1UCI6KQ2LYrFBbOpwmei5lXs',  // Family & Coach, 19,99 €/Monat
   };
 
   const priceKey = plan === 'business' ? 'biz_monthly' : (yearly ? 'pro_yearly' : 'pro_monthly');
@@ -29,6 +29,8 @@
       'line_items[0][quantity]': '1',
       'mode': 'subscription',
       'metadata[plan]': priceKey,
+      // 14 Tage Testphase wie auf /preise beworben (kündbar vor der 1. Abbuchung)
+      'subscription_data[trial_period_days]': '14',
       'success_url': `${origin}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       'cancel_url': `${origin}/preise?checkout=abgebrochen`,
     });

@@ -6,7 +6,7 @@ import { C } from "../shared/colors";
 const PLANS = [
   {
     name: "Free",
-    price: { monthly: 0, yearly: 0 },
+    price: { monthly: 0, yearly: 0, yearTotal: 0 },
     color: C.stone,
     cta: "Kostenlos starten",
     ctaBg: C.cream,
@@ -18,7 +18,8 @@ const PLANS = [
   {
     name: "Pro",
     badge: "Beliebt",
-    price: { monthly: 9.9, yearly: 7.9 },
+    // Exakt = Stripe-Live-Preise (999 ct / 7999 ct p.a.)
+    price: { monthly: 9.99, yearly: 6.67, yearTotal: 79.99 },
     color: C.mint,
     cta: "Pro starten",
     ctaBg: C.forest,
@@ -38,7 +39,8 @@ const PLANS = [
   },
   {
     name: "Business",
-    price: { monthly: 39, yearly: 31 },
+    // = Stripe-Produkt "FUDI Family & Coach" (1999 ct / 14999 ct p.a.)
+    price: { monthly: 19.99, yearly: 12.5, yearTotal: 149.99 },
     color: C.coral,
     cta: "Business kontaktieren",
     ctaBg: C.coral,
@@ -58,7 +60,7 @@ const PLANS = [
 
 const FAQS = [
   { q: "Kann ich jederzeit kündigen?", a: "Ja, du kannst dein Abo jederzeit ohne Angabe von Gründen kündigen. Der Zugang bleibt bis zum Ende des bezahlten Zeitraums erhalten." },
-  { q: "Gibt es eine kostenlose Testphase?", a: "Der Pro-Plan kann 14 Tage kostenlos getestet werden – ohne Kreditkarte, ohne Risiko." },
+  { q: "Gibt es eine kostenlose Testphase?", a: "Ja – der Pro-Plan startet mit 14 kostenlosen Tagen. Du brauchst eine Zahlungsmethode für die Anmeldung, dir werden aber vor Ende der Testphase keine Gebühren berechnet, solange du kündigst." },
   { q: "Wie sicher sind meine Gesundheitsdaten?", a: "Alle Daten sind AES-256-verschlüsselt, DSGVO-konform und werden auf deutschen Servern gespeichert. Wir geben keine Daten an Dritte weiter." },
   { q: "Auf wie vielen Geräten kann ich FUDI nutzen?", a: "Mit Pro kannst du FUDI auf bis zu 3 Geräten gleichzeitig nutzen – Smartphone, Tablet und Desktop." },
   { q: "Ist FUDI auch für Diabetiker geeignet?", a: "Ja, FUDI wurde unter Mitwirkung von Ernährungsmedizinern entwickelt. Allerdings ersetzt es keine medizinische Beratung." },
@@ -122,7 +124,7 @@ export default function Pricing() {
                     </div>
                     {yearly && p.price.monthly > 0 && (
                       <p className="text-xs mt-0.5" style={{ color: p.highlight ? "rgba(255,255,255,0.5)" : C.stone }}>
-                        €{(p.price.yearly * 12).toFixed(2).replace(".", ",")} / Jahr
+                        €{p.price.yearTotal.toFixed(2).replace(".", ",")} / Jahr
                       </p>
                     )}
                   </div>
