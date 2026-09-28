@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://fudi-app-psi.vercel.app/sitemap.xml
+Sitemap: https://fudi-health-app.vercel.app/sitemap.xml

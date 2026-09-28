@@ -38,7 +38,7 @@ export default function Impressum() {
         <p>
           E-Mail: <a href="mailto:kontakt@fudi.app" className="underline">kontakt@fudi.app</a>
           <br />
-          Webseite: <a href="https://fudi-app-psi.vercel.app" className="underline">fudi-app-psi.vercel.app</a>
+          Webseite: <a href="https://fudi-health-app.vercel.app" className="underline">fudi-health-app.vercel.app</a>
         </p>
       </section>
 

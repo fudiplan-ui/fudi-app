@@ -21,7 +21,7 @@
   const priceId = PRICE_MAP[priceKey] || PRICE_MAP.pro_monthly;
 
   try {
-    const origin = req.headers.origin || 'https://fudi-app-psi.vercel.app';
+    const origin = req.headers.origin || 'https://fudi-health-app.vercel.app';
     const params = new URLSearchParams({
       'payment_method_types[0]': 'card',
       'line_items[0][price]': priceId,

@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const SITE_URL = "https://fudi-app-psi.vercel.app";
+const SITE_URL = "https://fudi-health-app.vercel.app";
 const DEFAULT_TITLE = "FUDI 2.0 – Smarte KI-Ernährung & Blutzucker-Vorhersage";
 const DEFAULT_DESCRIPTION =
   "FUDI: Gesunde Mahlzeiten mit KI-Blutzucker-Vorhersage, Kühlschrank-Scan, glykämischem Index und automatischem Preisvergleich. Für Diabetiker, Sportler und gesunden Genuss.";
