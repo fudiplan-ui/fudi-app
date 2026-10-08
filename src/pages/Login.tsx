@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { C } from "../shared/colors";
 import { IMG } from "../shared/images";
@@ -95,21 +95,95 @@ function Field({ label, type = "text", placeholder, value, onChange, tooltip }: 
 }
 
 function GoogleButton({ label }: { label: string }) {
+  const { login, register } = useAuth();
+  const nav = useNavigate();
+  const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID as string | undefined;
+  const [note, setNote] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  // Google Identity Services nur laden, wenn eine Client-ID konfiguriert ist.
+  useEffect(() => {
+    if (!clientId) return;
+    if (document.querySelector('script[src*="gsi/client"]')) return;
+    const s = document.createElement("script");
+    s.src = "https://accounts.google.com/gsi/client";
+    s.async = true;
+    s.defer = true;
+    s.onload = () => {
+      const g = (window as any).google;
+      if (!g?.accounts?.id) return;
+      g.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (resp: { credential?: string }) => {
+          if (!resp.credential) return;
+          setBusy(true);
+          setNote(null);
+          try {
+            const payload = JSON.parse(
+              atob(resp.credential.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+            );
+            const email: string = payload.email || "";
+            const secret: string = String(payload.sub || "google-oauth");
+            const name: string = payload.given_name || payload.name || email.split("@")[0];
+            if (!email) throw new Error("keine E-Mail");
+            let r = await login(email, secret);
+            if (!r.ok) r = await register(email, secret, name);
+            if (r.ok) nav("/dashboard", { replace: true });
+            else setNote(r.error || "Google-Anmeldung fehlgeschlagen.");
+          } catch {
+            setNote("Google-Anmeldung fehlgeschlagen – bitte nutze die E-Mail-Anmeldung.");
+          } finally {
+            setBusy(false);
+          }
+        },
+      });
+      const btn = document.getElementById("fudi-google-btn");
+      if (btn) g.accounts.id.renderButton(btn, { theme: "outline", size: "medium", width: 280, text: "continue_with" });
+    };
+    document.head.appendChild(s);
+  }, [clientId, login, register, nav]);
+
+  if (!clientId) {
+    // Ehrlicher Zwischenzustand statt eines toten Buttons (alert):
+    return (
+      <div className="space-y-2">
+        <button
+          type="button"
+          onClick={() => setNote(note ? null : "info")}
+          className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border font-semibold text-sm transition-all hover:bg-gray-50 active:scale-95"
+          style={{ borderColor: C.border, color: C.inkSoft, background: "#fff", opacity: 0.8 }}
+        >
+          <svg width="18" height="18" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.22 3.22l6.88-6.88C36.05 2.33 30.36 0 24 0 14.62 0 6.52 5.35 2.56 13.16l8.02 6.23C12.34 13.16 17.72 9.5 24 9.5z" />
+            <path fill="#4285F4" d="M46.52 24.55c0-1.65-.15-3.25-.42-4.78H24v9.05h12.62c-.55 2.94-2.2 5.43-4.67 7.1l7.27 5.65C43.44 37.72 46.52 31.58 46.52 24.55z" />
+            <path fill="#FBBC05" d="M10.58 28.61A14.55 14.55 0 0 1 9.5 24c0-1.6.27-3.15.74-4.61L2.22 13.16A23.94 23.94 0 0 0 0 24c0 3.87.93 7.52 2.56 10.72l8.02-6.11z" />
+            <path fill="#34A853" d="M24 48c6.48 0 11.92-2.14 15.9-5.83l-7.27-5.65c-2.14 1.43-4.87 2.28-8.63 2.28-6.28 0-11.62-3.68-13.42-8.9l-8.02 6.11C6.52 42.65 14.62 48 24 48z" />
+          </svg>
+          {busy ? "Anmeldung läuft…" : label}
+        </button>
+        {note === "info" && (
+          <div className="px-3 py-2.5 rounded-xl text-[11px] leading-relaxed" style={{ background: C.cream, color: C.inkMid, border: `1px solid ${C.border}` }}>
+            <strong style={{ color: C.forest }}>Google-Anmeldung ist noch nicht aktiviert.</strong> Dafür fehlt eine eigene Google-Client-ID:
+            in der Google Cloud Console OAuth-Client erstellen, <code className="font-mono">VITE_GOOGLE_CLIENT_ID</code> in{" "}
+            <code className="font-mono">Webseite/.env</code> eintragen und neu deployen. Bis dahin funktioniert die Registrierung per
+            E-Mail vollständig – auch im Free-Plan.
+          </div>
+        )}
+        {note && note !== "info" && (
+          <div className="px-3 py-2 rounded-xl text-[11px] font-semibold" style={{ background: "#D94F3D18", color: C.danger }}>{note}</div>
+        )}
+      </div>
+    );
+  }
+
+  // Echte Google-Anmeldung (Client-ID konfiguriert)
   return (
-    <button
-      type="button"
-      onClick={() => alert("Google OAuth wird nach Backend-Integration aktiviert.")}
-      className="w-full flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl border font-semibold text-sm transition-all hover:bg-gray-50 active:scale-95"
-      style={{ borderColor: C.border, color: C.ink, background: "#fff" }}
-    >
-      <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
-        <path fill="#EA4335" d="M24 9.5c3.54 0 6.72 1.22 9.22 3.22l6.88-6.88C36.05 2.33 30.36 0 24 0 14.62 0 6.52 5.35 2.56 13.16l8.02 6.23C12.34 13.16 17.72 9.5 24 9.5z"/>
-        <path fill="#4285F4" d="M46.52 24.55c0-1.65-.15-3.25-.42-4.78H24v9.05h12.62c-.55 2.94-2.2 5.43-4.67 7.1l7.27 5.65C43.44 37.72 46.52 31.58 46.52 24.55z"/>
-        <path fill="#FBBC05" d="M10.58 28.61A14.55 14.55 0 0 1 9.5 24c0-1.6.27-3.15.74-4.61L2.22 13.16A23.94 23.94 0 0 0 0 24c0 3.87.93 7.52 2.56 10.72l8.02-6.11z"/>
-        <path fill="#34A853" d="M24 48c6.48 0 11.92-2.14 15.9-5.83l-7.27-5.65c-2.14 1.43-4.87 2.28-8.63 2.28-6.28 0-11.62-3.68-13.42-8.9l-8.02 6.11C6.52 42.65 14.62 48 24 48z"/>
-      </svg>
-      {label}
-    </button>
+    <div className="space-y-2">
+      <div id="fudi-google-btn" className="flex justify-center" />
+      {note && (
+        <div className="px-3 py-2 rounded-xl text-[11px] font-semibold" style={{ background: "#D94F3D18", color: C.danger }}>{note}</div>
+      )}
+    </div>
   );
 }
 

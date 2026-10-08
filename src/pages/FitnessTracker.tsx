@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { C } from "../shared/colors";
+import { EXTRA_WORKOUTS, NUTRITION_TIMING } from "../data/trainingLibrary";
 
 export interface ExerciseStep {
   name: string;
@@ -12,7 +13,7 @@ export interface WorkoutItem {
   id: number;
   name: string;
   icon: string;
-  category: "Kraft" | "Ausdauer" | "Mobilitaet" | "Yoga" | "TaiChi";
+  category: "Kraft" | "Ausdauer" | "Mobilitaet" | "Yoga" | "TaiChi" | "HIIT" | "Sportarten" | "Alltag";
   muscles: string;
   targetedMuscleGroups: string[];
   duration: number; // min
@@ -395,7 +396,9 @@ const WORKOUTS: WorkoutItem[] = [
   }
 ];
 
-const MUSCLE_FILTERS = ["Alle Muskeln", "Brust & Trizeps", "Rücken & Bizeps", "Beine & Gluteus", "Core & Rücken", "Schulter & Nacken"];
+const MUSCLE_FILTERS = ["Alle Muskeln", "Brust & Trizeps", "Rücken & Bizeps", "Beine & Gluteus", "Core & Rücken", "Schulter & Nacken", "Ganzkörper", "Koordination & Balance"];
+// Alle Workouts: Basis-Set + erweiterte Bibliothek (Sportarten, HIIT, Alltag …)
+const ALL_WORKOUTS: WorkoutItem[] = [...WORKOUTS, ...EXTRA_WORKOUTS];
 const DAYS = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
 export default function FitnessTracker() {
@@ -529,7 +532,7 @@ export default function FitnessTracker() {
   };
 
   // Filter Workouts
-  const filteredWorkouts = WORKOUTS.filter(w => {
+  const filteredWorkouts = ALL_WORKOUTS.filter(w => {
     const matchesCat = selectedCat === "Alle" || w.category === selectedCat;
     const matchesMuscle = selectedMuscle === "Alle Muskeln" || w.targetedMuscleGroups.includes(selectedMuscle);
     return matchesCat && matchesMuscle;
@@ -785,7 +788,7 @@ export default function FitnessTracker() {
         <div className="bg-white rounded-3xl p-6 border shadow-sm space-y-4" style={{ borderColor: C.border }}>
           {/* Category Tabs */}
           <div className="flex flex-wrap gap-2 border-b pb-3" style={{ borderColor: C.border }}>
-            {["Alle", "Kraft", "Yoga", "TaiChi", "Ausdauer"].map(cat => (
+            {["Alle", "Kraft", "HIIT", "Ausdauer", "Sportarten", "Yoga", "TaiChi", "Mobilitaet", "Alltag"].map(cat => (
               <button
                 key={cat}
                 onClick={() => setSelectedCat(cat)}
@@ -795,7 +798,7 @@ export default function FitnessTracker() {
                     : "bg-gray-100 text-slate-600 hover:bg-gray-200"
                 }`}
               >
-                {cat === "TaiChi" ? "☯️ Tai Chi & Qi Gong" : cat === "Yoga" ? "🧘‍♀️ Yoga Asanas" : cat}
+                {cat === "TaiChi" ? "☯️ Tai Chi & Qi Gong" : cat === "Yoga" ? "🧘‍♀️ Yoga Asanas" : cat === "Mobilitaet" ? "🤸 Mobilität" : cat}
               </button>
             ))}
           </div>
@@ -863,6 +866,78 @@ export default function FitnessTracker() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* ── Ernährung & Timing (vor/nach dem Training) ── */}
+        <div className="bg-white rounded-3xl p-6 border shadow-sm space-y-4" style={{ borderColor: C.border }}>
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 mb-1">
+              <span>🍽</span> Ernährung & Timing
+            </div>
+            <h2 className="text-lg font-black text-slate-900">Was isst man – und wann?</h2>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Passend zur Trainingsart: Zeitfenster vor und nach dem Training, Ernährungsstile und was die Kost für den Körper im Zusammenhang mit der Belastung leistet.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {NUTRITION_TIMING.map((g) => {
+              const relevant = selectedCat === "Alle" || g.categories.includes(selectedCat);
+              return (
+                <div
+                  key={g.id}
+                  className={`rounded-2xl border p-4 space-y-3 transition-all ${relevant ? "bg-white" : "bg-gray-50 opacity-60"}`}
+                  style={{ borderColor: relevant ? C.mint : C.border }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{g.icon}</span>
+                    <h3 className="text-sm font-bold text-slate-900">{g.title}</h3>
+                    {relevant && selectedCat !== "Alle" && (
+                      <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full text-white" style={{ background: C.mint }}>PASST</span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="rounded-xl p-2.5" style={{ background: C.mintLight }}>
+                      <p className="text-[10px] font-black uppercase tracking-wider" style={{ color: C.forest }}>⏱ Vor dem Training – {g.before.window}</p>
+                      <ul className="mt-1 space-y-1">
+                        {g.before.options.map((o) => (
+                          <li key={o} className="text-[11px] leading-snug" style={{ color: C.inkMid }}>• {o}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div className="rounded-xl p-2.5" style={{ background: C.coralLight }}>
+                      <p className="text-[10px] font-black uppercase tracking-wider" style={{ color: "#9A5B1F" }}>⌛ Nach dem Training – {g.after.window}</p>
+                      <ul className="mt-1 space-y-1">
+                        {g.after.options.map((o) => (
+                          <li key={o} className="text-[11px] leading-snug" style={{ color: C.inkMid }}>• {o}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-wider mb-1" style={{ color: C.stone }}>🥗 Ernährungsstile</p>
+                    {g.dietStyles.map((d) => (
+                      <p key={d.name} className="text-[11px] leading-snug" style={{ color: C.inkMid }}>
+                        <strong style={{ color: C.forest }}>{d.name}:</strong> {d.hint}
+                      </p>
+                    ))}
+                  </div>
+
+                  <p className="text-[11px] leading-relaxed rounded-xl p-2.5" style={{ background: C.cream, color: C.inkMid }}>
+                    <strong style={{ color: C.forest }}>Für den Körper:</strong> {g.bodyNote}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+
+          <p className="text-[11px] leading-relaxed rounded-xl p-3" style={{ background: "#FFFBEB", color: "#92400E", border: "1px solid #FDE68A" }}>
+            <strong>⚠️ Hinweis:</strong> Alle Angaben sind allgemeine Ernährungsbildung (DGE-Leitlinien) und keine individuelle Diät- oder
+            Therapieberatung. Bei Diabetes, Erkrankungen, Allergien oder Medikamenteneinnahme bitte das Behandlungsteam fragen – insbesondere
+            beim Timing von Kohlenhydraten. Kalorienangaben der Workouts sind MET-basierte Richtwerte.
+          </p>
         </div>
 
       </div>

@@ -20,6 +20,7 @@ const ROUTE_META: Array<{ match: RegExp; title: string; description: string }> =
   { match: /^\/(fitness|training)$/, title: "Fitness-Tracker", description: "Trainingsplan, Ausführungskarten und Netto-Kalorien im Abgleich mit deinem Blutzucker." },
   { match: /^\/impressum$/, title: "Impressum", description: "Impressum der FUDI Health Technologies." },
   { match: /^\/datenschutz$/, title: "Datenschutz", description: "Datenschutzerklärung von FUDI gemäß DSGVO." },
+  { match: /^\/(saison|saison-kueche)$/, title: "Saisonküche & Erntekalender", description: "Welche Lebensmittel sind jetzt in Saison? Erntezeiten, Vitamine mit NRV-Werten und passende Rezepte – monatlich aktualisiert." },
 ];
 
 /** Liefert Title/Description für einen Pfad (Fallback = 404/Default). */

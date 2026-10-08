@@ -183,6 +183,8 @@ export default function Layout({ children, authenticated = false }: { children: 
             <span>•</span>
             <Link to="/planer" className="hover:underline">Wochenplaner</Link>
             <span>•</span>
+            <Link to="/saison" className="hover:underline">Saisonküche</Link>
+            <span>•</span>
             <Link to="/preise" className="hover:underline">Preise &amp; Abos</Link>
             <span>•</span>
             <Link to="/impressum" className="hover:underline">Impressum</Link>

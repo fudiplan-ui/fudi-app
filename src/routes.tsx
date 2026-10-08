@@ -23,6 +23,7 @@ const Pricing = lazy(() => import("./pages/Pricing"));
 const FitnessTracker = lazy(() => import("./pages/FitnessTracker"));
 const Impressum = lazy(() => import("./pages/Impressum"));
 const Datenschutz = lazy(() => import("./pages/Datenschutz"));
+const SeasonalKitchen = lazy(() => import("./pages/SeasonalKitchen"));
 
 /** Zeigt einen Lade-Spinner während eines Route-Chunks nachgeladen wird. */
 function PageFallback() {
@@ -98,6 +99,8 @@ export const router = createBrowserRouter([
       { path: "pricing", Component: withSuspense(Pricing) },
       { path: "impressum", Component: withSuspense(Impressum) },
       { path: "datenschutz", Component: withSuspense(Datenschutz) },
+      { path: "saison", Component: withSuspense(SeasonalKitchen) },
+      { path: "saison-kueche", Component: withSuspense(SeasonalKitchen) },
       // App-seitige Routen (Login erforderlich)
       ...APP_ROUTES,
       // 404 – muss der letzte Eintrag bleiben

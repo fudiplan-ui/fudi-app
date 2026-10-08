@@ -1,6 +1,6 @@
 import FridgeScannerModal from "../components/FridgeScannerModal";
-import { useState, useMemo } from "react";
-import { Link } from "react-router";
+import { useMemo, useState } from "react";
+import { Link, useSearchParams } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES_DB, RecipeItem } from "../data/recipesDatabase";
 
@@ -8,8 +8,18 @@ const MEAL_TYPES = ["Alle", "Frühstück", "Mittag", "Abendessen", "Snack", "Pre
 const DIETS = ["Alle", "High Protein", "Low Carb", "Keto", "Vegan", "Vegetarisch", "Glutenfrei", "Paleo"];
 const ALLERGIES = ["Alle", "Glutenfrei", "Laktosefrei", "Nussfrei", "Histaminarm"];
 const VITAMINS = ["Alle", "B12 & Eisen", "Omega-3 & Cholin", "Vitamin C & Zink", "Magnesium & Kalium", "Sulforaphan & Antioxidantien", "Präbiotische Ballaststoffe", "D3, K2 & Calcium"];
-const COUNTRIES = ["Alle", "Japan", "Italien", "Griechenland", "Mexiko", "Indien", "Thailand", "Spanien", "Marokko", "Schweden", "Georgien", "Peru", "Frankreich", "Deutschland", "USA", "Korea", "Brasilien"];
+// Länder dynamisch aus der Datenbank – nie wieder veraltete Hardcode-Liste
+const COUNTRIES = ["Alle", ...Array.from(new Set(RECIPES_DB.map(r => r.country))).sort((a, b) => a.localeCompare(b, "de"))];
 const TIMES = ["Alle", "< 15 min", "< 25 min", "< 40 min"];
+const DIFFICULTIES = ["Alle", "Einfach", "Mittel", "Anspruchsvoll"] as const;
+const SORTS = [
+  { key: "standard", label: "Empfohlen" },
+  { key: "time_asc", label: "Zeit: schnell zuerst" },
+  { key: "time_desc", label: "Zeit: aufwendig zuerst" },
+  { key: "difficulty", label: "Schwierigkeit" },
+  { key: "kcal_asc", label: "Kalorien: niedrig zuerst" },
+  { key: "rating_desc", label: "Bewertung: beste zuerst" },
+] as const;
 
 function GIBadge({ gi }: { gi: string }) {
   const color = gi === "low" ? C.mint : C.coral;
@@ -107,24 +117,30 @@ function RecipeCard({ r }: { r: RecipeItem }) {
 }
 
 export default function RecipeSearch() {
+  const [searchParams] = useSearchParams();
   const [scannerOpen, setScannerOpen] = useState(false);
-  const [search, setSearch]           = useState("");
+  // Suche ggf. aus URL-Parameter (?search=Orangen) vorbelegen –
+  // so können Saison-/Landing-Seiten direkt auf passende Rezepte verlinken.
+  const [search, setSearch]           = useState(() => searchParams.get("search") || "");
   const [mealType, setMealType]       = useState("Alle");
   const [diet, setDiet]               = useState("Alle");
   const [allergy, setAllergy]         = useState("Alle");
   const [vitamin, setVitamin]         = useState("Alle");
   const [country, setCountry]         = useState("Alle");
   const [time, setTime]               = useState("Alle");
+  const [difficulty, setDifficulty]   = useState<string>("Alle");
+  const [sort, setSort]               = useState<string>("standard");
   const [page, setPage]               = useState(1);
   const pageSize                      = 24;
 
   const filtered = useMemo(() => {
-    return RECIPES_DB.filter(r => {
+    const list = RECIPES_DB.filter(r => {
       if (mealType !== "Alle" && r.tag !== mealType) return false;
       if (diet !== "Alle" && r.diet !== diet) return false;
       if (allergy !== "Alle" && !r.allergies.includes(allergy)) return false;
       if (vitamin !== "Alle" && r.vitamins !== vitamin) return false;
       if (country !== "Alle" && r.country !== country) return false;
+      if (difficulty !== "Alle" && r.difficulty !== difficulty) return false;
       if (time === "< 15 min" && r.time >= 15) return false;
       if (time === "< 25 min" && r.time >= 25) return false;
       if (time === "< 40 min" && r.time >= 40) return false;
@@ -140,7 +156,17 @@ export default function RecipeSearch() {
       }
       return true;
     });
-  }, [mealType, diet, allergy, vitamin, country, time, search]);
+
+    const diffRank = (d: string) => (d === "Einfach" ? 0 : d === "Mittel" ? 1 : 2);
+    switch (sort) {
+      case "time_asc":     return [...list].sort((a, b) => a.time - b.time);
+      case "time_desc":    return [...list].sort((a, b) => b.time - a.time);
+      case "difficulty":   return [...list].sort((a, b) => diffRank(a.difficulty) - diffRank(b.difficulty) || a.time - b.time);
+      case "kcal_asc":     return [...list].sort((a, b) => a.kcal - b.kcal);
+      case "rating_desc":  return [...list].sort((a, b) => b.rating - a.rating);
+      default:             return list;
+    }
+  }, [mealType, diet, allergy, vitamin, country, time, difficulty, sort, search]);
 
   const totalPages = Math.ceil(filtered.length / pageSize) || 1;
   const paginated = useMemo(() => {
@@ -279,11 +305,27 @@ export default function RecipeSearch() {
               </select>
             </div>
 
-            {(diet !== "Alle" || mealType !== "Alle" || allergy !== "Alle" || vitamin !== "Alle" || country !== "Alle" || time !== "Alle" || search) && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Schwierigkeit:</span>
+              <select value={difficulty} onChange={e => { setDifficulty(e.target.value); setPage(1); }}
+                className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border bg-white" style={{ borderColor: C.border }}>
+                {DIFFICULTIES.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Sortieren:</span>
+              <select value={sort} onChange={e => { setSort(e.target.value); setPage(1); }}
+                className="text-xs font-semibold px-2.5 py-1.5 rounded-lg border bg-white" style={{ borderColor: C.border }}>
+                {SORTS.map(s => <option key={s.key} value={s.key}>{s.label}</option>)}
+              </select>
+            </div>
+
+            {(diet !== "Alle" || mealType !== "Alle" || allergy !== "Alle" || vitamin !== "Alle" || country !== "Alle" || time !== "Alle" || difficulty !== "Alle" || sort !== "standard" || search) && (
               <button
                 onClick={() => {
                   setDiet("Alle"); setMealType("Alle"); setAllergy("Alle"); setVitamin("Alle");
-                  setCountry("Alle"); setTime("Alle"); setSearch(""); setPage(1);
+                  setCountry("Alle"); setTime("Alle"); setDifficulty("Alle"); setSort("standard"); setSearch(""); setPage(1);
                 }}
                 className="text-xs font-bold text-rose-600 hover:underline ml-auto">
                 Filter zurücksetzen ✕
