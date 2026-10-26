@@ -12,6 +12,7 @@ import { RECIPES_DB, RecipeItem } from "../data/recipesDatabase";
 export type Diet = "Vegan" | "Vegetarisch" | "Keto" | "Paleo" | "LowCarb" | "Mixed";
 export type Priority = "guenstig" | "schnell" | "saison" | "proteinreich" | "lowGI";
 export type ShopType = "lokal" | "online";
+export type MealSlot = "frühstück" | "mittag" | "abend";
 
 export interface UserPreferences {
   diet: Diet;
@@ -52,9 +53,14 @@ export interface ShoppingListItem {
   discountPct?: number;
 }
 
+export interface DayPlan {
+  date: string;
+  meals: Record<MealSlot, RecipeItem[]>; // max. 3 Rezepte pro Slot
+}
+
 export interface WeekPlan {
   weekStart: string;
-  recipes: RecipeItem[];
+  days: DayPlan[];
   shoppingList: ShoppingListItem[];
   totalCost: number;
   noWasteTips: string[];
@@ -153,32 +159,54 @@ export function generateWeekPlan(
   prefs: UserPreferences,
   weekStart: string = new Date().toISOString().split("T")[0]
 ): WeekPlan {
-  const candidates = RECIPES_DB.filter((r) => matchesPreferences(r, prefs));
+  const start = new Date(weekStart);
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Montag
 
+  const candidates = RECIPES_DB.filter((r) => matchesPreferences(r, prefs));
   const scored = candidates
     .map((r) => ({ recipe: r, score: scoreRecipe(r, prefs) }))
     .sort((a, b) => b.score - a.score);
 
-  const selected: RecipeItem[] = [];
-  const usedTags = new Set<string>();
+  const MEAL_SLOTS: MealSlot[] = ["frühstück", "mittag", "abend"];
+  const days: DayPlan[] = [];
+  const ingredientUsage = new Map<string, number>();
 
-  for (const { recipe } of scored) {
-    if (selected.length >= 3) break;
-    if (prefs.noWaste && usedTags.has(recipe.tag) && selected.length > 0) continue;
-    selected.push(recipe);
-    usedTags.add(recipe.tag);
-  }
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(start);
+    date.setDate(start.getDate() + d);
+    const dateStr = date.toISOString().split("T")[0];
 
-  if (selected.length < 3) {
-    for (const { recipe } of scored) {
-      if (selected.length >= 3) break;
-      if (!selected.includes(recipe)) selected.push(recipe);
+    const meals: Record<MealSlot, RecipeItem[]> = {
+      frühstück: [],
+      mittag: [],
+      abend: [],
+    };
+
+    for (const slot of MEAL_SLOTS) {
+      const slotRecipes: RecipeItem[] = [];
+      for (const { recipe } of scored) {
+        if (slotRecipes.length >= 3) break;
+        if (slotRecipes.includes(recipe)) continue;
+        slotRecipes.push(recipe);
+      }
+      meals[slot] = slotRecipes;
+
+      for (const recipe of slotRecipes) {
+        for (const ing of recipe.ingredients) {
+          const key = ing.name.toLowerCase();
+          ingredientUsage.set(key, (ingredientUsage.get(key) || 0) + 1);
+        }
+      }
     }
+
+    days.push({ date: dateStr, meals });
   }
 
-  const totalPortions = selected.reduce((sum, r) => sum + r.portions, 0);
+  const allSelected = days.flatMap((day) => Object.values(day.meals).flat());
+
+  const totalPortions = allSelected.reduce((sum, r) => sum + r.portions, 0);
   const factor = (prefs.householdSize * 7) / Math.max(totalPortions, 1);
-  const rawIngredients = aggregateIngredients(selected, factor);
+  const rawIngredients = aggregateIngredients(allSelected, factor);
 
   const shoppingList: ShoppingListItem[] = [];
   let totalCost = 0;
@@ -201,24 +229,24 @@ export function generateWeekPlan(
   }
 
   const noWasteTips: string[] = [];
-  if (prefs.noWaste && selected.length > 1) {
-    const allNames = selected.flatMap((r) =>
-      r.ingredients.map((i) => i.name.toLowerCase())
-    );
-    const duplicates = allNames.filter(
-      (name, idx) => allNames.indexOf(name) !== idx
-    );
+  if (prefs.noWaste) {
+    const duplicates = Array.from(ingredientUsage.entries())
+      .filter(([, count]) => count > 1)
+      .map(([ingredient]) => ingredient);
     if (duplicates.length > 0) {
       noWasteTips.push(
-        `Folgende Zutaten kommen mehrfach vor und können gemeinsam gekauft werden: ${[...new Set(duplicates)].join(", ")}.`
+        `Folgende Zutaten kommen mehrfach vor und können gemeinsam gekauft werden: ${duplicates.join(", ")}.`
       );
     }
     noWasteTips.push("Übrig gebliebene Gemüse-Reste eignen sich für Suppen oder Pfannen-Gerichte am Wochenende.");
+    if (allSelected.length > 0) {
+      noWasteTips.push("Plane Reste vom Mittagessen als Abendessen am selben Tag ein.");
+    }
   }
 
   return {
-    weekStart,
-    recipes: selected,
+    weekStart: start.toISOString().split("T")[0],
+    days,
     shoppingList,
     totalCost: Math.round(totalCost * 100) / 100,
     noWasteTips,
