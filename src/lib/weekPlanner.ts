@@ -1,18 +1,21 @@
 /**
  * FUDI Wochenplaner – No-Waste, Diät- & Preisbewusste Mahlzeitenplanung.
- *
- * RECHTSSICHERHEIT:
- * - Keine medizinischen oder ernährungswissenschaftlichen Heilversprechen.
- * - Preise sind Platzhalter und müssen manuell gepflegt werden (keine Shop-API).
- * - Keine Integration mit Picnic/Rewe/Edeka ohne offizielle API.
+ * Kochhistorie läuft lokal über localStorage (später migrierbar auf Supabase).
  */
 
 import { RECIPES_DB, RecipeItem } from "../data/recipesDatabase";
+import { RECIPE_POOL } from "../data/recipePool";
+import { WEEKLY_TIPS, WeeklyTip, getTipsForWeek } from "../data/weeklyTips";
 
 export type Diet = "Vegan" | "Vegetarisch" | "Keto" | "Paleo" | "LowCarb" | "Mixed";
 export type Priority = "guenstig" | "schnell" | "saison" | "proteinreich" | "lowGI";
 export type ShopType = "lokal" | "online";
 export type MealSlot = "frühstück" | "mittag" | "abend";
+
+export interface RecipeCookingEntry {
+  recipeId: string;
+  cookedAt: string;
+}
 
 export interface UserPreferences {
   diet: Diet;
@@ -22,6 +25,8 @@ export interface UserPreferences {
   noWaste: boolean;
   householdSize: number;
   plz?: string;
+  maxRepetitionDays?: number;
+  persistHistory?: boolean;
 }
 
 export interface Shop {
@@ -55,7 +60,7 @@ export interface ShoppingListItem {
 
 export interface DayPlan {
   date: string;
-  meals: Record<MealSlot, RecipeItem[]>; // max. 3 Rezepte pro Slot
+  meals: Record<MealSlot, RecipeItem[]>;
 }
 
 export interface WeekPlan {
@@ -65,7 +70,11 @@ export interface WeekPlan {
   totalCost: number;
   noWasteTips: string[];
   generatedAt: string;
+  cookedRecipeIds: string[];
+  weeklyTips: WeeklyTip[];
 }
+
+const COOKING_HISTORY_KEY = "fudi_cooking_history";
 
 const DEFAULT_SHOPS: Shop[] = [
   { id: "rewe", name: "REWE", type: "lokal", delivery: true, discountActive: true },
@@ -98,7 +107,7 @@ export function getPriceForIngredient(ingredient: string, shopId?: string): Pric
     const shopMatch = matches.find((p) => p.shopId === shopId);
     if (shopMatch) return shopMatch;
   }
-  return matches.reduce((best, cur) => (cur.unitPrice < best.unitPrice ? cur : best));
+  return matches.reduce((best, cur) => (cur.unitPrice < best.unitPrice ? cur : best));cur.unitPrice < best.unitPrice ? cur : best));
 }
 
 function matchesPreferences(recipe: RecipeItem, prefs: UserPreferences): boolean {
@@ -114,13 +123,26 @@ function matchesPreferences(recipe: RecipeItem, prefs: UserPreferences): boolean
   return true;
 }
 
-function scoreRecipe(recipe: RecipeItem, prefs: UserPreferences): number {
+function scoreRecipe(
+  recipe: RecipeItem,
+  prefs: UserPreferences,
+  history: RecipeCookingEntry[],
+  maxRepetitionDays: number
+): number {
   let score = 0;
   if (prefs.priorities.includes("schnell") && recipe.time <= 30) score += 2;
   if (prefs.priorities.includes("guenstig") && recipe.rating >= 4.0) score += 1;
   if (prefs.priorities.includes("proteinreich") && recipe.protein >= 20) score += 2;
   if (prefs.priorities.includes("lowGI") && recipe.gi === "low") score += 2;
   if (prefs.priorities.includes("saison")) score += 1;
+  // Blutzucker-Regelung
+  if (recipe.gi === "low") score += 2;
+  if (recipe.impact <= 15) score += 1;
+  if (recipe.impact > 25) score -= 1;
+  // Wiederholung vermeiden: max 1x pro Monat
+  const days = daysSinceLastCooked(recipe.id, history);
+  if (days >= maxRepetitionDays) score += 2;
+  else if (days < 7) score -= 5;
   return score;
 }
 
@@ -162,14 +184,28 @@ export function generateWeekPlan(
   const start = new Date(weekStart);
   start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Montag
 
-  const candidates = RECIPES_DB.filter((r) => matchesPreferences(r, prefs));
-  const scored = candidates
-    .map((r) => ({ recipe: r, score: scoreRecipe(r, prefs) }))
-    .sort((a, b) => b.score - a.score);
+  const history = prefs.persistHistory !== false ? loadCookingHistory() : [];
+  const maxRepetitionDays = prefs.maxRepetitionDays ?? 30;
+  const allRecipes = [...RECIPES_DB, ...RECIPE_POOL];
+  const candidates = allRecipes.filter((r) => matchesPreferences(r, prefs));
+
+  if (candidates.length === 0) {
+    return {
+      weekStart: start.toISOString().split("T")[0],
+      days: [],
+      shoppingList: [],
+      totalCost: 0,
+      noWasteTips: ["Keine passenden Rezepte für deine Einstellungen gefunden."],
+      generatedAt: new Date().toISOString(),
+      cookedRecipeIds: [],
+    };
+  }
 
   const MEAL_SLOTS: MealSlot[] = ["frühstück", "mittag", "abend"];
   const days: DayPlan[] = [];
   const ingredientUsage = new Map<string, number>();
+  const weeklyUsage = new Map<string, number>();
+  const cookedRecipeIds: string[] = [];
 
   for (let d = 0; d < 7; d++) {
     const date = new Date(start);
@@ -184,14 +220,36 @@ export function generateWeekPlan(
 
     for (const slot of MEAL_SLOTS) {
       const slotRecipes: RecipeItem[] = [];
-      for (const { recipe } of scored) {
+      const sorted = [...candidates]
+        .filter((r) => !slotRecipes.includes(r))
+        .filter(
+          (r) =>
+            !meals.frühstück.includes(r) &&
+            !meals.mittag.includes(r) &&
+            !meals.abend.includes(r)
+        )
+        .sort((a, b) => {
+          const daysA = daysSinceLastCooked(a.id, history);
+          const daysB = daysSinceLastCooked(b.id, history);
+          const recentlyA = daysA < maxRepetitionDays ? 1 : 0;
+          const recentlyB = daysB < maxRepetitionDays ? 1 : 0;
+          if (recentlyA !== recentlyB) return recentlyA - recentlyB;
+          return (
+            scoreRecipe(b, prefs, history, maxRepetitionDays) -
+            scoreRecipe(a, prefs, history, maxRepetitionDays)
+          );
+        });
+
+      for (const recipe of sorted) {
         if (slotRecipes.length >= 3) break;
-        if (slotRecipes.includes(recipe)) continue;
+        if ((weeklyUsage.get(recipe.id) || 0) >= 3) continue;
         slotRecipes.push(recipe);
+        weeklyUsage.set(recipe.id, (weeklyUsage.get(recipe.id) || 0) + 1);
       }
       meals[slot] = slotRecipes;
 
       for (const recipe of slotRecipes) {
+        cookedRecipeIds.push(recipe.id);
         for (const ing of recipe.ingredients) {
           const key = ing.name.toLowerCase();
           ingredientUsage.set(key, (ingredientUsage.get(key) || 0) + 1);
@@ -203,6 +261,7 @@ export function generateWeekPlan(
   }
 
   const allSelected = days.flatMap((day) => Object.values(day.meals).flat());
+  const uniqueSelected = [...new Map(allSelected.map((r) => [r.id, r])).values()];
 
   const totalPortions = allSelected.reduce((sum, r) => sum + r.portions, 0);
   const factor = (prefs.householdSize * 7) / Math.max(totalPortions, 1);
@@ -244,6 +303,12 @@ export function generateWeekPlan(
     }
   }
 
+  if (prefs.persistHistory !== false) {
+    for (const id of cookedRecipeIds) {
+      markRecipeCooked(id);
+    }
+  }
+
   return {
     weekStart: start.toISOString().split("T")[0],
     days,
@@ -251,6 +316,8 @@ export function generateWeekPlan(
     totalCost: Math.round(totalCost * 100) / 100,
     noWasteTips,
     generatedAt: new Date().toISOString(),
+    cookedRecipeIds: uniqueSelected.map((r) => r.id),
+    weeklyTips: getTipsForWeek(0),
   };
 }
 
@@ -259,4 +326,59 @@ export function formatPrice(eur: number): string {
     style: "currency",
     currency: "EUR",
   }).format(eur);
+}
+
+export function loadCookingHistory(): RecipeCookingEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(COOKING_HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as RecipeCookingEntry[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveCookingHistory(history: RecipeCookingEntry[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(
+      COOKING_HISTORY_KEY,
+      JSON.stringify(history.slice(-500))
+    );
+  } catch {
+    // still ignorieren
+  }
+}
+
+export function markRecipeCooked(recipeId: string): void {
+  const history = loadCookingHistory();
+  history.push({
+    recipeId,
+    cookedAt: new Date().toISOString().split("T")[0],
+  });
+  saveCookingHistory(history);
+}
+
+export function daysSinceLastCooked(
+  recipeId: string,
+  history: RecipeCookingEntry[]
+): number {
+  const matches = history.filter((h) => h.recipeId === recipeId);
+  if (matches.length === 0) return Infinity;
+  const last = matches
+    .sort((a, b) => b.cookedAt.localeCompare(a.cookedAt))[0].cookedAt;
+  const lastDate = new Date(last + "T00:00:00");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.max(0, Math.round((today.getTime() - lastDate.getTime()) / 86400000));
+}
+
+export function isRecentlyCooked(
+  recipeId: string,
+  history: RecipeCookingEntry[],
+  days: number
+): boolean {
+  return daysSinceLastCooked(recipeId, history) < days;
 }
