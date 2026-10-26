@@ -2,6 +2,9 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { C } from "../shared/colors";
 import { RECIPES_DB, RecipeItem } from "../data/recipesDatabase";
+import { useToast } from "../lib/toast";
+import { usePageMeta } from "../lib/seo";
+import { buildRecipeSchema, useStructuredData } from "../lib/structuredData";
 
 function scaleAmount(amount: string, scale: number): string {
   if (scale === 1) return amount;
@@ -68,7 +71,34 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
+function DifficultyBadge({ difficulty }: { difficulty: string }) {
+  const map: Record<string, { label: string; color: string }> = {
+    Einfach:       { label: "Einfach",       color: "#2D5016" },
+    Mittel:        { label: "Mittel",        color: "#F4A261" },
+    Anspruchsvoll: { label: "Anspruchsvoll", color: "#E76F51" },
+  };
+  const cfg = map[difficulty] ?? { label: difficulty || "—", color: "#94A3B8" };
+  return (
+    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ background: cfg.color }}>
+      {cfg.label}
+    </span>
+  );
+}
+
+function SourceBadge({ source }: { source: string }) {
+  return (
+    <span
+      className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+      style={{ background: "#FEF3E2", color: "#9A5B1F", border: "1px solid #F4A26166" }}
+      title="Importiertes Rezept – Nährwerte sind Schätzwerte und wurden nicht geprüft."
+    >
+      ⓘ {source}
+    </span>
+  );
+}
+
 export default function RecipeDetail() {
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const recipe = RECIPES_DB.find((r) => r.id === id) ?? RECIPES_DB[0];
   const [tab, setTab]         = useState<"overview" | "nutrients" | "steps" | "health">("overview");
@@ -83,6 +113,29 @@ export default function RecipeDetail() {
   useEffect(() => {
     if (recipe) setPortions(recipe.portions);
   }, [recipe?.id]);
+
+  // Dynamischer Seitentitel + Recipe-JSON-LD für Google-Rich-Results
+  // (Sterne, Kochzeit, Nährwerte). usePageMeta registriert den Titel so, dass
+  // das zentrale applyRouteMeta in Root ihn nicht überschreibt.
+  usePageMeta(recipe?.title ?? "Rezept");
+  useStructuredData(
+    "recipe-jsonld",
+    recipe
+      ? buildRecipeSchema({
+          id: recipe.id,
+          title: recipe.title,
+          description: `${recipe.title} – gesundes FUDI-Rezept (${recipe.country}) mit ${recipe.kcal} kcal und ${recipe.protein} g Protein. Zubereitung in ca. ${recipe.time} Minuten.`,
+          kcal: recipe.kcal,
+          protein: recipe.protein,
+          carbs: recipe.carbs,
+          fat: recipe.fat,
+          time: recipe.time,
+          portions: recipe.portions,
+          rating: recipe.rating,
+          image: recipe.img?.startsWith("http") ? recipe.img : undefined,
+        })
+      : null,
+  );
 
   if (!recipe) {
     return (
@@ -120,7 +173,7 @@ export default function RecipeDetail() {
 
   const speakCurrentStep = (stepIndex: number) => {
     if (!('speechSynthesis' in window)) {
-      alert("Sprachausgabe wird von diesem Browser leider nicht unterstützt.");
+      toast.warning("Sprachausgabe wird von diesem Browser leider nicht unterstützt.");
       return;
     }
     window.speechSynthesis.cancel();
@@ -156,7 +209,7 @@ export default function RecipeDetail() {
   const toggleVoiceAssistant = () => {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Sprachsteuerung wird in diesem Browser leider nicht unterstützt (Empfohlen: Chrome / Safari).");
+      toast.warning("Sprachsteuerung wird in diesem Browser leider nicht unterstützt (Empfohlen: Chrome / Safari).");
       return;
     }
 
@@ -245,7 +298,16 @@ export default function RecipeDetail() {
                   {recipe.vitamins}
                 </span>
               </div>
-              <h1 className="text-2xl md:text-3xl font-black leading-tight mb-2 drop-shadow-sm">
+              {/* Badges: Zeit · Schwierigkeit · Herkunft */}
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: C.forestLight, color: C.forest }}>
+          ⏱ {recipe.time} Min.
+        </span>
+        <DifficultyBadge difficulty={recipe.difficulty} />
+        {recipe.source && <SourceBadge source={recipe.source} />}
+      </div>
+
+      <h1 className="text-2xl md:text-3xl font-black leading-tight mb-2 drop-shadow-sm">
                 {recipe.title}
               </h1>
               <div className="flex items-center gap-4 text-xs font-medium text-white/90">
