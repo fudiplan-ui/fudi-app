@@ -33,16 +33,13 @@
 
 ## 🛒 Welle 4 — Wochenplaner, No-Waste, Preise & Shops (neu)
 - [x] **19** `src/lib/weekPlanner.ts` erstellt: 7 Tage × Frühstück/Mittag/Abend × max. 3 Rezepte/Slot, Diät, Allergien, Prioritäten, Blutzucker-Regelung, No-Waste, max. 1× pro Monat (Kochhistorie via localStorage)
-- [x] **20** `src/data/recipePool.ts` erstellt: zusätzliche Rezepte mit Unsplash-Bildern für Frühstück/Mittag (Abend folgt)
+- [x] **20** `src/data/recipePool.ts` erstellt: zusätzliche Rezepte mit Unsplash-Bildern für Frühstück/Mittag/Abend
 - [x] **21** `src/data/weeklyTips.ts` erstellt: 3 wöchentliche Tipps (Aufbewahrung, Zubereitung, Geschmack, Kühlschrank, Gerichte), rotierend pro Kalenderwoche
 - [x] **22** WeekPlanner nutzt `RECIPE_POOL` als zusätzliche Kandidatenquelle und liefert `weeklyTips` im Plan
-- [ ] **23** `src/data/priceIndex.ts` anlegen: manueller Preisindex (Zutat, Preis, Einheit, Shop, Rabatt)
-- [ ] **24** No-Waste-Logik: gleiche Zutat über mehrere Gerichte planen, Resteverwertungs-Tipp (bereits in weekPlanner.ts enthalten)
-- [ ] **25** Einkaufsliste aggregieren + Gesamtpreis pro Shop kalkulieren (bereits in weekPlanner.ts enthalten)
-- [ ] **26** `UserPreferences`: diet, allergies, budget/woche, priorities[], noWaste, householdSize, plz (bereits enthalten)
-- [ ] **27** Shops modellieren (REWE, EDEKA, Picnic, Alnatura, lokaler Markt) mit PLZ-Zuordnung (bereits enthalten)
-- [ ] **28** UI: WeekPlanner-Seite (`/planer`) mit den 3 Vorschlägen und Einkaufsliste verbinden
-- [ ] **29** Zutatenalternativen (`src/data/ingredientSubstitutes.ts`) für Allergien/Ersatz
+- [x] **23** `src/data/ingredientSubstitutes.ts` erstellt: Zutatenalternativen für Allergien/Ersatz mit Hilfsfunktionen
+- [ ] **24** `src/data/priceIndex.ts` anlegen: manueller Preisindex (Zutat, Preis, Einheit, Shop, Rabatt)
+- [ ] **25** UI: WeekPlanner-Seite (`/planer`) mit den 7-Tage-Plänen, Einkaufsliste und Tips verbinden
+- [ ] **26** Abend-Rezepte für weitere Diäten (Keto, Paleo, Vegetarisch) ergänzen
 
 ## ⚠️ Preise ohne offizielle API — Konzept
 - [ ] **27** Preise über JSON/CSV pflegen (manuell oder regelmäßiger Import) — realistisch ohne API

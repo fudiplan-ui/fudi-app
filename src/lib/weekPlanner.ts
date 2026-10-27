@@ -6,6 +6,12 @@
 import { RECIPES_DB, RecipeItem } from "../data/recipesDatabase";
 import { RECIPE_POOL } from "../data/recipePool";
 import { WEEKLY_TIPS, WeeklyTip, getTipsForWeek } from "../data/weeklyTips";
+import {
+  findShopsNear,
+  distanceMeters,
+  osmMapLink,
+  ShopLocation,
+} from "./location";
 
 export type Diet = "Vegan" | "Vegetarisch" | "Keto" | "Paleo" | "LowCarb" | "Mixed";
 export type Priority = "guenstig" | "schnell" | "saison" | "proteinreich" | "lowGI";
@@ -25,6 +31,7 @@ export interface UserPreferences {
   noWaste: boolean;
   householdSize: number;
   plz?: string;
+  userLocation?: { lat: number; lon: number; label: string };
   maxRepetitionDays?: number;
   persistHistory?: boolean;
 }
@@ -72,6 +79,7 @@ export interface WeekPlan {
   generatedAt: string;
   cookedRecipeIds: string[];
   weeklyTips: WeeklyTip[];
+  nearbyShops: ShopLocation[];
 }
 
 const COOKING_HISTORY_KEY = "fudi_cooking_history";
@@ -107,7 +115,8 @@ export function getPriceForIngredient(ingredient: string, shopId?: string): Pric
     const shopMatch = matches.find((p) => p.shopId === shopId);
     if (shopMatch) return shopMatch;
   }
-  return matches.reduce((best, cur) => (cur.unitPrice < best.unitPrice ? cur : best));cur.unitPrice < best.unitPrice ? cur : best));
+  return matches.reduce((best, cur) => (cur.unitPrice < best.unitPrice ? cur : best));
+}
 }
 
 function matchesPreferences(recipe: RecipeItem, prefs: UserPreferences): boolean {
@@ -177,10 +186,10 @@ function aggregateIngredients(
   }));
 }
 
-export function generateWeekPlan(
+export async function generateWeekPlan(
   prefs: UserPreferences,
   weekStart: string = new Date().toISOString().split("T")[0]
-): WeekPlan {
+): Promise<WeekPlan> {
   const start = new Date(weekStart);
   start.setDate(start.getDate() - ((start.getDay() + 6) % 7)); // Montag
 
@@ -198,6 +207,8 @@ export function generateWeekPlan(
       noWasteTips: ["Keine passenden Rezepte für deine Einstellungen gefunden."],
       generatedAt: new Date().toISOString(),
       cookedRecipeIds: [],
+      weeklyTips: getTipsForWeek(0),
+      nearbyShops: [],
     };
   }
 
@@ -309,6 +320,23 @@ export function generateWeekPlan(
     }
   }
 
+  const nearbyShops: ShopLocation[] = prefs.userLocation
+    ? await findShopsNear(prefs.userLocation.lat, prefs.userLocation.lon, 5000)
+        .then((shops) =>
+          shops
+            .map((s) => ({
+              ...s,
+              distance: distanceMeters(
+                prefs.userLocation!.lat,
+                prefs.userLocation!.lon,
+                s.lat,
+                s.lon
+              ),
+            }))
+            .sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0))
+        )
+    : [];
+
   return {
     weekStart: start.toISOString().split("T")[0],
     days,
@@ -318,6 +346,7 @@ export function generateWeekPlan(
     generatedAt: new Date().toISOString(),
     cookedRecipeIds: uniqueSelected.map((r) => r.id),
     weeklyTips: getTipsForWeek(0),
+    nearbyShops,
   };
 }
 
